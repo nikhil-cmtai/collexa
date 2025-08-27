@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 
+// Color theme harmonized with the rest of the website (primary/secondary using opacity classes)
 type Course = {
   title: string;
   category: string;
@@ -55,43 +56,57 @@ const CoursesExploreSection = () => {
       return matchesQuery && matchesDuration && matchesCategory;
     });
   }, [query, duration, activeCategory]);
+
   return (
     <section className="relative overflow-hidden">
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_0%,rgba(2,132,199,0.10)_0%,rgba(255,255,255,0)_60%)]" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white to-transparent" />
+      {/* Only keep subtle top and bottom fade for section */}
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white to-transparent" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-6">
+      <div className="max-w-7xl mx-auto px-4 py-20">
+        <div className="grid grid-cols-1 md:grid-cols-[270px_1fr] gap-10">
           {/* Sidebar */}
           <motion.aside
-            className="sticky md:top-20 h-max rounded-xl border border-neutral-200 bg-white/80 backdrop-blur p-4 shadow-sm"
-            initial={{ x: -12, opacity: 0 }}
+            className="sticky md:top-24 h-max rounded-2xl border border-neutral-200 bg-white/90 backdrop-blur-xl p-6 shadow-xl"
+            initial={{ x: -18, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             viewport={{ once: true }}
           >
-            <div className="text-sm font-semibold text-neutral-900">Explore</div>
-            <div className="mt-3 space-y-2">
+            <div className="text-lg font-extrabold text-neutral-900 tracking-tight flex items-center gap-2">
+              <span className="inline-block h-2 w-2 rounded-full bg-primary/80 animate-pulse" />
+              Explore Courses
+            </div>
+            <div className="mt-6 flex flex-wrap gap-2">
               {categories.map((c) => (
                 <button
                   key={c.key}
                   onClick={() => setActiveCategory(activeCategory === c.key ? null : c.key)}
-                  className={["w-full rounded-md px-3 py-2 text-left text-sm border", activeCategory === c.key ? "bg-black text-white border-black" : "hover:bg-neutral-50 border-transparent hover:border-neutral-200"].join(" ")}
+                  className={[
+                    "rounded-full px-4 py-2 text-sm font-semibold border transition-all duration-150 shadow-sm",
+                    activeCategory === c.key
+                      ? "bg-primary/90 text-white border-primary scale-105"
+                      : "bg-neutral-50 text-neutral-800 border-neutral-200 hover:bg-primary/10 hover:border-primary/30"
+                  ].join(" ")}
                 >
                   {c.label}
                 </button>
               ))}
             </div>
-            <div className="mt-4">
-              <label className="text-xs text-neutral-600">Search</label>
-              <Input placeholder="Find a course" className="mt-1" value={query} onChange={(e) => setQuery(e.target.value)} />
+            <div className="mt-7">
+              <label className="text-xs font-semibold text-neutral-600">Search</label>
+              <Input
+                placeholder="🔍 Find a course"
+                className="mt-2 rounded-lg border-neutral-200 focus:ring-2 focus:ring-primary/40"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
             </div>
-            <div className="mt-4">
-              <label className="text-xs text-neutral-600">Duration</label>
+            <div className="mt-7">
+              <label className="text-xs font-semibold text-neutral-600">Duration</label>
               <Select value={duration} onValueChange={(v) => setDuration(v)}>
-                <SelectTrigger className="w-full mt-1">
+                <SelectTrigger className="w-full mt-2 rounded-lg border-neutral-200 focus:ring-2 focus:ring-primary/40">
                   <SelectValue placeholder="Any" />
                 </SelectTrigger>
                 <SelectContent>
@@ -107,42 +122,91 @@ const CoursesExploreSection = () => {
           {/* Content */}
           <div>
             <motion.h2
-              className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-neutral-900"
-              initial={{ y: 12, opacity: 0 }}
+              className="text-4xl sm:text-5xl lg:text-5xl font-extrabold tracking-tight drop-shadow-lg text-accent"
+              initial={{ y: 18, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               viewport={{ once: true }}
             >
               Browse Courses
             </motion.h2>
 
-            <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+              {filtered.length === 0 && (
+                <motion.div
+                  className="col-span-full flex flex-col items-center justify-center py-16"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                >
+                  <span className="text-5xl mb-2">😕</span>
+                  <div className="text-lg font-semibold text-neutral-700">No courses found</div>
+                  <div className="text-sm text-neutral-500 mt-1">Try a different search or filter.</div>
+                </motion.div>
+              )}
               {filtered.map((c, idx) => (
                 <motion.div
                   key={c.title}
-                  className="group relative overflow-hidden"
-                  initial={{ y: 16, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
+                  className="group relative overflow-visible"
+                  initial={{ y: 24, opacity: 0, scale: 0.97 }}
+                  whileInView={{ y: 0, opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: idx * 0.05, duration: 0.45, ease: "easeOut" }}
+                  transition={{ delay: idx * 0.07, duration: 0.5, ease: "easeOut" }}
                 >
-                  <Card className="p-5">
-                  {c.tag && (
-                    <Badge variant="default" className="absolute right-3 top-3">{c.tag}</Badge>
-                  )}
-                  <div className="text-base font-medium text-neutral-900">{c.title}</div>
-                  <div className="mt-1 text-xs text-neutral-500">{c.level} • {c.duration}</div>
-                  <div className="mt-3 flex items-center gap-2">
-                    <Button size="sm">Compare</Button>
-                    <Button size="sm" variant="outline">Details</Button>
-                  </div>
-                  <div className="pointer-events-none absolute -right-6 -bottom-6 h-24 w-24 rounded-full bg-gradient-to-tr from-indigo-200/60 to-transparent blur-2xl transition-transform group-hover:scale-110" />
+                  <Card
+                    className={[
+                      "relative p-6 rounded-2xl border-0 shadow-xl bg-white/90 transition-all duration-200 hover:scale-[1.025] hover:shadow-2xl",
+                      "before:absolute before:inset-0 before:rounded-2xl before:z-0 before:bg-primary/10 before:opacity-0 group-hover:before:opacity-100 before:transition-opacity before:duration-300",
+                    ].join(" ")}
+                    style={{
+                      boxShadow:
+                        "0 4px 32px 0 rgb(59 130 246 / 10%), 0 1.5px 8px 0 rgb(251 191 36 / 8%)",
+                    }}
+                  >
+                    {/* Tag badge */}
+                    {c.tag && (
+                      <Badge
+                        variant="default"
+                        className="absolute right-5 top-5 z-10 bg-primary/90 text-white font-bold shadow-lg animate-bounce"
+                      >
+                        {c.tag}
+                      </Badge>
+                    )}
+                    <div className="relative z-10">
+                      <div className="text-lg font-bold text-neutral-900 mb-1 flex items-center gap-2">
+                        <span className="inline-block h-2 w-2 rounded-full bg-primary/80 animate-pulse" />
+                        {c.title}
+                      </div>
+                      <div className="text-xs text-neutral-500 font-medium mb-4">
+                        {c.level} <span className="mx-1">•</span> {c.duration}
+                      </div>
+                      <div className="flex items-center gap-3 mt-2">
+                        <Button
+                          size="sm"
+                          className="bg-primary/90 text-white font-semibold shadow-md hover:bg-secondary/90 transition-all"
+                        >
+                          Compare
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-secondary/30 text-primary font-semibold hover:bg-secondary/10 transition-all"
+                        >
+                          Details
+                        </Button>
+                      </div>
+                    </div>
                   </Card>
                 </motion.div>
               ))}
             </div>
 
-            <div className="mt-6 flex justify-center">
-              <Button variant="outline">View all</Button>
+            <div className="mt-10 flex justify-center">
+              <Button
+                variant="outline"
+                className="px-8 py-3 rounded-full border-2 border-primary/40 text-primary font-bold bg-white/80 hover:bg-primary/10 hover:border-primary/60 transition-all shadow-md"
+              >
+                View all
+              </Button>
             </div>
           </div>
         </div>
@@ -152,5 +216,3 @@ const CoursesExploreSection = () => {
 };
 
 export default CoursesExploreSection;
-
-

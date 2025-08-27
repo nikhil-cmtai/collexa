@@ -1,7 +1,6 @@
 import React from "react";
 import HeroSection from "@/components/home/hero-section";
 import UniversitiesSection from "@/components/home/universities-section";
-import CoursesSection from "@/components/home/courses-section";
 import WhyChooseSection from "@/components/home/why-choose-section";
 import NewsSection from "@/components/home/news-section";
 import FaqsSection from "@/components/home/faqs-section";
@@ -15,7 +14,6 @@ const HomePage = () => {
     <div>
       <HeroSection />
       <UniversitiesSection />
-      <CoursesSection />
       <CoursesExploreSection />
       <FacultySection />
       <WhyChooseSection />

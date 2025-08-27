@@ -14,7 +14,7 @@ const HeroSection = () => {
                                       radial-gradient(40%_40%_at_100%_80%,rgba(244,63,94,0.25)_0%,rgba(255,255,255,0)_60%)]" />
         <motion.div
           aria-hidden
-          className="pointer-events-none absolute -top-32 left-1/2 h-[560px] w-[560px] -translate-x-1/2 rounded-full bg-gradient-to-b from-indigo-500/15 to-transparent blur-3xl"
+          className="pointer-events-none absolute -top-32 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-gradient-to-b from-indigo-500/15 to-transparent blur-3xl"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, ease: "easeOut" }}
@@ -34,7 +34,7 @@ const HeroSection = () => {
         />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 py-16">
+      <div className="relative max-w-7xl mx-auto px-4 py-24 sm:py-32">
         <motion.div
           className="flex flex-col items-center text-center"
           initial="hidden"
