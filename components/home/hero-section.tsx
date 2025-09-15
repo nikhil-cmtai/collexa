@@ -59,7 +59,7 @@ const HeroSection = () => {
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <span className="bg-clip-text text-transparent bg-gradient-to-b from-neutral-900 to-neutral-700">
-              Chuno Apna Sahi: Compare Online Universities & Programs
+              Learn Today, Lead Tomorrow
             </span>
           </motion.h1>
           <motion.p
