@@ -411,6 +411,7 @@ const InfluencersDashboard = () => {
                       <Badge className={getStatusColor(referral.status)}>
                         {referral.status}
                       </Badge>
+
                     </div>
                   </div>
                 )
