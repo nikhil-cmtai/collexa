@@ -66,6 +66,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed }) => {
         { name: 'Jobs', href: '/dashboard/careers/jobs', icon: Briefcase },
       ]
     },
+    { name: 'Applications', href: '/dashboard/applications', icon: Users },
   ]
 
   const isActive = (href: string) => {
