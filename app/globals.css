@@ -96,37 +96,7 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --surface: #18181b;
-    --border-color: #23272f;
-    --heading-color: #18bba6;
-    --text-color: #ededed;
-    --muted-text: #a1a1aa;
-    --background: #1a223a;
-    --foreground: #fff;
-    --card: #23272f;
-    --card-foreground: #fff;
-    --popover: #23272f;
-    --popover-foreground: #fff;
-    --primary: #18bba6;
-    --primary-foreground: #1a223a;
-    --secondary: #163683;
-    --secondary-foreground: #fff;
-    --muted: #23272f;
-    --muted-foreground: #a1a1aa;
-    --accent: #ffe066;
-    --accent-foreground: #163683;
-    --sidebar: #23272f;
-    --sidebar-foreground: #fff;
-    --sidebar-primary: #18bba6;
-    --sidebar-primary-foreground: #1a223a;
-    --sidebar-accent: #ffe066;
-    --sidebar-accent-foreground: #163683;
-    --sidebar-border: #23272f;
-    --sidebar-ring: #18bba6;
-  }
-}
+/* Dark theme removed - website will always use light theme */
 
 body {
   color: var(--text-color);

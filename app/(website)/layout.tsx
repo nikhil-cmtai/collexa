@@ -5,11 +5,11 @@ import FloatingButtons from "@/components/layouts/website/floating-buttons";
 
 const WebsiteLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div>
+    <div className="light">
       <Header />
       {children}
       <Footer />  
-    <FloatingButtons />
+      <FloatingButtons />
     </div>
   );
 };
