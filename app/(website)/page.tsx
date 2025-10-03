@@ -1,26 +1,30 @@
 import React from "react";
 import HeroSection from "@/components/home/hero-section";
-import UniversitiesSection from "@/components/home/universities-section";
-import WhyChooseSection from "@/components/home/why-choose-section";
-import NewsSection from "@/components/home/news-section";
-import FaqsSection from "@/components/home/faqs-section";
-import CtaSection from "@/components/home/cta-section";
-import ContactSection from "@/components/home/contact-section";
-import CoursesExploreSection from "@/components/home/courses-explore-section";
-import FacultySection from "@/components/home/faculty-section";
+import TrendingCarousel from "@/components/home/trending-carousel";
+import JobsTabs from "@/components/home/jobs-tab";
+import CompassCoursesAndCertifications from "@/components/home/CompassCoursesAndCertifications";
+import SkillsCoursesAndDevelopment from "@/components/home/skill-courses";
+import InternshipTabs from "@/components/home/internship-tab";
+import Testimonial from "@/components/home/testimonial";
 
 const HomePage = () => {
   return (
     <div>
       <HeroSection />
-      <UniversitiesSection />
+      <TrendingCarousel />
+      <CompassCoursesAndCertifications />
+      <JobsTabs />
+      <InternshipTabs />
+      <SkillsCoursesAndDevelopment />
+      <Testimonial />
+      {/* <UniversitiesSection />
       <CoursesExploreSection />
       <FacultySection />
       <WhyChooseSection />
       <NewsSection />
       <FaqsSection />
       <CtaSection />
-      <ContactSection />
+      <ContactSection /> */}
     </div>
   );
 };

@@ -10,7 +10,25 @@ const protectedRoutes = {
   }
 
 // Public routes that don't require authentication
-const publicRoutes = ['/login', '/signup', '/', '/about', '/contact', '/privacy-policy', '/terms', 'cookie-policy', '/products', '/our-doctors']
+const publicRoutes = [
+  '/login',
+  '/signup',
+  '/',
+  '/about',
+  '/contact',
+  '/privacy-policy',
+  '/terms',
+  'cookie-policy',
+  '/products',
+  '/our-doctors',
+  // Website public sections
+  '/jobs',
+  '/internship',
+  '/internships',
+  '/courses',
+  '/skill-based-course',
+  '/enquiry',
+]
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl

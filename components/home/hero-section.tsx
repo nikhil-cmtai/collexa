@@ -1,119 +1,209 @@
-"use client";
+"use client"
+import React from "react"
+import { Star } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import Image from "next/image"
 
-import React from "react";
-import Link from "next/link";
-import { motion } from "framer-motion";
+// --- CONFIGURATION ---
+const CONFIG = {
+  stats: {
+    courses: "45+",
+    mentors: "29+", 
+    learners: "50K+",
+    rating: "4.9"
+  }
+} as const
 
-const HeroSection = () => {
+// --- TYPES ---
+// interface StatCardProps {
+//   value: string
+//   label: string
+//   className?: string
+// }
+
+// --- STAT CARD COMPONENT ---
+// const StatCard: React.FC<StatCardProps> = ({ value, label, className = "" }) => {
+//   return (
+//     <div className={`bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 ${className}`}>
+//       <div className="text-4xl font-bold text-[var(--heading-color)] mb-2">
+//         {value}
+//       </div>
+//       <div className="text-sm text-[var(--muted-text)] font-medium">
+//         {label}
+//       </div>
+//     </div>
+//   )
+// }
+
+// --- RATING COMPONENT ---
+const RatingCard: React.FC = () => {
+  const avatars = [
+    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face",
+    "https://images.unsplash.com/photo-1494790108755-2616b612b8c4?w=60&h=60&fit=crop&crop=face", 
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop&crop=face",
+    "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop&crop=face"
+  ]
+
   return (
-    <section className="relative overflow-hidden">
-      {/* Rich animated gradient background */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_0%,rgba(99,102,241,0.25)_0%,rgba(255,255,255,0)_60%),
-                                      radial-gradient(40%_40%_at_0%_70%,rgba(16,185,129,0.25)_0%,rgba(255,255,255,0)_60%),
-                                      radial-gradient(40%_40%_at_100%_80%,rgba(244,63,94,0.25)_0%,rgba(255,255,255,0)_60%)]" />
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute -top-32 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-gradient-to-b from-indigo-500/15 to-transparent blur-3xl"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-        />
-        {/* Floating orbs */}
-        <motion.div
-          aria-hidden
-          className="absolute top-24 left-12 h-24 w-24 rounded-full bg-emerald-400/20 blur-xl"
-          animate={{ y: [0, -12, 0], x: [0, 8, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          aria-hidden
-          className="absolute bottom-12 right-16 h-28 w-28 rounded-full bg-rose-400/20 blur-xl"
-          animate={{ y: [0, 10, 0], x: [0, -10, 0] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
-        />
+    <div className="absolute bottom-8 left-8 bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-2xl border border-white/20">
+      <div className="flex items-center space-x-3">
+        <div className="flex -space-x-2">
+          {avatars.map((src, index) => (
+            <Image
+              key={index}
+              src={src}
+              alt="User avatar"
+              width={32}
+              height={32}
+              className="w-8 h-8 rounded-full border-2 border-white object-cover"
+            />
+          ))}
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-2xl font-bold text-[var(--heading-color)]">4.9</span>
+          <div className="flex space-x-1">
+            {[...Array(5)].map((_, i) => (
+              <Star key={i} className="w-4 h-4 fill-[var(--accent)] text-[var(--accent)]" />
+            ))}
+          </div>
+          <span className="text-sm text-[var(--muted-text)] font-medium">Rating</span>
+        </div>
       </div>
+    </div>
+  )
+}
 
-      <div className="relative max-w-7xl mx-auto px-4 py-24 sm:py-32">
-        <motion.div
-          className="flex flex-col items-center text-center"
-          initial="hidden"
-          animate="show"
-          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 } } }}
-        >
-          <motion.div
-            className="inline-flex items-center gap-2 rounded-full border border-neutral-200/70 backdrop-blur bg-white/70 px-3 py-1 text-xs text-neutral-700 mb-4 shadow-sm"
-            initial={{ y: 12, opacity: 0 }}
-            variants={{ show: { y: 0, opacity: 1 } }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-          >
-            <span>Trusted by 1 Lakh+ students</span>
-            <span className="h-1 w-1 rounded-full bg-neutral-300" />
-            <span>500+ expert mentors</span>
-          </motion.div>
+// --- MAIN HERO SECTION COMPONENT ---
+const HeroSection: React.FC = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      <div className="container mx-auto px-6 lg:px-12 py-20">
+        <div className="grid lg:grid-cols-2 gap-20 items-center min-h-[80vh]">
+          
+          {/* Left Content */}
+          <div className="space-y-8">
+            {/* Main Heading */}
+            <div className="space-y-6">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
+                <span className="text-[var(--text-color)]">Learning Today</span>
+                <br />
+                <span className="text-[var(--text-color)]">Unlimited </span>
+                <span className="text-[var(--primary)]">Growth</span>
+                <br />
+                <span className="text-[var(--text-color)]">with Vintar</span>
+              </h1>
 
-          <motion.h1
-            className="text-4xl sm:text-6xl font-semibold tracking-tight text-neutral-900 max-w-4xl leading-[1.1]"
-            initial={{ y: 16, opacity: 0 }}
-            variants={{ show: { y: 0, opacity: 1 } }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
-            <span className="bg-clip-text text-transparent bg-gradient-to-b from-neutral-900 to-neutral-700">
-              Learn Today, Lead Tomorrow
-            </span>
-          </motion.h1>
-          <motion.p
-            className="mt-4 text-neutral-600 max-w-2xl"
-            initial={{ y: 12, opacity: 0 }}
-            variants={{ show: { y: 0, opacity: 1 } }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 0.05 }}
-          >
-            Explore 100+ online universities with unbiased guidance. Get a personalized suggestion in 2 minutes.
-          </motion.p>
+              {/* Subheading */}
+              <div className="space-y-4 max-w-xl">
+                <p className="text-lg text-[var(--text-color)] leading-relaxed font-medium">
+                  Learn from industry experts through engaging, self-paced video courses.
+                </p>
+                <p className="text-lg text-[var(--text-color)] leading-relaxed font-medium">
+                  Master new skills and unlock your potential anytime, anywhere.
+                </p>
+              </div>
+            </div>
 
-          <motion.div
-            className="mt-8 w-full max-w-xl"
-            initial={{ y: 16, opacity: 0 }}
-            variants={{ show: { y: 0, opacity: 1 } }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
-          >
-            <div className="flex gap-2 backdrop-blur supports-[backdrop-filter]:bg-white/60 bg-white/80 rounded-md p-1 shadow-sm">
-              <input
-                type="text"
-                placeholder="Search programs e.g. Online MBA"
-                className="flex-1 rounded-md border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-black"
-              />
-              <motion.button
-                whileTap={{ scale: 0.98 }}
-                whileHover={{ scale: 1.02 }}
-                className="rounded-md bg-black text-white px-5 text-sm hover:bg-neutral-800"
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button 
+                size="lg" 
+                className="bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white rounded-full px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                Search
-              </motion.button>
+                Explore Courses
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="border-2 border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white rounded-full px-8 py-4 text-lg font-semibold transition-all duration-300"
+              >
+                Contact Us
+              </Button>
             </div>
-            <div className="mt-3 text-xs text-neutral-500">
-              Popular: Online MBA, Online MCA, Data Science
-            </div>
-          </motion.div>
 
-          <motion.div
-            className="mt-8 flex items-center gap-4 text-xs text-neutral-700"
-            initial={{ opacity: 0 }}
-            variants={{ show: { opacity: 1 } }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 0.15 }}
-          >
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-6 items-center rounded-full bg-green-50 px-2 text-green-700 border border-green-200">4.8/5 Google</span>
+            {/* Stats Row */}
+            <div className="grid grid-cols-3 gap-8 pt-8">
+              <div className="text-center">
+                <div className="text-4xl font-bold text-[var(--heading-color)] mb-2">
+                  {CONFIG.stats.courses}
+                </div>
+                <div className="text-sm text-[var(--muted-text)] font-medium">
+                  Courses
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-bold text-[var(--heading-color)] mb-2">
+                  {CONFIG.stats.mentors}
+                </div>
+                <div className="text-sm text-[var(--muted-text)] font-medium">
+                  Mentors
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-bold text-[var(--heading-color)] mb-2">
+                  {CONFIG.stats.learners}
+                </div>
+                <div className="text-sm text-[var(--muted-text)] font-medium">
+                  Learners
+                </div>
+              </div>
             </div>
-            <div className="hidden sm:block h-4 w-px bg-neutral-200" />
-            <Link href="#suggest" className="text-neutral-800 hover:text-black underline underline-offset-4">
-              Suggest in 2 mins
-            </Link>
-          </motion.div>
-        </motion.div>
+          </div>
+
+          {/* Right Content - Image Grid */}
+          <div className="relative">
+            <div className="grid grid-cols-2 gap-6 h-[600px]">
+              {/* Large main image */}
+              <div className="col-span-1 row-span-2 relative">
+                <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-50 rounded-3xl overflow-hidden shadow-2xl relative">
+                  <Image
+                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=800&fit=crop&crop=face"
+                    alt="Student with tablet"
+                    width={600}
+                    height={800}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+                  <RatingCard />
+                </div>
+              </div>
+
+              {/* Top right image */}
+              <div className="col-span-1 row-span-1">
+                <div className="w-full h-full bg-gradient-to-br from-purple-100 to-purple-50 rounded-3xl overflow-hidden shadow-xl">
+                  <Image
+                    src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=280&fit=crop"
+                    alt="Business meeting"
+                    width={400}
+                    height={280}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+
+              {/* Bottom right image */}
+              <div className="col-span-1 row-span-1">
+                <div className="w-full h-full bg-gradient-to-br from-green-100 to-emerald-50 rounded-3xl overflow-hidden shadow-xl">
+                  <Image
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=280&fit=crop&crop=face"
+                    alt="Professional woman"
+                    width={400}
+                    height={280}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Decorative elements */}
+            <div className="absolute -top-6 -left-6 w-24 h-24 bg-[var(--accent)]/20 rounded-full blur-xl"></div>
+            <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-[var(--primary)]/20 rounded-full blur-xl"></div>
+            <div className="absolute top-1/2 -right-12 w-16 h-16 bg-[var(--secondary)]/20 rounded-full blur-lg"></div>
+          </div>
+        </div>
       </div>
-    </section>
-  );
-};
+    </div>
+  )
+}
 
-export default HeroSection;
+export default HeroSection
