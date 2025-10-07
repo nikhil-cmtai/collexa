@@ -7,10 +7,10 @@ import { Input } from "@/components/ui/input"
 
 export function NewsletterSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-primary via-secondary to-primary py-20">
+    <section className="relative overflow-hidden bg-gradient-to-br from-[var(--primary)] via-[var(--secondary)] to-[var(--primary)] py-20">
       {/* Decorative elements */}
-      <div className="absolute left-0 top-0 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
-      <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-accent/20 blur-3xl" />
+      <div className="absolute left-0 top-0 h-96 w-96 rounded-full bg-[var(--primary-foreground)]/5 blur-3xl" />
+      <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[var(--accent)]/20 blur-3xl" />
 
       <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <motion.div
@@ -20,11 +20,11 @@ export function NewsletterSection() {
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <div className="inline-flex rounded-full bg-white/10 p-3 backdrop-blur-sm">
-            <Mail className="h-8 w-8 text-white" />
+          <div className="inline-flex rounded-full bg-[var(--card)]/10 p-3 backdrop-blur-sm">
+            <Mail className="h-8 w-8 text-[var(--primary-foreground)]" />
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-white sm:text-4xl">Never Miss an Opportunity</h2>
-          <p className="mt-4 text-lg text-white/90">
+          <h2 className="mt-6 text-3xl font-bold text-[var(--primary-foreground)] sm:text-4xl">Never Miss an Opportunity</h2>
+          <p className="mt-4 text-lg text-[var(--primary-foreground)]/90">
             Get the latest internships, career tips, and exclusive offers delivered to your inbox
           </p>
 
@@ -38,15 +38,15 @@ export function NewsletterSection() {
             <Input
               type="email"
               placeholder="Enter your email address"
-              className="h-12 border-white/20 bg-white/10 text-white placeholder:text-white/60 backdrop-blur-sm focus-visible:ring-white/50 sm:w-80"
+              className="h-12 border-[var(--primary-foreground)]/20 bg-[color:rgb(255_255_255_/_.08)] text-[var(--primary-foreground)] placeholder:text-[var(--primary-foreground)]/60 backdrop-blur-sm focus-visible:ring-[var(--primary-foreground)]/50 sm:w-80"
             />
-            <Button size="lg" className="h-12 bg-accent text-accent-foreground hover:bg-accent/90">
+            <Button size="lg" className="h-12 bg-[var(--accent)] text-[var(--accent-foreground)] hover:bg-[color:color-mix(in_oklab,_var(--accent),_black_10%)]">
               <Send className="mr-2 h-4 w-4" />
               Subscribe
             </Button>
           </motion.div>
 
-          <p className="mt-4 text-sm text-white/70">Join 50,000+ students already subscribed. Unsubscribe anytime.</p>
+          <p className="mt-4 text-sm text-[var(--primary-foreground)]/70">Join 50,000+ students already subscribed. Unsubscribe anytime.</p>
         </motion.div>
 
         {/* Trust indicators */}
@@ -55,7 +55,7 @@ export function NewsletterSection() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-12 flex flex-wrap items-center justify-center gap-8 border-t border-white/10 pt-8"
+          className="mt-12 flex flex-wrap items-center justify-center gap-8 border-t border-[var(--primary-foreground)]/10 pt-8"
         >
           {["Weekly Updates", "Career Tips", "Exclusive Offers", "No Spam"].map((item, index) => (
             <motion.div
@@ -64,9 +64,9 @@ export function NewsletterSection() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
-              className="flex items-center gap-2 text-white/90"
+              className="flex items-center gap-2 text-[var(--primary-foreground)]/90"
             >
-              <div className="h-1.5 w-1.5 rounded-full bg-accent" />
+              <div className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />   
               <span className="text-sm font-medium">{item}</span>
             </motion.div>
           ))}

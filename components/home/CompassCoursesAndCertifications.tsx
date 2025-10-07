@@ -728,7 +728,19 @@ function TabSection({ title, data, sectionType }: { title: string; data: Courses
 // ======= Main Export Component =======
 export default function CompassCoursesAndCertifications() {
   return (
-    <section className="bg-gradient-to-b from-surface to-background py-16 px-4">
+    <section className="relative overflow-hidden group bg-gradient-to-b from-surface to-background py-16 px-4">
+      {/* Background image with hover zoom */}
+      <div className="absolute inset-0 -z-10">
+        <Image
+          src="https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?q=80&w=2070&auto=format&fit=crop"
+          alt="Students learning in a modern campus"
+          fill
+          priority
+          className="object-cover opacity-15 transition-transform duration-700 ease-out group-hover:scale-105"
+        />
+        {/* Subtle gradient overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[var(--background)]/70 via-[var(--background)]/60 to-[var(--background)]/80" />
+      </div>
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-heading mb-4">
