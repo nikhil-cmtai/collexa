@@ -6,17 +6,22 @@ import CompassCoursesAndCertifications from "@/components/home/CompassCoursesAnd
 import SkillsCoursesAndDevelopment from "@/components/home/skill-courses";
 import InternshipTabs from "@/components/home/internship-tab";
 import Testimonial from "@/components/home/testimonial";
+import { CompanyLogoSlider } from "@/components/home/company-slider";
+import { NewsletterSection } from "@/components/home/newsletter-section";
 
 const HomePage = () => {
   return (
     <div>
       <HeroSection />
+     
       <TrendingCarousel />
       <CompassCoursesAndCertifications />
       <JobsTabs />
       <InternshipTabs />
       <SkillsCoursesAndDevelopment />
       <Testimonial />
+      <CompanyLogoSlider />
+      <NewsletterSection />
       {/* <UniversitiesSection />
       <CoursesExploreSection />
       <FacultySection />

@@ -71,16 +71,16 @@ const NewsSection = () => {
           variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 } } }}
         >
           <motion.div
-            className="inline-flex items-center gap-2 mb-2 px-4 py-1 rounded-full bg-gradient-to-r from-yellow-200 via-pink-100 to-blue-100 text-sm font-semibold text-yellow-700 shadow"
+            className="inline-flex items-center gap-2 mb-2 px-4 py-1 rounded-full bg-[var(--muted)] text-sm font-semibold text-[var(--accent-foreground)] shadow"
             initial={{ y: 12, opacity: 0, scale: 0.95 }}
             variants={{ show: { y: 0, opacity: 1, scale: 1 } }}
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            <Sparkles size={18} className="text-yellow-500" />
+            <Sparkles size={18} className="text-[var(--accent)]" />
             Hot & Fresh
           </motion.div>
           <motion.h2
-            className="text-4xl sm:text-5xl font-extrabold text-neutral-900 tracking-tight bg-gradient-to-r from-yellow-500 via-pink-500 to-blue-500 bg-clip-text text-transparent"
+            className="text-4xl sm:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-[var(--accent)] via-[var(--secondary)] to-[var(--primary)] bg-clip-text text-transparent"
             initial={{ y: 16, opacity: 0 }}
             variants={{ show: { y: 0, opacity: 1 } }}
             transition={{ duration: 0.7, ease: "easeOut" }}
@@ -88,7 +88,7 @@ const NewsSection = () => {
             Latest News & Buzz
           </motion.h2>
           <motion.p
-            className="mt-3 text-lg text-neutral-600 max-w-2xl mx-auto"
+            className="mt-3 text-lg text-[var(--text-color)] max-w-2xl mx-auto"
             initial={{ y: 12, opacity: 0 }}
             variants={{ show: { y: 0, opacity: 1 } }}
             transition={{ duration: 0.6, ease: "easeOut", delay: 0.05 }}
@@ -100,7 +100,7 @@ const NewsSection = () => {
             {news.map((n, idx) => (
               <motion.article
                 key={n.title}
-                className={`relative group overflow-hidden rounded-3xl border border-neutral-200 bg-white/90 backdrop-blur shadow-xl hover:scale-[1.03] hover:shadow-2xl transition-all duration-200`}
+                className={`relative group overflow-hidden rounded-3xl border border-[var(--border-color)] bg-white/90 backdrop-blur shadow-xl hover:scale-[1.03] hover:shadow-2xl transition-all duration-200`}
                 initial={{ y: 24, opacity: 0, scale: 0.96 }}
                 whileInView={{ y: 0, opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
@@ -110,22 +110,22 @@ const NewsSection = () => {
                 <div
                   className={`absolute -top-6 left-1/2 -translate-x-1/2 h-32 w-32 rounded-full blur-2xl opacity-30 z-0 bg-gradient-to-br ${n.color}`}
                 />
-                <div className="relative z-10 h-50 w-full flex items-center justify-center bg-gradient-to-br from-white to-neutral-100 border-b border-neutral-200">
+                <div className="relative z-10 h-50 w-full flex items-center justify-center bg-gradient-to-br from-white to-[var(--surface)] border-b border-[var(--border-color)]">
                   <Image src={n.img} alt={n.title} className="h-10 w-10 opacity-90 drop-shadow" width={56} height={56} />
                 </div>
                 <div className="p-6 relative z-10">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[11px] text-neutral-500">{n.date}</span>
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-yellow-700 shadow-sm">
-                      <Newspaper size={14} className="text-yellow-500" />
+                    <span className="text-[11px] text-[var(--muted-text)]">{n.date}</span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-[var(--accent-foreground)] shadow-sm">
+                      <Newspaper size={14} className="text-[var(--accent)]" />
                       {n.highlight}
                     </span>
                   </div>
-                  <div className="text-lg font-semibold text-neutral-900 mt-1">{n.title}</div>
+                  <div className="text-lg font-semibold text-[var(--heading-color)] mt-1">{n.title}</div>
                   {/* Read more button */}
                   <Link
                     href={n.link}
-                    className="mt-4 inline-flex items-center gap-2 text-sm text-primary font-medium transition-all duration-150 cursor-pointer"
+                    className="mt-4 inline-flex items-center gap-2 text-sm text-[var(--primary)] font-medium transition-all duration-150 cursor-pointer"
                     aria-label={`Read more about ${n.title}`}
                   >
                     Read more
@@ -147,11 +147,11 @@ const NewsSection = () => {
           <div className="mt-10 flex justify-center">
             <Link
               href="#"
-              className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-7 py-3 text-base font-semibold text-primary border border-primary/20 bg-white shadow hover:bg-secondary/10 hover:scale-105 transition-transform duration-150"
+              className="inline-flex items-center gap-2 rounded-full px-7 py-3 text-base font-semibold text-[var(--primary)] border border-[var(--primary)]/20 bg-white shadow hover:bg-secondary/10 hover:scale-105 transition-transform duration-150"
               aria-label="Read more news"
             >
               Read more news
-              <Newspaper size={20} className="ml-1 text-yellow-500" />
+              <Newspaper size={20} className="ml-1 text-[var(--accent)]" />
             </Link>
           </div>
         </motion.div>
