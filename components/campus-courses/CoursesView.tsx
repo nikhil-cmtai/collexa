@@ -3,6 +3,10 @@
 import React, { useEffect } from "react"
 import { useAppDispatch, useAppSelector, RootState } from "@/lib/store"
 import { fetchCourses, setCourseLevel, setCourseMode, setCourseQuery } from "@/lib/slices/coursesSlice"
+import CampusHero from "./Hero"
+import Highlights from "./Highlights"
+import FAQs from "./FAQs"
+import CTA from "./CTA"
 
 export default function CoursesView({ presetQuery, presetLevel, presetMode }: { presetQuery?: string; presetLevel?: string; presetMode?: string }) {
   const dispatch = useAppDispatch()
@@ -20,10 +24,21 @@ export default function CoursesView({ presetQuery, presetLevel, presetMode }: { 
     dispatch(setCourseMode(presetMode || ""))
   }, [dispatch, presetQuery, presetLevel, presetMode])
 
+  const filtered = items.filter((c) => {
+    const haystack = (c.title + " " + c.university + " " + c.tags.join(" ")).toLowerCase()
+    const byQuery = query ? haystack.includes(query.toLowerCase()) : true
+    const byLevel = level ? c.level.toLowerCase() === level.toLowerCase() : true
+    const byMode = mode ? c.mode.toLowerCase().includes(mode.toLowerCase()) : true
+    return byQuery && byLevel && byMode
+  })
+
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+    <>
+      <CampusHero />
+      <Highlights />
+      <section id="courses" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
       <div className="rounded-2xl p-6 bg-white border border-[var(--border-color)]">
-        <h1 className="text-2xl font-bold">Campus Courses</h1>
+        <h1 className="text-2xl font-bold text-[var(--heading-color)]">Campus Courses</h1>
         <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-3">
           <input value={query} onChange={(e) => dispatch(setCourseQuery(e.target.value))} placeholder="Search by title or university" className="rounded-lg px-4 py-3 text-[15px] bg-white border border-[var(--border-color)]" />
           <input value={level} onChange={(e) => dispatch(setCourseLevel(e.target.value))} placeholder="Level (UG/PG/Executive)" className="rounded-lg px-4 py-3 text-[15px] bg-white border border-[var(--border-color)]" />
@@ -33,7 +48,7 @@ export default function CoursesView({ presetQuery, presetLevel, presetMode }: { 
       </div>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((c) => (
+        {filtered.map((c) => (
           <div key={c.id} className="rounded-xl border border-[var(--border-color)] bg-white p-5 shadow-sm">
             <div className="flex items-start justify-between">
               <div>
@@ -54,7 +69,10 @@ export default function CoursesView({ presetQuery, presetLevel, presetMode }: { 
           </div>
         ))}
       </div>
-    </section>
+      </section>
+      <FAQs />
+      <CTA />
+    </>
   )
 }
 

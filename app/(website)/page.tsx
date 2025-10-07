@@ -1,5 +1,5 @@
 import React from "react";
-import HeroSection from "@/components/home/hero-section";
+import { HeroSection } from "@/components/home/hero-section";
 import TrendingCarousel from "@/components/home/trending-carousel";
 import JobsTabs from "@/components/home/jobs-tab";
 import CompassCoursesAndCertifications from "@/components/home/CompassCoursesAndCertifications";

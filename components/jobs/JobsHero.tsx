@@ -2,6 +2,7 @@
 
 import React from "react"
 import Image from "next/image"
+import jobHero from "@/public/images/job-hero.jpg"
 
 export default function JobsHero() {
   return (
@@ -38,7 +39,7 @@ export default function JobsHero() {
           <div className="relative">
             <div className="relative h-64 md:h-80 lg:h-96 rounded-2xl overflow-hidden shadow-xl ring-1 ring-black/5 bg-white">
               <Image
-                src="/images/internship-opportunities.jpg"
+                src={jobHero}
                 alt="Students exploring campus jobs"
                 fill
                 priority

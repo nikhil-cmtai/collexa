@@ -1,5 +1,5 @@
 import React from "react"
-import JobsView from "@/components/home/JobsView"
+import JobsView from "@/components/jobs/JobsView"
 
 const JobsPage = () => {
   return <JobsView />

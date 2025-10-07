@@ -23,6 +23,7 @@ const publicRoutes = [
   '/our-doctors',
   // Website public sections
   '/jobs',
+  '/campus-courses',
   '/internship',
   '/internships',
   '/courses',

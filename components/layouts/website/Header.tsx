@@ -204,56 +204,56 @@ const navLinks: NavLink[] = [
 const getIconForItem = (label: string): React.ReactNode => {
   const iconMap: { [key: string]: React.ReactNode } = {
     // Jobs icons
-    "Top Locations": <MapPin className="size-4 shrink-0 text-blue-600" />,
-    Profile: <User className="size-4 shrink-0 text-blue-600" />,
-    "Top Categories": <Grid3X3 className="size-4 shrink-0 text-blue-600" />,
-    "Explore More Jobs": <Search className="size-4 shrink-0 text-blue-600" />,
-    "Placement Courses with AI": <Brain className="size-4 shrink-0 text-teal-500" />,
-    "Work from home": <Home className="size-4 shrink-0 text-blue-600" />,
-    "Work from Home": <Home className="size-4 shrink-0 text-blue-600" />,
-    "Jobs in Delhi": <Building className="size-4 shrink-0 text-gray-600" />,
-    "Jobs in Mumbai": <Building className="size-4 shrink-0 text-gray-600" />,
-    "Jobs in Bangalore": <Building className="size-4 shrink-0 text-gray-600" />,
-    "Jobs in Hyderabad": <Building className="size-4 shrink-0 text-gray-600" />,
-    "Jobs in Kolkata": <Building className="size-4 shrink-0 text-gray-600" />,
-    "Jobs in Chennai": <Building className="size-4 shrink-0 text-gray-600" />,
-    "Jobs in Pune": <Building className="size-4 shrink-0 text-gray-600" />,
-    "View all jobs": <Briefcase className="size-4 shrink-0 text-blue-600" />,
+    "Top Locations": <MapPin className="size-4 shrink-0 text-[var(--primary)]" />,
+    Profile: <User className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Top Categories": <Grid3X3 className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Explore More Jobs": <Search className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Placement Courses with AI": <Brain className="size-4 shrink-0 text-[var(--secondary)]" />,
+    "Work from home": <Home className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Work from Home": <Home className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Jobs in Delhi": <Building className="size-4 shrink-0 text-[var(--muted-text)]" />,
+    "Jobs in Mumbai": <Building className="size-4 shrink-0 text-[var(--muted-text)]" />,
+    "Jobs in Bangalore": <Building className="size-4 shrink-0 text-[var(--muted-text)]" />,
+    "Jobs in Hyderabad": <Building className="size-4 shrink-0 text-[var(--muted-text)]" />,
+    "Jobs in Kolkata": <Building className="size-4 shrink-0 text-[var(--muted-text)]" />,
+    "Jobs in Chennai": <Building className="size-4 shrink-0 text-[var(--muted-text)]" />,
+    "Jobs in Pune": <Building className="size-4 shrink-0 text-[var(--muted-text)]" />,
+    "View all jobs": <Briefcase className="size-4 shrink-0 text-[var(--primary)]" />,
 
     // Internships icons
-    "Explore More Internships": <Search className="size-4 shrink-0 text-blue-600" />,
-    "Internship in Bangalore": <Building className="size-4 shrink-0 text-gray-600" />,
-    "Internship in Delhi": <Building className="size-4 shrink-0 text-gray-600" />,
-    "Internship in Hyderabad": <Building className="size-4 shrink-0 text-gray-600" />,
-    "Internship in Mumbai": <Building className="size-4 shrink-0 text-gray-600" />,
-    "Internship in Chennai": <Building className="size-4 shrink-0 text-gray-600" />,
-    "International Internship": <Globe className="size-4 shrink-0 text-blue-600" />,
-    "View all internships": <GraduationCap className="size-4 shrink-0 text-blue-600" />,
+    "Explore More Internships": <Search className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Internship in Bangalore": <Building className="size-4 shrink-0 text-[var(--muted-text)]" />,
+    "Internship in Delhi": <Building className="size-4 shrink-0 text-[var(--muted-text)]" />,
+    "Internship in Hyderabad": <Building className="size-4 shrink-0 text-[var(--muted-text)]" />,
+    "Internship in Mumbai": <Building className="size-4 shrink-0 text-[var(--muted-text)]" />,
+    "Internship in Chennai": <Building className="size-4 shrink-0 text-[var(--muted-text)]" />,
+    "International Internship": <Globe className="size-4 shrink-0 text-[var(--primary)]" />,
+    "View all internships": <GraduationCap className="size-4 shrink-0 text-[var(--primary)]" />,
 
     // Courses icons
-    "Certification Courses": <Award className="size-4 shrink-0 text-blue-600" />,
-    "Artificial Intelligence & ML": <Brain className="size-4 shrink-0 text-teal-500" />,
-    "Full Stack Development": <Code className="size-4 shrink-0 text-blue-600" />,
-    "Web Development with AI": <Code className="size-4 shrink-0 text-teal-500" />,
-    "Data Science": <Database className="size-4 shrink-0 text-blue-600" />,
-    "Programming with Python with AI": <Code className="size-4 shrink-0 text-teal-500" />,
-    "Human Resource Management": <User className="size-4 shrink-0 text-blue-600" />,
-    "Digital Marketing with AI": <TrendingUp className="size-4 shrink-0 text-teal-500" />,
-    "Cyber Security": <Shield className="size-4 shrink-0 text-blue-600" />,
-    "Cloud Computing": <Cloud className="size-4 shrink-0 text-blue-600" />,
-    "UI/UX Design": <Palette className="size-4 shrink-0 text-blue-600" />,
-    "Advanced Excel with AI": <Calculator className="size-4 shrink-0 text-teal-500" />,
-    "Product Management": <TrendingUp className="size-4 shrink-0 text-blue-600" />,
-    AutoCAD: <Wrench className="size-4 shrink-0 text-blue-600" />,
-    "Financial Modelling": <DollarSign className="size-4 shrink-0 text-blue-600" />,
-    "Blockchain Development": <LinkIcon className="size-4 shrink-0 text-blue-600" />,
-    "Supply Chain Logistics": <TrendingUp className="size-4 shrink-0 text-blue-600" />,
-    "Software Testing": <TestTube className="size-4 shrink-0 text-blue-600" />,
-    "Ethical Hacking": <Lock className="size-4 shrink-0 text-blue-600" />,
-    "Business Analytics": <BarChart3 className="size-4 shrink-0 text-blue-600" />,
-    "Creative Writing": <PenTool className="size-4 shrink-0 text-blue-600" />,
-    "Graphic Design": <ImageIcon className="size-4 shrink-0 text-blue-600" />,
-    "View 100+ more courses": <Book className="size-4 shrink-0 text-blue-600" />,
+    "Certification Courses": <Award className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Artificial Intelligence & ML": <Brain className="size-4 shrink-0 text-[var(--secondary)]" />,
+    "Full Stack Development": <Code className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Web Development with AI": <Code className="size-4 shrink-0 text-[var(--secondary)]" />,
+    "Data Science": <Database className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Programming with Python with AI": <Code className="size-4 shrink-0 text-[var(--secondary)]" />,
+    "Human Resource Management": <User className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Digital Marketing with AI": <TrendingUp className="size-4 shrink-0 text-[var(--secondary)]" />,
+    "Cyber Security": <Shield className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Cloud Computing": <Cloud className="size-4 shrink-0 text-[var(--primary)]" />,
+    "UI/UX Design": <Palette className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Advanced Excel with AI": <Calculator className="size-4 shrink-0 text-[var(--secondary)]" />,
+    "Product Management": <TrendingUp className="size-4 shrink-0 text-[var(--primary)]" />,
+    AutoCAD: <Wrench className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Financial Modelling": <DollarSign className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Blockchain Development": <LinkIcon className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Supply Chain Logistics": <TrendingUp className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Software Testing": <TestTube className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Ethical Hacking": <Lock className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Business Analytics": <BarChart3 className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Creative Writing": <PenTool className="size-4 shrink-0 text-[var(--primary)]" />,
+    "Graphic Design": <ImageIcon className="size-4 shrink-0 text-[var(--primary)]" />,
+    "View 100+ more courses": <Book className="size-4 shrink-0 text-[var(--primary)]" />,
     // Campus Courses (names)
     BA: <Book className="size-4 shrink-0 text-blue-600" />,
     "B.Sc": <TestTube className="size-4 shrink-0 text-teal-500" />,
@@ -292,7 +292,7 @@ const getIconForItem = (label: string): React.ReactNode => {
     "View all courses": <Book className="size-4 shrink-0 text-blue-600" />,
   }
 
-  return iconMap[label] || <Book className="size-4 shrink-0 text-blue-600" />
+  return iconMap[label] || <Book className="size-4 shrink-0 text-[var(--primary)]" />
 }
 
 const Header: React.FC = () => {
@@ -357,15 +357,15 @@ const Header: React.FC = () => {
         >
           <Link
             href={item.href}
-            className={`flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 no-underline relative group-hover:text-blue-600 ${
+            className={`flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 no-underline relative group-hover:text-[var(--primary)] ${
               isActive(item.href)
-                ? "text-blue-600"
-                : "text-gray-700 hover:text-blue-600"
+                ? "text-[var(--primary)]"
+                : "text-[var(--text-color)] hover:text-[var(--primary)]"
             }`}
           >
             {item.label}
             {item.hasBadge && (
-              <span className="ml-2 px-2 py-0.5 text-xs font-bold text-white bg-orange-500 rounded animate-pulse">
+              <span className="ml-2 px-2 py-0.5 text-xs font-bold text-[var(--primary-foreground)] bg-[var(--accent)] rounded animate-pulse">
                 {item.badgeText}
               </span>
             )}
@@ -379,20 +379,20 @@ const Header: React.FC = () => {
 
           {/* Dropdown Menu */}
           {activeDropdown === item.label && (
-            <div className={`absolute top-full left-0 mt-2 z-50 ${getDropdownWidth(item.dropdownItems.length)} bg-white border border-gray-200 rounded-lg shadow-xl py-4 animate-in slide-in-from-top-2 duration-200`}>
+            <div className={`absolute top-full left-0 mt-2 z-50 ${getDropdownWidth(item.dropdownItems.length)} bg-[var(--background)] border border-[var(--border-color)] rounded-lg shadow-xl py-4 animate-in slide-in-from-top-2 duration-200`}>
               <div className={`grid ${getGridCols(item.dropdownItems.length)} gap-x-6 gap-y-1 px-4`}>
                 {item.dropdownItems.map((dropdownItem) => (
                   <Link
                     key={dropdownItem.href}
                     href={dropdownItem.href}
-                    className="flex items-center text-sm text-gray-700 py-2 px-3 no-underline hover:bg-blue-50 hover:text-blue-600 rounded-md transition-all duration-150 group"
+                    className="flex items-center text-sm text-[var(--text-color)] py-2 px-3 no-underline hover:bg-[var(--surface)] hover:text-[var(--primary)] rounded-md transition-all duration-150 group"
                   >
                     {getIconForItem(dropdownItem.label)}
                     <span className="ml-2 group-hover:translate-x-1 transition-transform duration-150">
                       {dropdownItem.label}
                     </span>
                     {dropdownItem.isNew && (
-                      <span className="ml-2 px-2 py-0.5 text-xs bg-red-100 text-red-600 rounded-full font-medium">
+                      <span className="ml-2 px-2 py-0.5 text-xs bg-[var(--accent)]/20 text-[var(--accent-foreground)] rounded-full font-medium">
                         NEW
                       </span>
                     )}
@@ -411,13 +411,13 @@ const Header: React.FC = () => {
         href={item.href}
         className={`flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 no-underline ${
           isActive(item.href)
-            ? "text-blue-600"
-            : "text-gray-700 hover:text-blue-600"
+            ? "text-[var(--primary)]"
+            : "text-[var(--text-color)] hover:text-[var(--primary)]"
         }`}
       >
         {item.label}
         {item.hasBadge && (
-          <span className="ml-2 px-2 py-0.5 text-xs font-bold text-white bg-orange-500 rounded animate-pulse">
+          <span className="ml-2 px-2 py-0.5 text-xs font-bold text-[var(--primary-foreground)] bg-[var(--accent)] rounded animate-pulse">
             {item.badgeText}
           </span>
         )}
@@ -478,8 +478,8 @@ const Header: React.FC = () => {
   }
 
   return (
-    <header className={`sticky top-0 z-40 bg-white transition-all duration-300 ${
-      isScrolled ? "shadow-md border-b border-gray-200" : "shadow-sm border-b border-gray-200"
+    <header className={`sticky top-0 z-40 bg-[var(--background)] transition-all duration-300 ${
+      isScrolled ? "shadow-md border-b border-[var(--border-color)]" : "shadow-sm border-b border-[var(--border-color)]"
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -513,7 +513,7 @@ const Header: React.FC = () => {
                 type="text"
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
-                className="block w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-full bg-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className="block w-64 pl-10 pr-4 py-2 border border-[var(--border-color)] rounded-full bg-[var(--background)] placeholder-[var(--muted-text)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all duration-200"
                 placeholder="Search jobs, internships, courses..."
               />
             </form>
@@ -522,7 +522,7 @@ const Header: React.FC = () => {
             <Button
               variant="outline"
               onClick={() => router.push("/login")}
-              className="text-blue-600 border-blue-600 hover:bg-blue-50 hover:border-blue-700 font-medium text-sm px-6 py-2 rounded-md transition-all duration-200"
+              className="text-[var(--primary)] border-[var(--primary)] hover:bg-[var(--surface)] hover:border-[var(--primary)] font-medium text-sm px-6 py-2 rounded-md transition-all duration-200"
             >
               Login
             </Button>
@@ -530,18 +530,18 @@ const Header: React.FC = () => {
             {/* Register Button */}
             <Button
               onClick={() => router.push("/register")}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium text-sm transition-all duration-200 hover:shadow-lg"
+              className="bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-[var(--primary-foreground)] px-6 py-2 rounded-md font-medium text-sm transition-all duration-200 hover:shadow-lg"
             >
               Register
             </Button>
 
             {/* Divider */}
-            <div className="h-6 w-px bg-gray-300" />
+            <div className="h-6 w-px bg-[var(--border-color)]" />
 
             {/* For Employers Link */}
             <Link
               href="/employers"
-              className="text-blue-600 hover:text-blue-700 text-sm font-medium no-underline whitespace-nowrap flex items-center transition-colors duration-200"
+              className="text-[var(--primary)] hover:text-[var(--primary)]/90 text-sm font-medium no-underline whitespace-nowrap flex items-center transition-colors duration-200"
             >
               For employers
               <ChevronDown size={14} className="ml-1 transition-transform duration-200" />
@@ -552,7 +552,7 @@ const Header: React.FC = () => {
           <div className="lg:hidden flex items-center">
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="icon" className="border-[var(--border-color)]">
                   <Menu className="size-4" />
                 </Button>
               </SheetTrigger>
@@ -581,7 +581,7 @@ const Header: React.FC = () => {
                         type="text"
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="block w-full pl-10 pr-3 py-2 border border-[var(--border-color)] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
                         placeholder="Search jobs, internships, courses..."
                       />
                     </form>
@@ -597,19 +597,19 @@ const Header: React.FC = () => {
                     <Button
                       variant="outline"
                       onClick={() => router.push("/login")}
-                      className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                      className="text-[var(--primary)] border-[var(--primary)] hover:bg-[var(--surface)]"
                     >
                       Login
                     </Button>
                     <Button
                       onClick={() => router.push("/register")}
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                      className="bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-[var(--primary-foreground)]"
                     >
                       Register
                     </Button>
                     <Link
                       href="/employers"
-                      className="block text-center w-full py-2 text-blue-600 text-sm font-medium no-underline hover:text-blue-700"
+                      className="block text-center w-full py-2 text-[var(--primary)] text-sm font-medium no-underline hover:text-[var(--primary)]/90"
                     >
                       For employers →
                     </Link>

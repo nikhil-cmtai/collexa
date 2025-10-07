@@ -206,7 +206,7 @@ const trendingItems = [
     subtitle: "Inviting aspirants from all fields into Supply Chain",
     features: ["Certification & job opportunity", "Connect with PepsiCo leaders"],
     buttonText: "Register now",
-    bgColor: "bg-gradient-to-br from-emerald-600 to-teal-700",
+    bgColor: "bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)]",
     illustration: "/supply-chain-illustration.jpg",
   },
   {
@@ -216,7 +216,7 @@ const trendingItems = [
     subtitle: "Short duration yet bigger rewards!",
     features: ["Work for 2-4 weeks in your favorite profiles", "An assured stipend & internship certificate"],
     buttonText: "Participate now",
-    bgColor: "bg-gradient-to-br from-purple-600 to-indigo-700",
+    bgColor: "bg-gradient-to-br from-[var(--secondary)] to-[var(--primary)]",
     illustration: "/internship-calendar-illustration.jpg",
   },
   {
@@ -225,8 +225,8 @@ const trendingItems = [
     title: "India Business Case Programme 2025-26",
     subtitle: "Empowering Youth for Career Readiness",
     buttonText: "Apply now",
-    bgColor: "bg-gradient-to-br from-gray-50 to-white",
-    textColor: "text-gray-900",
+    bgColor: "bg-gradient-to-br from-[var(--surface)] to-[var(--background)]",
+    textColor: "text-[var(--text-color)]",
     illustration: "/business-professionals-team.jpg",
   },
 ]
@@ -243,13 +243,13 @@ export default function TrendingCarousel() {
   }
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-[var(--surface)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <h2 className="text-3xl font-bold text-gray-900">Trending now</h2>
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <h2 className="text-3xl font-bold text-[var(--heading-color)]">Trending now</h2>
+            <div className="w-8 h-8 bg-[var(--primary)] rounded-full flex items-center justify-center">
+              <svg className="w-5 h-5 text-[var(--primary-foreground)]" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
                   d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -262,15 +262,15 @@ export default function TrendingCarousel() {
           <div className="flex gap-2">
             <button
               onClick={prevSlide}
-              className="p-2 rounded-full bg-white shadow-md hover:shadow-lg transition-shadow"
+              className="p-2 rounded-full bg-[var(--background)] shadow-md hover:shadow-lg transition-shadow"
             >
-              <ChevronLeft className="w-5 h-5 text-gray-600" />
+              <ChevronLeft className="w-5 h-5 text-[var(--text-color)]" />
             </button>
             <button
               onClick={nextSlide}
-              className="p-2 rounded-full bg-white shadow-md hover:shadow-lg transition-shadow"
+              className="p-2 rounded-full bg-[var(--background)] shadow-md hover:shadow-lg transition-shadow"
             >
-              <ChevronRight className="w-5 h-5 text-gray-600" />
+              <ChevronRight className="w-5 h-5 text-[var(--text-color)]" />
             </button>
           </div>
         </div>
@@ -285,8 +285,8 @@ export default function TrendingCarousel() {
                 <div
                   className={`${item.bgColor} rounded-2xl p-6 h-80 relative overflow-hidden group hover:scale-105 transition-transform duration-300`}
                 >
-                  <div className="relative z-10">
-                    <div className="inline-block px-3 py-1 bg-black/20 rounded-full text-xs font-medium text-white mb-4">
+                  <div className="relative z-10 h-full flex flex-col">
+                    <div className="inline-block px-3 py-1 bg-black/20 rounded-full text-xs font-medium text-white mb-3">
                       {item.category}
                     </div>
 
@@ -298,33 +298,29 @@ export default function TrendingCarousel() {
                       </div>
                     )}
 
-                    <h3 className={`text-xl font-bold mb-2 ${item.textColor || "text-white"}`}>{item.title}</h3>
+                    <h3 className={`text-xl font-bold mb-1 ${item.textColor || "text-white"}`}>{item.title}</h3>
 
-                    <p className={`text-sm mb-4 ${item.textColor || "text-white/90"}`}>{item.subtitle}</p>
+                    <p className={`text-sm mb-3 line-clamp-2 ${item.textColor || "text-white/90"}`}>{item.subtitle}</p>
 
-                    <ul className="space-y-2 mb-6">
+                    <ul className="space-y-2 mb-4 flex-1">
                       {item.features?.map((feature, index) => (
                         <li
                           key={index}
                           className={`text-sm flex items-start gap-2 ${item.textColor || "text-white/90"}`}
                         >
-                          <span className="text-yellow-400 mt-0.5">•</span>
+                          <span className="text-[var(--secondary)] mt-0.5">•</span>
                           {feature}
                         </li>
                       ))}
                     </ul>
 
-                    <button
-                      className={`px-6 py-2 rounded-lg font-medium text-sm transition-colors ${
-                        item.id === 3
-                          ? "bg-red-600 text-white hover:bg-red-700"
-                          : item.id === 2
-                            ? "bg-white text-purple-700 hover:bg-gray-100"
-                            : "bg-yellow-400 text-gray-900 hover:bg-yellow-300"
-                      }`}
-                    >
-                      {item.buttonText}
-                    </button>
+                    <div className="mt-auto">
+                      <button
+                        className="px-6 py-2 rounded-lg font-medium text-sm transition-opacity bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90"
+                      >
+                        {item.buttonText}
+                      </button>
+                    </div>
                   </div>
 
                   <div className="absolute bottom-0 right-0 opacity-30">
@@ -342,7 +338,7 @@ export default function TrendingCarousel() {
               key={index}
               onClick={() => setCurrentIndex(index)}
               className={`w-2 h-2 rounded-full transition-colors ${
-                index === currentIndex ? "bg-blue-600" : "bg-gray-300"
+                index === currentIndex ? "bg-[var(--primary)]" : "bg-[var(--border-color)]"
               }`}
             />
           ))}

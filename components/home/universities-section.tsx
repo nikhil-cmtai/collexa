@@ -93,7 +93,7 @@ const UniversitiesSection = () => {
             <span>Accredited & Trusted</span>
           </motion.div>
           <motion.h2
-            className="text-4xl sm:text-5xl font-bold text-neutral-900 bg-gradient-to-b from-neutral-900 to-neutral-700 bg-clip-text text-transparent"
+            className="text-4xl sm:text-5xl font-bold bg-gradient-to-b from-neutral-900 to-neutral-700 bg-clip-text text-transparent"
             initial={{ y: 18, opacity: 0 }}
             variants={{ show: { y: 0, opacity: 1 } }}
           >

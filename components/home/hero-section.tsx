@@ -1,209 +1,165 @@
 "use client"
-import React from "react"
-import { Star } from "lucide-react"
+
+import { Search, MapPin, BookOpen, Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import Image from "next/image"
+import { Input } from "@/components/ui/input"
+import { motion } from "framer-motion"
+import { useState } from "react"
 
-// --- CONFIGURATION ---
-const CONFIG = {
-  stats: {
-    courses: "45+",
-    mentors: "29+", 
-    learners: "50K+",
-    rating: "4.9"
-  }
-} as const
-
-// --- TYPES ---
-// interface StatCardProps {
-//   value: string
-//   label: string
-//   className?: string
-// }
-
-// --- STAT CARD COMPONENT ---
-// const StatCard: React.FC<StatCardProps> = ({ value, label, className = "" }) => {
-//   return (
-//     <div className={`bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 ${className}`}>
-//       <div className="text-4xl font-bold text-[var(--heading-color)] mb-2">
-//         {value}
-//       </div>
-//       <div className="text-sm text-[var(--muted-text)] font-medium">
-//         {label}
-//       </div>
-//     </div>
-//   )
-// }
-
-// --- RATING COMPONENT ---
-const RatingCard: React.FC = () => {
-  const avatars = [
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face",
-    "https://images.unsplash.com/photo-1494790108755-2616b612b8c4?w=60&h=60&fit=crop&crop=face", 
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop&crop=face",
-    "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop&crop=face"
-  ]
+export function HeroSection() {
+  const [activeTab, setActiveTab] = useState<"courses" | "jobs">("courses")
 
   return (
-    <div className="absolute bottom-8 left-8 bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-2xl border border-white/20">
-      <div className="flex items-center space-x-3">
-        <div className="flex -space-x-2">
-          {avatars.map((src, index) => (
-            <Image
-              key={index}
-              src={src}
-              alt="User avatar"
-              width={32}
-              height={32}
-              className="w-8 h-8 rounded-full border-2 border-white object-cover"
-            />
-          ))}
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-2xl font-bold text-[var(--heading-color)]">4.9</span>
-          <div className="flex space-x-1">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-4 h-4 fill-[var(--accent)] text-[var(--accent)]" />
-            ))}
-          </div>
-          <span className="text-sm text-[var(--muted-text)] font-medium">Rating</span>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// --- MAIN HERO SECTION COMPONENT ---
-const HeroSection: React.FC = () => {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-      <div className="container mx-auto px-6 lg:px-12 py-20">
-        <div className="grid lg:grid-cols-2 gap-20 items-center min-h-[80vh]">
-          
+    <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+      <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-32">
+        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Left Content */}
-          <div className="space-y-8">
-            {/* Main Heading */}
-            <div className="space-y-6">
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
-                <span className="text-[var(--text-color)]">Learning Today</span>
-                <br />
-                <span className="text-[var(--text-color)]">Unlimited </span>
-                <span className="text-[var(--primary)]">Growth</span>
-                <br />
-                <span className="text-[var(--text-color)]">with Vintar</span>
-              </h1>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex flex-col justify-center"
+          >
+            <h1 className="text-4xl font-bold leading-tight text-foreground sm:text-5xl lg:text-6xl">
+              Learn Skills, <span className="text-gradient">Land Jobs</span>
+            </h1>
+            <p className="mt-4 text-lg leading-relaxed text-muted-foreground sm:text-xl">
+              Master in-demand skills with expert courses, then apply for internships and jobs at top companies.
+            </p>
 
-              {/* Subheading */}
-              <div className="space-y-4 max-w-xl">
-                <p className="text-lg text-[var(--text-color)] leading-relaxed font-medium">
-                  Learn from industry experts through engaging, self-paced video courses.
-                </p>
-                <p className="text-lg text-[var(--text-color)] leading-relaxed font-medium">
-                  Master new skills and unlock your potential anytime, anywhere.
-                </p>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="mt-8"
+            >
+              <div className="mb-4 inline-flex rounded-lg border border-border bg-card p-1">
+                <button
+                  onClick={() => setActiveTab("courses")}
+                  className={`flex items-center gap-2 rounded-md px-6 py-2.5 text-sm font-medium transition-all ${
+                    activeTab === "courses"
+                      ? "bg-primary text-white shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <BookOpen className="h-4 w-4" />
+                  Courses
+                </button>
+                <button
+                  onClick={() => setActiveTab("jobs")}
+                  className={`flex items-center gap-2 rounded-md px-6 py-2.5 text-sm font-medium transition-all ${
+                    activeTab === "jobs"
+                      ? "bg-primary text-white shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Briefcase className="h-4 w-4" />
+                  Jobs & Internships
+                </button>
               </div>
-            </div>
+
+              {/* Search Bar */}
+              <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 shadow-lg transition-shadow hover:shadow-xl sm:flex-row">
+                <div className="flex flex-1 items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 transition-colors focus-within:border-primary">
+                  <Search className="h-5 w-5 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder={activeTab === "courses" ? "Search courses..." : "Search jobs & internships..."}
+                    className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                  />
+                </div>
+                {activeTab === "jobs" && (
+                  <div className="flex flex-1 items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 transition-colors focus-within:border-primary">
+                    <MapPin className="h-5 w-5 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      placeholder="Location"
+                      className="border-0 bg-transparent p-0 focus-visible:ring-0"
+                    />
+                  </div>
+                )}
+                <Button className="bg-primary transition-all hover:scale-105 hover:bg-secondary">Search</Button>
+              </div>
+            </motion.div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                size="lg" 
-                className="bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white rounded-full px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                Explore Courses
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mt-6 flex flex-wrap gap-3"
+            >
+              <Button size="lg" className="bg-primary transition-all hover:scale-105 hover:bg-secondary">
+                Get Started Free
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="border-2 border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white rounded-full px-8 py-4 text-lg font-semibold transition-all duration-300"
-              >
-                Contact Us
+              <Button size="lg" variant="outline" className="bg-transparent transition-all hover:scale-105">
+                Explore Opportunities
               </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="mt-10 grid grid-cols-3 gap-6"
+            >
+              {[
+                { value: "500+", label: "Expert Courses" },
+                { value: "10K+", label: "Job Openings" },
+                { value: "100K+", label: "Success Stories" },
+              ].map((stat, index) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.4, delay: 0.8 + index * 0.1 }}
+                >
+                  <div className="text-3xl font-bold text-foreground">{stat.value}</div>
+                  <div className="text-sm text-muted-foreground">{stat.label}</div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          {/* Right Illustration */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="relative hidden lg:block"
+          >
+            <div className="relative h-full w-full">
+              <img
+                src="/images/hero.png"
+                alt="Students learning and working"
+                className="h-full w-full rounded-2xl object-cover shadow-2xl"
+              />
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+                className="absolute right-4 top-4 rounded-lg border border-border bg-card p-4 shadow-xl backdrop-blur-sm"
+              >
+                <div className="flex items-center gap-2">
+                  <BookOpen className="h-4 w-4 text-primary" />
+                  <div className="text-sm font-semibold text-foreground">New Course!</div>
+                </div>
+                <div className="text-xs text-muted-foreground">Full Stack Development</div>
+              </motion.div>
+              <motion.div
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 1.5 }}
+                className="absolute bottom-4 left-4 rounded-lg border border-border bg-card p-4 shadow-xl backdrop-blur-sm"
+              >
+                <div className="flex items-center gap-2">
+                  <Briefcase className="h-4 w-4 text-secondary" />
+                  <div className="text-sm font-semibold text-primary">₹25,000/month</div>
+                </div>
+                <div className="text-xs text-muted-foreground">Software Engineer Intern</div>
+              </motion.div>
             </div>
-
-            {/* Stats Row */}
-            <div className="grid grid-cols-3 gap-8 pt-8">
-              <div className="text-center">
-                <div className="text-4xl font-bold text-[var(--heading-color)] mb-2">
-                  {CONFIG.stats.courses}
-                </div>
-                <div className="text-sm text-[var(--muted-text)] font-medium">
-                  Courses
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-[var(--heading-color)] mb-2">
-                  {CONFIG.stats.mentors}
-                </div>
-                <div className="text-sm text-[var(--muted-text)] font-medium">
-                  Mentors
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-[var(--heading-color)] mb-2">
-                  {CONFIG.stats.learners}
-                </div>
-                <div className="text-sm text-[var(--muted-text)] font-medium">
-                  Learners
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Content - Image Grid */}
-          <div className="relative">
-            <div className="grid grid-cols-2 gap-6 h-[600px]">
-              {/* Large main image */}
-              <div className="col-span-1 row-span-2 relative">
-                <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-50 rounded-3xl overflow-hidden shadow-2xl relative">
-                  <Image
-                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=800&fit=crop&crop=face"
-                    alt="Student with tablet"
-                    width={600}
-                    height={800}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
-                  <RatingCard />
-                </div>
-              </div>
-
-              {/* Top right image */}
-              <div className="col-span-1 row-span-1">
-                <div className="w-full h-full bg-gradient-to-br from-purple-100 to-purple-50 rounded-3xl overflow-hidden shadow-xl">
-                  <Image
-                    src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=280&fit=crop"
-                    alt="Business meeting"
-                    width={400}
-                    height={280}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-
-              {/* Bottom right image */}
-              <div className="col-span-1 row-span-1">
-                <div className="w-full h-full bg-gradient-to-br from-green-100 to-emerald-50 rounded-3xl overflow-hidden shadow-xl">
-                  <Image
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=280&fit=crop&crop=face"
-                    alt="Professional woman"
-                    width={400}
-                    height={280}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Decorative elements */}
-            <div className="absolute -top-6 -left-6 w-24 h-24 bg-[var(--accent)]/20 rounded-full blur-xl"></div>
-            <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-[var(--primary)]/20 rounded-full blur-xl"></div>
-            <div className="absolute top-1/2 -right-12 w-16 h-16 bg-[var(--secondary)]/20 rounded-full blur-lg"></div>
-          </div>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
-
-export default HeroSection

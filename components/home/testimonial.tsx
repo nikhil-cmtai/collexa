@@ -113,9 +113,16 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ title, descri
     <section className={`bg-background text-text py-12 sm:py-24 md:py-32 px-0 ${className}`}>
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 text-center sm:gap-16">
         <div className="flex flex-col items-center gap-4 px-4 sm:gap-8">
-          <h2 className="max-w-[720px] text-3xl font-semibold leading-tight sm:text-5xl sm:leading-tight text-heading">
-            {title}
-          </h2>
+          <div className="flex flex-col items-center gap-2">
+            
+            {/* Title with underline */}
+            <h2 className="relative inline-block max-w-[720px] text-3xl font-semibold leading-tight sm:text-5xl sm:leading-tight text-heading">
+              {title}
+              <span className="absolute bottom-[-8px] left-0 w-full h-[6px] rounded-full 
+                bg-gradient-to-r from-[#18bba6] to-[#163683] opacity-90 rotate-[-1deg]"></span>
+            </h2>
+
+          </div>
           <p className="text-md max-w-[600px] font-medium text-muted sm:text-xl">
             {description}
           </p>
@@ -242,10 +249,10 @@ const EducationTestimonials: React.FC = () => {
 
   return (
     <TestimonialsSection
-    title="Thousands Trained. Careers Transformed."
-    description="See success stories of students who built their careers through our courses, internships and job placement programs"
-    testimonials={testimonials}
-  />
+      title="Thousands Trained. Careers Transformed."
+      description="See success stories of students who built their careers through our courses, internships and job placement programs"
+      testimonials={testimonials}
+    />
   );
 };
 
