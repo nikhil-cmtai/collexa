@@ -11,7 +11,12 @@ export function HeroSection() {
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5">
-      <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-32">
+      {/* 
+        CHANGE MADE HERE: 
+        Reduced horizontal padding from "px-4 sm:px-6 lg:px-8" to just "px-4" 
+        to decrease the space on the sides, especially on larger screens.
+      */}
+      <div className="mx-auto max-w-7xl px-4 py-20 sm:py-24 lg:py-32">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Left Content */}
           <motion.div
@@ -136,7 +141,7 @@ export function HeroSection() {
               />
               <motion.div
                 animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute right-4 top-4 rounded-lg border border-border bg-card p-4 shadow-xl backdrop-blur-sm"
               >
                 <div className="flex items-center gap-2">
@@ -147,7 +152,7 @@ export function HeroSection() {
               </motion.div>
               <motion.div
                 animate={{ y: [0, 10, 0] }}
-                transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 1.5 }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
                 className="absolute bottom-4 left-4 rounded-lg border border-border bg-card p-4 shadow-xl backdrop-blur-sm"
               >
                 <div className="flex items-center gap-2">

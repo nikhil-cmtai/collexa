@@ -8,12 +8,12 @@ import InternshipTabs from "@/components/home/internship-tab";
 import Testimonial from "@/components/home/testimonial";
 import { CompanyLogoSlider } from "@/components/home/company-slider";
 import { NewsletterSection } from "@/components/home/newsletter-section";
+import NewsSection from "@/components/home/news-section";
 
 const HomePage = () => {
   return (
     <div>
-      <HeroSection />
-     
+      <HeroSection />   
       <TrendingCarousel />
       <CompassCoursesAndCertifications />
       <JobsTabs />
@@ -21,7 +21,9 @@ const HomePage = () => {
       <SkillsCoursesAndDevelopment />
       <Testimonial />
       <CompanyLogoSlider />
+      <NewsSection />
       <NewsletterSection />
+
       {/* <UniversitiesSection />
       <CoursesExploreSection />
       <FacultySection />

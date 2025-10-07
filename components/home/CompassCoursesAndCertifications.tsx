@@ -7,7 +7,7 @@ import Image from "next/image"
 // Course & Certification categories
 const categories = [
   "Technology",
-  "Business",
+  "Business", 
   "Design",
   "Data Science",
   "Marketing",
@@ -608,20 +608,24 @@ function TabSection({ title, data, sectionType }: { title: string; data: Courses
                   <div className="w-10 h-10 rounded-lg overflow-hidden bg-surface flex items-center justify-center">
                     {item.instructorLogo.startsWith("http") ? (
                       <Image
-                        src={item.instructorLogo || "/placeholder.svg"}
+                        src={item.instructorLogo}
                         alt={item.instructor}
                         width={40}
                         height={40}
                         className="w-full h-full object-cover"
+                        unoptimized
                         onError={(e) => {
                           const target = e.target as HTMLImageElement
                           target.style.display = "none"
-                          target.nextElementSibling!.classList.remove("hidden")
+                          const nextElement = target.nextElementSibling as HTMLElement
+                          if (nextElement) {
+                            nextElement.classList.remove("hidden")
+                          }
                         }}
                       />
                     ) : null}
                     <span
-                      className={`text-xs font-bold ${item.instructorLogo.startsWith("http") ? "hidden" : ""}`}
+                      className={`text-xl ${item.instructorLogo.startsWith("http") ? "hidden" : ""}`}
                     >
                       {item.instructorLogo}
                     </span>
@@ -729,18 +733,19 @@ function TabSection({ title, data, sectionType }: { title: string; data: Courses
 export default function CompassCoursesAndCertifications() {
   return (
     <section className="relative overflow-hidden group bg-gradient-to-b from-surface to-background py-16 px-4">
-      {/* Background image with hover zoom */}
+      {/* Background Pattern instead of image */}
       <div className="absolute inset-0 -z-10">
-        <Image
-          src="https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?q=80&w=2070&auto=format&fit=crop"
-          alt="Students learning in a modern campus"
-          fill
-          priority
-          className="object-cover opacity-15 transition-transform duration-700 ease-out group-hover:scale-105"
-        />
-        {/* Subtle gradient overlay for readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[var(--background)]/70 via-[var(--background)]/60 to-[var(--background)]/80" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5" />
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-10 left-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute top-32 right-20 w-48 h-48 bg-secondary/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 left-32 w-40 h-40 bg-accent/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-32 right-10 w-56 h-56 bg-primary/10 rounded-full blur-3xl" />
+        </div>
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 bg-grid-pattern opacity-5" />
       </div>
+      
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-heading mb-4">

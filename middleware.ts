@@ -34,6 +34,21 @@ const publicRoutes = [
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   
+  // Allow all static asset requests (served from /public) to pass through
+  // This prevents images, fonts, and other files from being blocked by auth redirects
+  const isStaticAsset =
+    /\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|json|mp4|webm|woff2?|ttf|otf|eot)$/i.test(pathname) ||
+    pathname.startsWith('/images/') ||
+    pathname === '/logo.png' ||
+    pathname === '/next.svg' ||
+    pathname === '/vercel.svg' ||
+    pathname === '/globe.svg' ||
+    pathname === '/window.svg'
+
+  if (isStaticAsset) {
+    return NextResponse.next()
+  }
+
   // Get user data from cookies
   const userCookie = request.cookies.get('user')
   let user = null
