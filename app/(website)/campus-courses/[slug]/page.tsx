@@ -38,8 +38,9 @@ const SLUG_TO_QUERY: Record<string, { q?: string; level?: string }> = {
   all: { q: "" },
 }
 
-export default function CampusCourseSlugPage({ params }: { params: { slug: string } }) {
-  const preset = SLUG_TO_QUERY[params.slug?.toLowerCase?.() || "all"] || SLUG_TO_QUERY["all"]
+export default async function CampusCourseSlugPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const preset = SLUG_TO_QUERY[slug?.toLowerCase?.() || "all"] || SLUG_TO_QUERY["all"]
   return <CoursesView presetQuery={preset.q} presetLevel={preset.level} />
 }
 
