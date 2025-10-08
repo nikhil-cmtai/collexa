@@ -12,7 +12,7 @@ const news = [
     date: "Sep 2024",
     img: "/window.svg",
     highlight: "🔥 Trending",
-    color: "from-yellow-400 via-orange-300 to-pink-400",
+    color: "from-[var(--accent)] via-[var(--accent)]/70 to-pink-400",
     link: "#", // Placeholder link
   },
   {
@@ -38,10 +38,10 @@ const NewsSection = () => {
     <section className="relative overflow-hidden">
       {/* Sexy animated background */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(60%_60%_at_0%_0%,rgba(234,179,8,0.10)_0%,rgba(255,255,255,0)_60%),radial-gradient(40%_40%_at_100%_100%,rgba(56,189,248,0.10)_0%,rgba(255,255,255,0)_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(60%_60%_at_0%_0%,color-mix(in_srgb,var(--accent)_12%,transparent)_0%,rgba(255,255,255,0)_60%),radial-gradient(40%_40%_at_100%_100%,rgba(56,189,248,0.10)_0%,rgba(255,255,255,0)_60%)]" />
         <motion.div
           aria-hidden
-          className="pointer-events-none absolute -top-24 left-1/2 h-[320px] w-[320px] -translate-x-1/2 rounded-full bg-gradient-to-br from-yellow-300/20 to-pink-400/10 blur-3xl"
+          className="pointer-events-none absolute -top-24 left-1/2 h-[320px] w-[320px] -translate-x-1/2 rounded-full bg-gradient-to-br from-[var(--accent)]/20 to-pink-400/10 blur-3xl"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, ease: "easeOut" }}
@@ -93,7 +93,7 @@ const NewsSection = () => {
             variants={{ show: { y: 0, opacity: 1 } }}
             transition={{ duration: 0.6, ease: "easeOut", delay: 0.05 }}
           >
-            Stay ahead with the freshest updates from the online education world. <span className="font-semibold text-yellow-600">No FOMO!</span>
+            Stay ahead with the freshest updates from the online education world. <span className="font-semibold text-[var(--accent)]">No FOMO!</span>
           </motion.p>
 
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 w-full text-left">

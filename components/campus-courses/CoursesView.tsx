@@ -1,14 +1,17 @@
 "use client"
 
 import React, { useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { useAppDispatch, useAppSelector, RootState } from "@/lib/store"
-import { fetchCourses, setCourseLevel, setCourseMode, setCourseQuery } from "@/lib/slices/coursesSlice"
+import { fetchCourses, setCourseLevel, setCourseMode, setCourseQuery, setSelectedCourse, Course } from "@/lib/slices/coursesSlice"
 import CampusHero from "./Hero"
 import Highlights from "./Highlights"
 import FAQs from "./FAQs"
 import CTA from "./CTA"
+import ApplicationForm from "./ApplicationForm"
 
 export default function CoursesView({ presetQuery, presetLevel, presetMode }: { presetQuery?: string; presetLevel?: string; presetMode?: string }) {
+  const router = useRouter()
   const dispatch = useAppDispatch()
   const { items, status, query, level, mode } = useAppSelector((s: RootState) => s.courses)
 
@@ -23,6 +26,11 @@ export default function CoursesView({ presetQuery, presetLevel, presetMode }: { 
     dispatch(setCourseLevel(presetLevel || ""))
     dispatch(setCourseMode(presetMode || ""))
   }, [dispatch, presetQuery, presetLevel, presetMode])
+
+  const handleViewDetails = (course: Course) => {
+    dispatch(setSelectedCourse(course))
+    router.push(`/campus-courses/${course.id}`)
+  }
 
   const filtered = items.filter((c) => {
     const haystack = (c.title + " " + c.university + " " + c.tags.join(" ")).toLowerCase()
@@ -63,8 +71,17 @@ export default function CoursesView({ presetQuery, presetLevel, presetMode }: { 
               ))}
             </div>
             <div className="mt-4 flex justify-between">
-              <button className="text-sm font-semibold text-white bg-[var(--primary)] rounded-md px-4 py-2">Apply</button>
-              <button className="text-sm font-medium text-[var(--primary)] hover:underline">View details</button>
+              <ApplicationForm courseTitle={c.title} university={c.university}>
+                <button className="text-sm font-semibold text-white bg-[var(--primary)] rounded-md px-4 py-2 hover:bg-[var(--primary)]/90 transition-colors">
+                  Apply
+                </button>
+              </ApplicationForm>
+              <button 
+                onClick={() => handleViewDetails(c)}
+                className="text-sm font-medium text-[var(--primary)] hover:underline"
+              >
+                View details
+              </button>
             </div>
           </div>
         ))}

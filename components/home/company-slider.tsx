@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+import Image from "next/image"
 
 const companies = [
   { name: "Google", logo: "/images/company-logo-slider/google-logo.png" },
@@ -44,9 +45,11 @@ export function CompanyLogoSlider() {
                   className="flex h-20 w-40 flex-shrink-0 items-center justify-center grayscale transition-all hover:grayscale-0"
                   whileHover={{ scale: 1.1 }}
                 >
-                  <img
+                  <Image
                     src={company.logo || "/placeholder.svg"}
                     alt={company.name}
+                    width={120}
+                    height={60}
                     className="h-full w-full object-contain"
                   />
                 </motion.div>

@@ -196,39 +196,25 @@
 import { useState } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 const trendingItems = [
   {
     id: 1,
-    category: "Career Opportunity",
-    company: "PEPSICO",
-    title: "Pep Supply Chain",
-    subtitle: "Inviting aspirants from all fields into Supply Chain",
-    features: ["Certification & job opportunity", "Connect with PepsiCo leaders"],
-    buttonText: "Register now",
-    bgColor: "bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)]",
-    illustration: "/supply-chain-illustration.jpg",
+    image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
+    href: "/internship",
   },
   {
     id: 2,
-    category: "Internships",
-    title: "SHORT-TERM INTERNSHIPS",
-    subtitle: "Short duration yet bigger rewards!",
-    features: ["Work for 2-4 weeks in your favorite profiles", "An assured stipend & internship certificate"],
-    buttonText: "Participate now",
-    bgColor: "bg-gradient-to-br from-[var(--secondary)] to-[var(--primary)]",
-    illustration: "/internship-calendar-illustration.jpg",
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    href: "/courses",
   },
   {
     id: 3,
-    category: "Real-world problem-solving",
-    title: "India Business Case Programme 2025-26",
-    subtitle: "Empowering Youth for Career Readiness",
-    buttonText: "Apply now",
-    bgColor: "bg-gradient-to-br from-[var(--surface)] to-[var(--background)]",
-    textColor: "text-[var(--text-color)]",
-    illustration: "/business-professionals-team.jpg",
+    image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
+    href: "/jobs",
   },
+ 
 ]
 
 export default function TrendingCarousel() {
@@ -282,51 +268,17 @@ export default function TrendingCarousel() {
           >
             {trendingItems.map((item) => (
               <div key={item.id} className="w-1/3 flex-shrink-0 px-3">
-                <div
-                  className={`${item.bgColor} rounded-2xl p-6 h-80 relative overflow-hidden group hover:scale-105 transition-transform duration-300`}
-                >
-                  <div className="relative z-10 h-full flex flex-col">
-                    <div className="inline-block px-3 py-1 bg-black/20 rounded-full text-xs font-medium text-white mb-3">
-                      {item.category}
-                    </div>
-
-                    {item.company && (
-                      <div className="text-right mb-2">
-                        <span className="text-xs font-bold text-white bg-black/20 px-2 py-1 rounded">
-                          {item.company}
-                        </span>
-                      </div>
-                    )}
-
-                    <h3 className={`text-xl font-bold mb-1 ${item.textColor || "text-white"}`}>{item.title}</h3>
-
-                    <p className={`text-sm mb-3 line-clamp-2 ${item.textColor || "text-white/90"}`}>{item.subtitle}</p>
-
-                    <ul className="space-y-2 mb-4 flex-1">
-                      {item.features?.map((feature, index) => (
-                        <li
-                          key={index}
-                          className={`text-sm flex items-start gap-2 ${item.textColor || "text-white/90"}`}
-                        >
-                          <span className="text-[var(--secondary)] mt-0.5">•</span>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-
-                    <div className="mt-auto">
-                      <button
-                        className="px-6 py-2 rounded-lg font-medium text-sm transition-opacity bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90"
-                      >
-                        {item.buttonText}
-                      </button>
-                    </div>
+                <Link href={item.href || "#"}>
+                  <div className="rounded-2xl h-80 relative overflow-hidden group hover:scale-105 transition-transform duration-300 cursor-pointer">
+                    <Image
+                      src={item.image || "/placeholder.svg"}
+                      alt="Trending opportunity"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
                   </div>
-
-                  <div className="absolute bottom-0 right-0 opacity-30">
-                    <Image src={item.illustration || "/placeholder.svg"} alt="" width={128} height={128} className="w-32 h-32 object-contain" />
-                  </div>
-                </div>
+                </Link>
               </div>
             ))}
           </div>

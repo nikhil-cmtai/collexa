@@ -4,6 +4,7 @@ import { Search, MapPin, BookOpen, Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { motion } from "framer-motion"
+import Image from "next/image"
 import { useState } from "react"
 
 export function HeroSection() {
@@ -134,10 +135,13 @@ export function HeroSection() {
             className="relative hidden lg:block"
           >
             <div className="relative h-full w-full">
-              <img
+              <Image
                 src="/images/hero.png"
                 alt="Students learning and working"
+                width={600}
+                height={500}
                 className="h-full w-full rounded-2xl object-cover shadow-2xl"
+                priority
               />
               <motion.div
                 animate={{ y: [0, -10, 0] }}

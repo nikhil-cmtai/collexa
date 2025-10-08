@@ -20,6 +20,7 @@ type CoursesState = {
   query: string;
   level: string;
   mode: string;
+  selectedCourse: Course | null;
 };
 
 const dummyCourses: Course[] = [
@@ -99,6 +100,7 @@ const initialState: CoursesState = {
   query: "",
   level: "",
   mode: "",
+  selectedCourse: null,
 };
 
 export const fetchCourses = createAsyncThunk(
@@ -131,6 +133,9 @@ const coursesSlice = createSlice({
     setCourseMode(state, action: PayloadAction<string>) {
       state.mode = action.payload;
     },
+    setSelectedCourse(state, action: PayloadAction<Course | null>) {
+      state.selectedCourse = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -149,7 +154,7 @@ const coursesSlice = createSlice({
   },
 });
 
-export const { setCourseQuery, setCourseLevel, setCourseMode } = coursesSlice.actions;
+export const { setCourseQuery, setCourseLevel, setCourseMode, setSelectedCourse } = coursesSlice.actions;
 export default coursesSlice.reducer;
 
 
