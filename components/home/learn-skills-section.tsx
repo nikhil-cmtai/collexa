@@ -569,11 +569,10 @@ function TabSection({ title, data }: { title: string; data: SkillsCoursesData; s
             <button
               key={category}
               onClick={() => handleCategoryChange(category)}
-              className={`cursor-pointer px-6 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-                activeCategory === category
-                  ? "bg-secondary text-secondary-foreground"
-                  : "bg-card text-text border border-border hover:border-secondary/50 hover:text-secondary"
-              }`}
+              className={`cursor-pointer px-6 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${activeCategory === category
+                ? "bg-secondary text-secondary-foreground"
+                : "bg-card text-text border border-border hover:border-secondary/50 hover:text-secondary"
+                }`}
             >
               {category}
             </button>
@@ -603,69 +602,91 @@ function TabSection({ title, data }: { title: string; data: SkillsCoursesData; s
             style={{ transform: `translateX(-${currentSlide * 33.333}%)` }}
           >
             {currentCards.slice(currentSlide * cardsPerSlide, currentSlide * cardsPerSlide + cardsPerSlide).map((item: SkillCourseItem, index: number) => (
-              <div key={`${item.id}-${index}`} className="w-1/3 flex-shrink-0 px-4">
+              <div
+                key={`${item.id}-${index}`}
+                className="w-1/3 flex-shrink-0 px-3"
+              >
                 <div className="cursor-pointer">
-                  <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-500 hover:scale-[1.02] relative border border-gray-100 hover:border-secondary/20">
-                    {/* Popular Badge - Absolute Positioned with Unique Gradient */}
+                  <div className="relative bg-white rounded-2xl border border-gray-100 shadow-md hover:shadow-lg transition-all duration-500 hover:scale-[1.03] overflow-hidden">
+
+                    {/* Popular Badge */}
                     {item.isPopular && (
-                      <div className="absolute top-4 right-4 bg-gradient-to-r from-secondary to-primary text-white px-3 py-1.5 rounded-full text-sm font-semibold flex items-center gap-1.5 z-10 shadow-lg">
-                        <Award className="w-4 h-4" />
-                        Popular
+                      <div className="absolute top-3 right-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-md z-10">
+                        <Award className="w-3.5 h-3.5" />
+                        <span>Popular</span>
                       </div>
                     )}
-                    
-                    {/* Skill Course Content */}
-                    <div className="p-4 h-full flex flex-col">
-                      <h4 className="text-base font-semibold text-gray-900 mb-3 line-clamp-2">
+
+                    {/* Card Body */}
+                    <div className="p-4 flex flex-col h-full">
+
+                      {/* Title */}
+                      <h4 className="text-sm md:text-lg font-semibold text-gray-900 mt-2 mb-2 line-clamp-2 leading-snug">
                         {item.title}
                       </h4>
-                      
+
+                      {/* Instructor Info */}
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-secondary/20 to-primary/20 flex items-center justify-center">
-                          <span className="text-xs">{item.instructorLogo}</span>
+                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center text-xs font-semibold text-gray-700">
+                          {item.instructorLogo}
                         </div>
-                        <div>
-                          <p className="text-xs font-medium text-gray-700">{item.instructor}</p>
-                          <p className="text-xs text-gray-500">{item.category}</p>
+                        <div className="flex flex-col">
+                          <p className="text-sm font-medium text-gray-800 leading-tight" style={{marginBottom:'0px'}}>{item.instructor}</p>
+                          <p className="text-[11px] text-gray-500">{item.category}</p>
                         </div>
                       </div>
-                      
-                      <div className="space-y-1.5 mb-3 flex-1">
+
+                      {/* Stats Section */}
+                      <div className="flex flex-col gap-2 flex-1">
+
+                        {/* Rating & Level */}
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1">
-                            <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                            <span className="text-xs font-medium text-gray-700">{item.rating}</span>
-                            <span className="text-xs text-gray-500">({item.students.toLocaleString()})</span>
+                            <Star className="w-3.5 h-3.5 text-yellow-400 fill-current" />
+                            <span className="text-xs font-semibold text-gray-700">{item.rating}</span>
+                            <span className="text-[11px] text-gray-500">({item.students.toLocaleString()})</span>
                           </div>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getLevelColor(item.level)}`}>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${getLevelColor(
+                              item.level
+                            )}`}
+                          >
                             {item.level}
                           </span>
                         </div>
-                        
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-3 h-3 text-secondary" />
-                          <span className="text-xs text-gray-600">{item.duration}</span>
+
+                        {/* Duration */}
+                        <div className="flex items-center gap-1.5 text-gray-600 text-xs">
+                          <Clock className="w-3.5 h-3.5 text-secondary" />
+                          <span>{item.duration}</span>
                         </div>
-                        
-                        <div className="flex items-center gap-2">
-                          <Users className="w-3 h-3 text-primary" />
-                          <span className="text-xs text-gray-600">{item.students.toLocaleString()} students</span>
+
+                        {/* Students */}
+                        <div className="flex items-center gap-1.5 text-gray-600 text-xs">
+                          <Users className="w-3.5 h-3.5 text-primary" />
+                          <span>{item.students.toLocaleString()} students</span>
                         </div>
                       </div>
-                      
-                      <div className="flex items-center justify-between mt-auto">
-                        <div>
-                          <span className="text-xs text-gray-500 font-medium">{item.type}</span>
-                        </div>
-                        <button className="bg-gradient-to-r from-secondary to-primary text-white text-xs font-medium px-3 py-1.5 rounded-lg hover:from-secondary/90 hover:to-primary/90 transition-all duration-300 flex items-center gap-1">
+
+                      {/* Footer Section */}
+                      <div className="flex items-center justify-between mt-4 pt-2 border-t border-gray-100">
+                        <span className="text-[11px] text-gray-500 font-medium tracking-wide">
+                          {item.type}
+                        </span>
+                        <button className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all duration-300 shadow-md hover:opacity-90 hover:shadow-lg">
                           Start Learning
                           <ChevronRight className="w-3 h-3" />
                         </button>
                       </div>
+
                     </div>
                   </div>
                 </div>
               </div>
+
+
+
+
             ))}
           </div>
         </div>

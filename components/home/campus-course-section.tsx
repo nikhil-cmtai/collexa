@@ -7,7 +7,7 @@ import Image from "next/image"
 // Campus Course categories
 const categories = [
   "Engineering",
-  "Management", 
+  "Management",
   "Technology",
   "Business",
   "Design",
@@ -1042,7 +1042,7 @@ function TabSection({ title, data, sectionType }: { title: string; data: Courses
     }
   }
 
-    return (
+  return (
     <div className="max-w-7xl mx-auto mb-16">
       <div className="mb-6">
         <h3 className="text-2xl font-semibold text-heading mb-4">{title}</h3>
@@ -1053,11 +1053,10 @@ function TabSection({ title, data, sectionType }: { title: string; data: Courses
             <button
               key={category}
               onClick={() => handleCategoryChange(category)}
-              className={`cursor-pointer px-6 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-                activeCategory === category
-                  ? "bg-secondary text-secondary-foreground"
-                  : "bg-card text-text border border-border hover:border-secondary/50 hover:text-secondary"
-              }`}
+              className={`cursor-pointer px-6 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${activeCategory === category
+                ? "bg-secondary text-secondary-foreground"
+                : "bg-card text-text border border-border hover:border-secondary/50 hover:text-secondary"
+                }`}
             >
               {category}
             </button>
@@ -1088,63 +1087,68 @@ function TabSection({ title, data, sectionType }: { title: string; data: Courses
           >
             {currentCards.slice(currentSlide * cardsPerSlide, currentSlide * cardsPerSlide + cardsPerSlide).map((item: CourseItem, index: number) => (
               <div key={`${item.id}-${index}`} className="w-1/3 flex-shrink-0 px-4">
-                <div className="cursor-pointer">
-                  <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-500 hover:scale-[1.02] relative border border-gray-100 hover:border-primary/20">
-                    {/* Popular Badge - Absolute Positioned */}
+                <div className="cursor-pointer group">
+                  <div className="relative bg-white rounded-2xl border border-gray-100 shadow-md hover:shadow-lg transition-all duration-500 hover:scale-[1.03] overflow-hidden">
+
+                    {/* Popular Badge */}
                     {item.isPopular && (
-                      <div className="absolute top-4 right-4 bg-gradient-to-r from-primary to-secondary text-white px-3 py-1.5 rounded-full text-sm font-semibold flex items-center gap-1.5 z-10 shadow-lg">
-                        <Award className="w-4 h-4" />
+                      <div className="absolute top-4 right-4 bg-[var(--primary)]/70 text-white px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 z-10 shadow-md">
+                        <Award className="w-4 h-4 text-white" />
                         Popular
                       </div>
                     )}
-                    
-                    {/* Course Content */}
-                    <div className="p-4 h-full flex flex-col">
-                      <h4 className="text-base font-semibold text-gray-900 mb-3 line-clamp-2">
+
+                    {/* Card Inner */}
+                    <div className="p-10 flex flex-col h-full">
+                      {/* Title */}
+                      <h4 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-2 group-hover:text-[var(--primary)] transition-colors duration-300">
                         {item.title}
                       </h4>
-                      
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
-                          <span className="text-xs">{item.instructorLogo}</span>
+
+                      {/* Instructor Info */}
+                      <div className="flex items-center gap-3 mb-2">
+                        {/* Instructor Avatar */}
+                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-semibold text-gray-600">
+                          {item.instructorLogo}
                         </div>
-                        <div>
-                          <p className="text-xs font-medium text-gray-700">{item.instructor}</p>
+
+                        {/* Instructor Info */}
+                        <div className="flex flex-col">
+                          <p className="text-sm font-medium text-gray-800" style={{marginBottom:"0.1em"}}>{item.instructor}</p>
                           <p className="text-xs text-gray-500">{item.category}</p>
                         </div>
                       </div>
-                      
-                      <div className="space-y-1.5 mb-3 flex-1">
+
+
+                      {/* Stats Section */}
+                      <div className="space-y-2 flex-1">
+                        {/* Rating & Level */}
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1">
-                            <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                          <div className="flex items-center gap-1.5">
+                            <Star className="w-3.5 h-3.5 text-yellow-500 fill-current" />
                             <span className="text-xs font-medium text-gray-700">{item.rating}</span>
                             <span className="text-xs text-gray-500">({item.students.toLocaleString()})</span>
                           </div>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getLevelColor(item.level)}`}>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${getLevelColor(
+                              item.level
+                            )}`}
+                          >
                             {item.level}
                           </span>
                         </div>
-                        
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-3 h-3 text-gray-400" />
-                          <span className="text-xs text-gray-600">{item.duration}</span>
+
+                        {/* Duration */}
+                        <div className="flex items-center gap-2 text-xs text-gray-600">
+                          <Clock className="w-3.5 h-3.5 text-gray-400" />
+                          <span>{item.duration}</span>
                         </div>
-                        
-                        <div className="flex items-center gap-2">
-                          <Users className="w-3 h-3 text-gray-400" />
-                          <span className="text-xs text-gray-600">{item.students.toLocaleString()} students</span>
+
+                        {/* Students */}
+                        <div className="flex items-center gap-2 text-xs text-gray-600">
+                          <Users className="w-3.5 h-3.5 text-gray-400" />
+                          <span>{item.students.toLocaleString()} students</span>
                         </div>
-                      </div>
-                      
-                      <div className="flex items-center justify-between mt-auto">
-        <div>
-                          <span className="text-base font-bold text-primary">{item.price}</span>
-                          {item.originalPrice !== item.price && (
-                            <span className="text-xs text-gray-500 line-through ml-2">{item.originalPrice}</span>
-                          )}
-                        </div>
-                        <span className="text-xs text-gray-500 font-medium">{item.type}</span>
                       </div>
                     </div>
                   </div>
@@ -1174,19 +1178,19 @@ export default function CompassCoursesAndCertifications() {
         {/* Subtle pattern overlay */}
         <div className="absolute inset-0 bg-grid-pattern opacity-5" />
       </div>
-      
+
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-5xl font-bold text-heading mb-4">
             Campus Courses
           </h2>
           <p className="text-muted text-lg">
-            Discover courses and certifications from industry experts for your campus 
+            Discover courses and certifications from industry experts for your campus
           </p>
         </div>
         <TabSection title="" data={coursesData} sectionType="courses" />
         {/* <TabSection title="Professional Certifications" data={certificationsData} sectionType="certifications" /> */}
       </div>
     </section>
-    )
+  )
 }
