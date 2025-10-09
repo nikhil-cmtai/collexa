@@ -99,7 +99,7 @@ const WhyChooseSection = () => {
             The <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Smart Choice</span> for Your Career
           </h2>
           <p className="text-xl text-muted max-w-3xl mx-auto leading-relaxed">
-            No confusion, only clarity! Compare, match, and win with India's most trusted education platform that has transformed <span className="font-bold text-primary">50,000+ careers</span>.
+            No confusion, only clarity! Compare, match, and win with India&apos;s most trusted education platform that has transformed <span className="font-bold text-primary">50,000+ careers</span>.
           </p>
         </div>
 
