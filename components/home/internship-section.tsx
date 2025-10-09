@@ -337,7 +337,7 @@ function InternshipsSection() {
   const [currentSlide, setCurrentSlide] = useState(0)
 
   const currentCards = internshipsData[activeCategory as keyof typeof internshipsData] || []
-  const cardsPerSlide = 4
+  const cardsPerSlide = 3
   const totalSlides = Math.ceil(currentCards.length / cardsPerSlide)
 
   const nextSlide = () => {
@@ -354,20 +354,16 @@ function InternshipsSection() {
   }
 
   return (
-    <div className="mb-16">
-      <div className="mb-6">
-        <h3 className="text-2xl font-semibold text-heading mb-4">Internship Programs</h3>
-      </div>
-
-      <div className="mb-8 overflow-x-auto">
-        <div className="flex gap-3 min-w-max pb-2">
+    <div className="max-w-7xl mx-auto mb-16">
+      <div className="overflow-x-auto justify-center items-center">
+        <div className="flex gap-3 min-w-max pb-2 justify-center">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => handleCategoryChange(category)}
-              className={`px-6 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+              className={`cursor-pointer px-6 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                 activeCategory === category
-                  ? "bg-secondary text-secondary-foreground shadow-md"
+                  ? "bg-secondary text-secondary-foreground"
                   : "bg-card text-text border border-border hover:border-secondary/50 hover:text-secondary"
               }`}
             >
@@ -376,172 +372,123 @@ function InternshipsSection() {
           ))}
         </div>
       </div>
-
       <div className="relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {currentCards
-            .slice(currentSlide * cardsPerSlide, currentSlide * cardsPerSlide + cardsPerSlide)
-            .map((item: InternshipItem) => (
-              <div
-                key={item.id}
-                className="bg-card rounded-xl shadow-sm border border-border p-6 hover:shadow-md transition-shadow duration-200 h-80 flex flex-col"
-              >
-                {item.isHiring && (
-                  <div className="flex items-center gap-2 mb-4">
-                    <svg className="w-4 h-4 text-secondary" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span className="text-sm text-secondary font-medium">Actively hiring</span>
-                  </div>
-                )}
+        {/* Left Navigation Button */}
+        <button
+          onClick={prevSlide}
+          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
+        >
+          <ChevronLeft className="w-5 h-5 text-gray-600" />
+        </button>
 
-                <h4 className="text-lg font-semibold text-heading mb-2 line-clamp-2">{item.title}</h4>
+        {/* Right Navigation Button */}
+        <button
+          onClick={nextSlide}
+          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
+        >
+          <ChevronRight className="w-5 h-5 text-gray-600" />
+        </button>
 
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg overflow-hidden bg-surface flex items-center justify-center">
-                    {item.companyLogo.startsWith("http") ? (
-                      <Image
-                        src={item.companyLogo || "/placeholder.svg"}
-                        alt={item.company}
-                        width={40}
-                        height={40}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement
-                          target.style.display = "none"
-                          target.nextElementSibling!.classList.remove("hidden")
-                        }}
-                      />
-                    ) : null}
-                    <span
-                      className={`text-xs font-bold text-secondary ${item.companyLogo.startsWith("http") ? "hidden" : ""}`}
-                    >
-                      {item.company.substring(0, 2).toUpperCase()}
-                    </span>
-                  </div>
-                  <p className="text-text text-sm font-medium">{item.company}</p>
-                </div>
-
-                <div className="flex-1 space-y-3">
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                    <span className="text-sm text-text">{item.workType}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-                      />
-                    </svg>
-                    <span className="text-sm text-text">{item.salary}</span>
-                  </div>
-
-                  {item.duration && (
-                    <div className="flex items-center gap-2">
-                      <svg className="w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      <span className="text-sm text-text">{item.duration}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
-                  <span className="text-sm text-muted font-medium">{item.type}</span>
-                  <button className="text-secondary text-sm font-medium hover:text-secondary/80 flex items-center gap-1">
-                    Apply Now
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
-
-          {currentCards.length < cardsPerSlide && (
-            <div className="bg-gradient-to-br from-secondary to-secondary/80 rounded-xl p-6 text-secondary-foreground relative overflow-hidden h-80 flex flex-col">
-              <div className="relative z-10 flex-1 flex flex-col">
-                <h4 className="text-xl font-bold mb-2">Kickstart Your Career</h4>
-                <p className="text-secondary-foreground/80 text-sm mb-6">Explore 5,000+ internship opportunities</p>
-
-                <div className="mt-auto">
-                  <button className="bg-card text-secondary px-4 py-2 rounded-lg font-medium text-sm hover:bg-surface transition-colors flex items-center gap-2">
-                    Browse Internships
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="absolute -right-4 -bottom-4 w-24 h-24 opacity-20">
-                <svg viewBox="0 0 100 100" className="w-full h-full">
-                  <circle cx="50" cy="30" r="8" fill="currentColor" />
-                  <rect x="45" y="40" width="10" height="20" fill="currentColor" />
-                  <rect x="35" y="45" width="8" height="3" fill="currentColor" />
-                  <rect x="57" y="45" width="8" height="3" fill="currentColor" />
-                  <rect x="40" y="62" width="6" height="15" fill="currentColor" />
-                  <rect x="54" y="62" width="6" height="15" fill="currentColor" />
-                </svg>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {totalSlides > 1 && (
-        <div className="flex justify-center items-center gap-4 mt-8">
-          <button
-            onClick={prevSlide}
-            className="bg-card rounded-full p-2 shadow-md hover:shadow-lg transition-all duration-200 border border-border disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={currentSlide === 0}
+        <div className="overflow-hidden rounded-3xl py-12">
+          <div
+            className="flex transition-transform duration-700 ease-in-out"
+            style={{ transform: `translateX(-${currentSlide * 33.333}%)` }}
           >
-            <ChevronLeft className="w-5 h-5 text-text" />
-          </button>
-
-          <div className="flex items-center gap-2">
-            {Array.from({ length: totalSlides }).map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`w-8 h-2 rounded-full transition-all duration-200 ${
-                  currentSlide === index ? "bg-secondary" : "bg-border hover:bg-muted"
-                }`}
-              />
+            {currentCards.slice(currentSlide * cardsPerSlide, currentSlide * cardsPerSlide + cardsPerSlide).map((item: InternshipItem, index: number) => (
+              <div key={`${item.id}-${index}`} className="w-1/3 flex-shrink-0 px-4">
+                <div className="cursor-pointer">
+                  <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-500 hover:scale-[1.02] relative border border-gray-100 hover:border-primary/20">
+                    {/* Hiring Badge - Absolute Positioned */}
+                    {item.isHiring && (
+                      <div className="absolute top-4 right-4 bg-gradient-to-r from-primary to-secondary text-white px-3 py-1.5 rounded-full text-sm font-semibold flex items-center gap-1.5 z-10 shadow-lg">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        Hiring
+                      </div>
+                    )}
+                    
+                    {/* Internship Content */}
+                    <div className="p-4 h-full flex flex-col">
+                      <h4 className="text-base font-semibold text-gray-900 mb-3 line-clamp-2">
+                        {item.title}
+                      </h4>
+                      
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
+                          {item.companyLogo.startsWith("http") ? (
+                            <Image
+                              src={item.companyLogo || "/placeholder.svg"}
+                              alt={item.company}
+                              width={24}
+                              height={24}
+                              className="w-full h-full object-cover rounded-full"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement
+                                target.style.display = "none"
+                                target.nextElementSibling!.classList.remove("hidden")
+                              }}
+                            />
+                          ) : null}
+                          <span
+                            className={`text-xs font-bold text-primary ${item.companyLogo.startsWith("http") ? "hidden" : ""}`}
+                          >
+                            {item.company.substring(0, 2).toUpperCase()}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-gray-700">{item.company}</p>
+                          <p className="text-xs text-gray-500">{item.workType}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-1.5 mb-3 flex-1">
+                        <div className="flex items-center gap-2">
+                          <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                            />
+                          </svg>
+                          <span className="text-xs text-gray-600">{item.salary}</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          <span className="text-xs text-gray-600">{item.duration}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between mt-auto">
+                        <div>
+                          <span className="text-xs text-gray-500 font-medium">{item.type}</span>
+                        </div>
+                        <button className="text-primary text-xs font-medium hover:text-primary/80 flex items-center gap-1">
+                          Apply Now
+                          <ChevronRight className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
-
-          <button
-            onClick={nextSlide}
-            className="bg-card rounded-full p-2 shadow-md hover:shadow-lg transition-all duration-200 border border-border disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={currentSlide === totalSlides - 1}
-          >
-            <ChevronRight className="w-5 h-5 text-text" />
-          </button>
         </div>
-      )}
+      </div>
     </div>
   )
 }
@@ -551,7 +498,7 @@ export default function InternshipOpportunities() {
     <section className="bg-gradient-to-b from-surface to-background py-16 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-heading mb-4">Launch Your Career With Internships</h2>
+          <h2 className="text-3xl md:text-5xl font-bold text-heading mb-4">Launch Your Career With Internships</h2>
           <p className="text-muted text-lg">Gain practical experience with leading companies</p>
         </div>
         <InternshipsSection />

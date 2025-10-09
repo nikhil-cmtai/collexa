@@ -541,7 +541,7 @@ function TabSection({ title, data }: { title: string; data: SkillsCoursesData; s
   const [currentSlide, setCurrentSlide] = useState(0)
 
   const currentCards = data[activeCategory] || []
-  const cardsPerSlide = 4
+  const cardsPerSlide = 3
   const totalSlides = Math.ceil(currentCards.length / cardsPerSlide)
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % totalSlides)
@@ -562,20 +562,17 @@ function TabSection({ title, data }: { title: string; data: SkillsCoursesData; s
   }
 
   return (
-    <div className="mb-16">
-      <div className="mb-6">
-        <h3 className="text-2xl font-semibold text-heading mb-4">{title}</h3>
-      </div>
-      <div className="mb-8 overflow-x-auto">
-        <div className="flex gap-3 min-w-max pb-2">
+    <div className="max-w-7xl mx-auto">
+      <div className="overflow-x-auto justify-center items-center">
+        <div className="flex gap-3 min-w-max pb-2 justify-center">
           {skillCategories.map((category) => (
             <button
               key={category}
               onClick={() => handleCategoryChange(category)}
-              className={`px-6 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+              className={`cursor-pointer px-6 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                 activeCategory === category
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "bg-card text-text border border-border hover:border-primary/50 hover:text-primary"
+                  ? "bg-secondary text-secondary-foreground"
+                  : "bg-card text-text border border-border hover:border-secondary/50 hover:text-secondary"
               }`}
             >
               {category}
@@ -584,120 +581,95 @@ function TabSection({ title, data }: { title: string; data: SkillsCoursesData; s
         </div>
       </div>
       <div className="relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {currentCards
-            .slice(currentSlide * cardsPerSlide, currentSlide * cardsPerSlide + cardsPerSlide)
-            .map((item: SkillCourseItem) => (
-              <div
-                key={item.id}
-                className="bg-card rounded-xl shadow-sm border border-border p-6 hover:shadow-lg transition-all duration-200 h-96 flex flex-col group"
-              >
-                {item.isPopular && (
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="flex items-center gap-1 bg-accent/20 px-2 py-1 rounded-full">
-                      <Award className="w-3 h-3 text-accent-foreground" />
-                      <span className="text-xs text-accent-foreground font-medium">Popular</span>
-                    </div>
-                  </div>
-                )}
-                <h4 className="text-lg font-semibold text-heading mb-3 line-clamp-2 group-hover:text-primary transition-colors">
-                  {item.title}
-                </h4>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg overflow-hidden bg-surface flex items-center justify-center">
-                    <span className="text-lg">{item.instructorLogo}</span>
-                  </div>
-                  <div>
-                    <p className="text-text text-sm font-medium">{item.instructor}</p>
-                    <p className="text-muted text-xs">{item.category}</p>
-                  </div>
-                </div>
-                <div className="flex-1 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-accent fill-current" />
-                      <span className="text-sm font-medium text-heading">{item.rating}</span>
-                      <span className="text-sm text-muted">({item.students.toLocaleString()})</span>
-                    </div>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getLevelColor(item.level)}`}>
-                      {item.level}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-muted" />
-                    <span className="text-sm text-text">{item.duration}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-muted" />
-                    <span className="text-sm text-text">{item.students.toLocaleString()} students</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg font-bold text-heading">{item.price}</span>
-                    {item.originalPrice !== item.price && (
-                      <span className="text-sm text-muted line-through">{item.originalPrice}</span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
-                  <span className="text-sm text-muted font-medium">{item.type}</span>
-                  <button className="bg-primary text-secondary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-secondary/90 transition-colors flex items-center gap-1">
-                    Start Learning
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
+        {/* Left Navigation Button */}
+        <button
+          onClick={prevSlide}
+          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
+        >
+          <ChevronLeft className="w-5 h-5 text-gray-600" />
+        </button>
 
-          {currentCards.length < cardsPerSlide && (
-            <div className="bg-gradient-to-br from-secondary to-secondary/80 rounded-xl p-6 text-secondary-foreground relative overflow-hidden h-96 flex flex-col">
-              <div className="relative z-10 flex-1 flex flex-col">
-                <h4 className="text-xl font-bold mb-2">Boost Your Professional Skills</h4>
-                <p className="text-secondary-foreground/80 text-sm mb-6">Master in-demand skills for career growth</p>
-                <div className="mt-auto">
-                  <button className="bg-card text-primary px-4 py-2 rounded-lg font-medium text-sm hover:bg-surface transition-colors flex items-center gap-2">
-                    Explore All Skills
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
+        {/* Right Navigation Button */}
+        <button
+          onClick={nextSlide}
+          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
+        >
+          <ChevronRight className="w-5 h-5 text-gray-600" />
+        </button>
+
+        <div className="overflow-hidden rounded-3xl py-12">
+          <div
+            className="flex transition-transform duration-700 ease-in-out"
+            style={{ transform: `translateX(-${currentSlide * 33.333}%)` }}
+          >
+            {currentCards.slice(currentSlide * cardsPerSlide, currentSlide * cardsPerSlide + cardsPerSlide).map((item: SkillCourseItem, index: number) => (
+              <div key={`${item.id}-${index}`} className="w-1/3 flex-shrink-0 px-4">
+                <div className="cursor-pointer">
+                  <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-500 hover:scale-[1.02] relative border border-gray-100 hover:border-secondary/20">
+                    {/* Popular Badge - Absolute Positioned with Unique Gradient */}
+                    {item.isPopular && (
+                      <div className="absolute top-4 right-4 bg-gradient-to-r from-secondary to-primary text-white px-3 py-1.5 rounded-full text-sm font-semibold flex items-center gap-1.5 z-10 shadow-lg">
+                        <Award className="w-4 h-4" />
+                        Popular
+                      </div>
+                    )}
+                    
+                    {/* Skill Course Content */}
+                    <div className="p-4 h-full flex flex-col">
+                      <h4 className="text-base font-semibold text-gray-900 mb-3 line-clamp-2">
+                        {item.title}
+                      </h4>
+                      
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-secondary/20 to-primary/20 flex items-center justify-center">
+                          <span className="text-xs">{item.instructorLogo}</span>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-gray-700">{item.instructor}</p>
+                          <p className="text-xs text-gray-500">{item.category}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-1.5 mb-3 flex-1">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                            <span className="text-xs font-medium text-gray-700">{item.rating}</span>
+                            <span className="text-xs text-gray-500">({item.students.toLocaleString()})</span>
+                          </div>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getLevelColor(item.level)}`}>
+                            {item.level}
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-3 h-3 text-secondary" />
+                          <span className="text-xs text-gray-600">{item.duration}</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <Users className="w-3 h-3 text-primary" />
+                          <span className="text-xs text-gray-600">{item.students.toLocaleString()} students</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between mt-auto">
+                        <div>
+                          <span className="text-xs text-gray-500 font-medium">{item.type}</span>
+                        </div>
+                        <button className="bg-gradient-to-r from-secondary to-primary text-white text-xs font-medium px-3 py-1.5 rounded-lg hover:from-secondary/90 hover:to-primary/90 transition-all duration-300 flex items-center gap-1">
+                          Start Learning
+                          <ChevronRight className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="absolute -right-4 -bottom-4 w-24 h-24 opacity-20">
-                <svg viewBox="0 0 100 100" className="w-full h-full">
-                  <path d="M50 15 L65 35 L85 35 L70 50 L75 70 L50 60 L25 70 L30 50 L15 35 L35 35 Z" fill="currentColor" />
-                </svg>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-      {totalSlides > 1 && (
-        <div className="flex justify-center items-center gap-4 mt-8">
-          <button
-            onClick={prevSlide}
-            className="bg-card rounded-full p-2 shadow-md hover:shadow-lg transition-all duration-200 border border-border disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={currentSlide === 0}
-          >
-            <ChevronLeft className="w-5 h-5 text-text" />
-          </button>
-          <div className="flex items-center gap-2">
-            {Array.from({ length: totalSlides }).map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`w-8 h-2 rounded-full transition-all duration-200 ${
-                  currentSlide === index ? "bg-primary" : "bg-border hover:bg-muted"
-                }`}
-              />
             ))}
           </div>
-          <button
-            onClick={nextSlide}
-            className="bg-card rounded-full p-2 shadow-md hover:shadow-lg transition-all duration-200 border border-border disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={currentSlide === totalSlides - 1}
-          >
-            <ChevronRight className="w-5 h-5 text-text" />
-          </button>
         </div>
-      )}
+      </div>
     </div>
   )
 }
@@ -708,7 +680,7 @@ export default function SkillsCoursesAndDevelopment() {
     <section className="bg-gradient-to-b from-surface to-background py-16 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-heading mb-4">
+          <h2 className="text-3xl md:text-5xl font-bold text-heading mb-4">
             What skills do you want to develop?
           </h2>
           <p className="text-muted text-lg">

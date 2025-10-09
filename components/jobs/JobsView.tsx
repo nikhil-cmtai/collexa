@@ -2,8 +2,8 @@
 
 import React, { useEffect } from "react"
 import { motion } from "framer-motion"
-import { fetchJobs, setLocation, setQuery, setType } from "@/lib/slices/jobsSlice"
-import { RootState, useAppDispatch, useAppSelector } from "@/lib/store"
+import { fetchJobs, setLocation, setQuery, setType } from "@/lib/redux/features/jobsSlice"
+import { RootState, useAppDispatch, useAppSelector } from "@/lib/redux/store"
 import JobsHero from "./JobsHero"
 import JobsHighlights from "./JobsHighlights"
 import JobsHowItWorks from "./JobsHowItWorks"

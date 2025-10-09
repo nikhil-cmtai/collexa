@@ -1,8 +1,8 @@
 "use client";
 
 import { configureStore } from "@reduxjs/toolkit";
-import jobsReducer from "./slices/jobsSlice";
-import coursesReducer from "./slices/coursesSlice";
+import jobsReducer from "./features/jobsSlice";
+import coursesReducer from "./features/coursesSlice";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 export const store = configureStore({

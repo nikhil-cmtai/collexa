@@ -3,7 +3,7 @@
 import React, { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAppDispatch, useAppSelector, RootState } from "@/lib/store"
-import { fetchCourses, setCourseLevel, setCourseMode, setCourseQuery, setSelectedCourse, Course } from "@/lib/slices/coursesSlice"
+import { fetchCourses, setCourseLevel, setCourseMode, setCourseQuery, setSelectedCourse, Course } from "@/lib/redux/features/coursesSlice"
 import CampusHero from "./Hero"
 import Highlights from "./Highlights"
 import FAQs from "./FAQs"

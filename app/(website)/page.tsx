@@ -1,37 +1,30 @@
+"use client";
+
 import React from "react";
-import { HeroSection } from "@/components/home/hero-section";
-import TrendingCarousel from "@/components/home/trending-carousel";
-import JobsTabs from "@/components/home/jobs-tab";
-import CompassCoursesAndCertifications from "@/components/home/CompassCoursesAndCertifications";
-import SkillsCoursesAndDevelopment from "@/components/home/skill-courses";
-import InternshipTabs from "@/components/home/internship-tab";
-import Testimonial from "@/components/home/testimonial";
+import HeroSection from "@/components/home/hero-section";
+import StatSection from "@/components/home/stat-section";
+import TrendingCarousel from "@/components/home/trending-section";
+import JobsTabs from "@/components/home/jobs-section";
+import CompassCoursesAndCertifications from "@/components/home/campus-course-section";
+import SkillsCoursesAndDevelopment from "@/components/home/learn-skills-section";
+import InternshipTabs from "@/components/home/internship-section";
+import Testimonial from "@/components/home/testimonial-section";
 import { CompanyLogoSlider } from "@/components/home/company-slider";
-import { NewsletterSection } from "@/components/home/newsletter-section";
-import NewsSection from "@/components/home/news-section";
+import WhyChooseSection from "@/components/home/why-choose-section";
 
 const HomePage = () => {
   return (
     <div>
       <HeroSection />   
+      <StatSection />
       <TrendingCarousel />
       <CompassCoursesAndCertifications />
       <JobsTabs />
       <InternshipTabs />
       <SkillsCoursesAndDevelopment />
+      <WhyChooseSection />
       <Testimonial />
       <CompanyLogoSlider />
-      <NewsSection />
-      <NewsletterSection />
-
-      {/* <UniversitiesSection />
-      <CoursesExploreSection />
-      <FacultySection />
-      <WhyChooseSection />
-      <NewsSection />
-      <FaqsSection />
-      <CtaSection />
-      <ContactSection /> */}
     </div>
   );
 };
