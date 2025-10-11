@@ -9,8 +9,9 @@ import CompassCoursesAndCertifications from "@/components/home/campus-course-sec
 import SkillsCoursesAndDevelopment from "@/components/home/learn-skills-section";
 import InternshipTabs from "@/components/home/internship-section";
 import Testimonial from "@/components/home/testimonial-section";
-import { CompanyLogoSlider } from "@/components/home/company-slider";
+import CompanySection from  "@/components/home/company-section";
 import WhyChooseSection from "@/components/home/why-choose-section";
+import BannerSection from "@/components/home/banner-section"; 
 
 const HomePage = () => {
   return (
@@ -22,9 +23,10 @@ const HomePage = () => {
       <JobsTabs />
       <InternshipTabs />
       <SkillsCoursesAndDevelopment />
+      <BannerSection />
       <WhyChooseSection />
       <Testimonial />
-      <CompanyLogoSlider />
+      <CompanySection />
     </div>
   );
 };

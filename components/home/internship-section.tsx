@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import { motion } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import Image from "next/image"
 
 const categories = [
   "Big brands",
@@ -394,92 +394,85 @@ function InternshipsSection() {
             style={{ transform: `translateX(-${currentSlide * 33.333}%)` }}
           >
             {currentCards.slice(currentSlide * cardsPerSlide, currentSlide * cardsPerSlide + cardsPerSlide).map((item: InternshipItem, index: number) => (
-              <div key={`${item.id}-${index}`} className="w-1/3 flex-shrink-0 px-4">
-                <div className="cursor-pointer">
-                  <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden relative transition-all duration-500 hover:scale-[1.02] hover:border-primary/20">
+              <motion.div 
+                key={`${item.id}-${index}`} 
+                className="w-1/3 flex-shrink-0 px-4"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <motion.div 
+                  className="cursor-pointer group"
+                  whileHover={{ y: -5 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="relative bg-gradient-to-br from-purple-50/30 via-white to-pink-50/30 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-purple-100">
 
-                    {/* Hiring Badge - Absolute Positioned */}
-                    {item.isHiring && (
-                      <div className="absolute top-4 right-4 bg-indigo-400 text-white px-3.5 py-1.5 rounded-full text-sm font-semibold flex items-center gap-1.5 z-10 shadow-md shadow-teal-900/20">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path
-                            fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        Hiring
-                      </div>
-                    )}
+                    {/* Card Content */}
+                    <div className="p-5">
+                      
+                      {/* Actively Hiring Badge */}
+                      {item.isHiring && (
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 rounded-lg mb-3">
+                          <svg className="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                          </svg>
+                          <span className="text-xs font-semibold text-green-700">Actively hiring</span>
+                        </div>
+                      )}
 
-                    {/* Internship Content */}
-                    <div className="p-5 h-full flex flex-col">
-
-                      {/* Title */}
-                      <h4 className="text-lg font-semibold text-gray-900  line-clamp-2">
+                      {/* Internship Title */}
+                      <h4 className="text-lg font-bold text-gray-800 mb-1.5 line-clamp-2 leading-snug">
                         {item.title}
                       </h4>
 
-                      {/* Company Info */}
-                      <div className="flex items-center gap-3 mt-2">
-                        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center relative overflow-hidden">
-                          {item.companyLogo.startsWith("http") ? (
-                            <Image
-                              src={item.companyLogo || "/placeholder.svg"}
-                              alt={item.company}
-                              width={40}
-                              height={40}
-                              className="w-full h-full object-cover rounded-full"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = "none";
-                                target.nextElementSibling!.classList.remove("hidden");
-                              }}
-                            />
-                          ) : null}
-                          <span
-                            className={`text-xs font-bold text-primary absolute inset-0 flex items-center justify-center ${item.companyLogo.startsWith("http") ? "hidden" : ""}`}
-                          >
-                            {item.company.substring(0, 2).toUpperCase()}
-                          </span>
-                        </div>
-                        <div className="flex flex-col">
-                          <p className="text-xs text-gray-700 mb-0" style={{ marginBottom: "0px" }}>{item.company}</p>
-                          <p className="text-xs text-gray-500">{item.workType}</p>
-                        </div>
+                      {/* Company Name */}
+                      <p className="text-sm text-gray-500 mb-3">{item.company}</p>
+
+                      {/* Divider */}
+                      <div className="h-px bg-gradient-to-r from-transparent via-purple-200 to-transparent mb-3"></div>
+
+                      {/* Location */}
+                      <div className="flex items-center gap-1.5 mb-2.5">
+                        <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span className="text-sm text-gray-700">{item.workType}</span>
                       </div>
 
-                      {/* Salary & Duration */}
-                      <div className="flex flex-col gap-2 flex-1 mb-2">
-
-                        {/* Salary */}
-                        <div className="flex items-center gap-2 text-gray-700 text-sm bg-gray-50 px-2 py-1 rounded-md w-max">
-                         💲
-                          <span className="font-medium">{item.salary}</span>
-                        </div>
-
-                        {/* Duration */}
-                        <div className="flex items-center gap-2 text-gray-700 text-sm bg-gray-50 px-2 py-1 rounded-md w-max">
-                          🕗
-                          <span className="font-medium">{item.duration}</span>
-                        </div>
-
+                      {/* Salary */}
+                      <div className="flex items-center gap-1.5 mb-2.5">
+                        <svg className="w-4 h-4 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span className="text-sm text-gray-700">{item.salary}</span>
                       </div>
 
+                      {/* Duration */}
+                      <div className="flex items-center gap-1.5 mb-3">
+                        <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="text-sm text-gray-700">{item.duration}</span>
+                      </div>
 
-                      {/* Bottom Section */}
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500 font-medium">{item.type}</span>
-                        <button className="text-primary text-xs font-medium hover:text-primary/80 flex items-center gap-1">
+                      {/* Bottom: Internship Type + Apply Button */}
+                      <div className="flex items-center justify-between pt-3 border-t border-purple-100">
+                        <span className="px-2.5 py-1 bg-purple-50 text-purple-700 text-xs font-medium rounded-lg border border-purple-200">
+                          {item.type}
+                        </span>
+                        <button className="text-purple-600 text-sm font-semibold hover:text-purple-700 flex items-center gap-1 transition-colors">
                           Apply Now
-                          <ChevronRight className="w-3 h-3" />
+                          <ChevronRight className="w-4 h-4" />
                         </button>
                       </div>
 
                     </div>
                   </div>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
 
             ))}
           </div>
@@ -493,10 +486,16 @@ export default function InternshipOpportunities() {
   return (
     <section className="bg-gradient-to-b from-surface to-background py-16 px-4">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
           <h2 className="text-3xl md:text-5xl font-bold text-heading mb-4">Launch Your Career With Internships</h2>
           <p className="text-muted text-lg">Gain practical experience with leading companies</p>
-        </div>
+        </motion.div>
         <InternshipsSection />
       </div>
     </section>

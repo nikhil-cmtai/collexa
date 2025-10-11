@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import { motion } from "framer-motion"
 import { ChevronLeft, ChevronRight, Star, Clock, Users, Award } from "lucide-react"
-import Image from "next/image"
 
 // Campus Course categories
 const categories = [
@@ -32,7 +32,8 @@ const coursesData = {
       students: 1200,
       type: "B.Tech",
       isPopular: true,
-      category: "Computer Science"
+      category: "Computer Science",
+      description: "Master programming, algorithms, and software development"
     },
     {
       id: 2,
@@ -47,7 +48,8 @@ const coursesData = {
       students: 950,
       type: "B.Tech",
       isPopular: true,
-      category: "Mechanical"
+      category: "Mechanical",
+      description: "Learn design, manufacturing, and thermal systems"
     },
     {
       id: 3,
@@ -62,7 +64,8 @@ const coursesData = {
       students: 800,
       type: "B.Tech",
       isPopular: false,
-      category: "Civil"
+      category: "Civil",
+      description: "Build infrastructure and construction expertise"
     },
     {
       id: 4,
@@ -77,7 +80,8 @@ const coursesData = {
       students: 1100,
       type: "B.Tech",
       isPopular: true,
-      category: "Electrical"
+      category: "Electrical",
+      description: "Power systems, electronics, and control engineering"
     },
     {
       id: 5,
@@ -92,7 +96,8 @@ const coursesData = {
       students: 300,
       type: "M.Tech",
       isPopular: true,
-      category: "Computer Science"
+      category: "Computer Science",
+      description: "Advanced research in AI, ML, and distributed systems"
     },
     {
       id: 6,
@@ -107,7 +112,8 @@ const coursesData = {
       students: 250,
       type: "M.Tech",
       isPopular: false,
-      category: "Mechanical"
+      category: "Mechanical",
+      description: "Advanced manufacturing and thermal engineering"
     },
     {
       id: 7,
@@ -122,7 +128,8 @@ const coursesData = {
       students: 700,
       type: "B.Tech",
       isPopular: false,
-      category: "Chemical"
+      category: "Chemical",
+      description: "Process engineering and industrial chemistry"
     },
     {
       id: 8,
@@ -137,7 +144,8 @@ const coursesData = {
       students: 400,
       type: "B.Tech",
       isPopular: true,
-      category: "Aerospace"
+      category: "Aerospace",
+      description: "Aircraft design and space technology fundamentals"
     },
   ],
   Management: [
@@ -154,7 +162,8 @@ const coursesData = {
       students: 500,
       type: "BBA",
       isPopular: true,
-      category: "General Management"
+      category: "General Management",
+      description: "Foundation in business administration and leadership"
     },
     {
       id: 2,
@@ -169,7 +178,8 @@ const coursesData = {
       students: 400,
       type: "BBA",
       isPopular: true,
-      category: "Finance"
+      category: "Finance",
+      description: "Financial management and investment strategies"
     },
     {
       id: 3,
@@ -184,7 +194,8 @@ const coursesData = {
       students: 350,
       type: "BBA",
       isPopular: false,
-      category: "Marketing"
+      category: "Marketing",
+      description: "Brand management and consumer behavior insights"
     },
     {
       id: 4,
@@ -199,7 +210,8 @@ const coursesData = {
       students: 300,
       type: "MBA",
       isPopular: true,
-      category: "Finance"
+      category: "Finance",
+      description: "Advanced financial analysis and corporate strategy"
     },
     {
       id: 5,
@@ -214,7 +226,8 @@ const coursesData = {
       students: 280,
       type: "MBA",
       isPopular: true,
-      category: "Marketing"
+      category: "Marketing",
+      description: "Strategic marketing and digital transformation"
     },
     {
       id: 6,
@@ -229,7 +242,8 @@ const coursesData = {
       students: 250,
       type: "MBA",
       isPopular: false,
-      category: "Operations"
+      category: "Operations",
+      description: "Supply chain and operations excellence"
     },
     {
       id: 7,
@@ -244,7 +258,8 @@ const coursesData = {
       students: 200,
       type: "MBA",
       isPopular: false,
-      category: "Human Resources"
+      category: "Human Resources",
+      description: "Talent management and organizational development"
     },
     {
       id: 8,
@@ -259,7 +274,8 @@ const coursesData = {
       students: 150,
       type: "Executive MBA",
       isPopular: true,
-      category: "Executive"
+      category: "Executive",
+      description: "Leadership program for working professionals"
     }
   ],
   Technology: [
@@ -276,7 +292,8 @@ const coursesData = {
       students: 800,
       type: "BCA",
       isPopular: true,
-      category: "Computer Applications"
+      category: "Computer Applications",
+      description: "Learn software development and database management"
     },
     {
       id: 2,
@@ -291,7 +308,8 @@ const coursesData = {
       students: 600,
       type: "BCA",
       isPopular: true,
-      category: "Data Science"
+      category: "Data Science",
+      description: "Analytics, machine learning, and big data insights"
     },
     {
       id: 3,
@@ -306,7 +324,8 @@ const coursesData = {
       students: 400,
       type: "MCA",
       isPopular: true,
-      category: "Computer Applications"
+      category: "Computer Applications",
+      description: "Learn software development and database management"
     },
     {
       id: 4,
@@ -321,7 +340,8 @@ const coursesData = {
       students: 350,
       type: "MCA",
       isPopular: true,
-      category: "Data Science"
+      category: "Data Science",
+      description: "Analytics, machine learning, and big data insights"
     },
     {
       id: 5,
@@ -336,7 +356,8 @@ const coursesData = {
       students: 500,
       type: "M.Tech",
       isPopular: true,
-      category: "Data Science"
+      category: "Data Science",
+      description: "Analytics, machine learning, and big data insights"
     },
     {
       id: 6,
@@ -351,7 +372,8 @@ const coursesData = {
       students: 400,
       type: "M.Tech",
       isPopular: true,
-      category: "AI/ML"
+      category: "AI/ML",
+      description: "Artificial intelligence and machine learning technologies"
     },
     {
       id: 7,
@@ -366,7 +388,8 @@ const coursesData = {
       students: 350,
       type: "M.Tech",
       isPopular: false,
-      category: "Security"
+      category: "Security",
+      description: "Cybersecurity and information protection"
     },
     {
       id: 8,
@@ -381,7 +404,8 @@ const coursesData = {
       students: 300,
       type: "M.Tech",
       isPopular: true,
-      category: "Cloud"
+      category: "Cloud",
+      description: "Cloud computing and distributed systems"
     }
   ],
   Business: [
@@ -398,7 +422,8 @@ const coursesData = {
       students: 2000,
       type: "B.Com",
       isPopular: true,
-      category: "Commerce"
+      category: "Commerce",
+      description: "Accounting, finance, and business fundamentals"
     },
     {
       id: 2,
@@ -413,7 +438,8 @@ const coursesData = {
       students: 1500,
       type: "B.Com Hons",
       isPopular: true,
-      category: "Commerce"
+      category: "Commerce",
+      description: "Accounting, finance, and business fundamentals"
     },
     {
       id: 3,
@@ -428,7 +454,8 @@ const coursesData = {
       students: 800,
       type: "M.Com",
       isPopular: true,
-      category: "Commerce"
+      category: "Commerce",
+      description: "Accounting, finance, and business fundamentals"
     },
     {
       id: 4,
@@ -443,7 +470,8 @@ const coursesData = {
       students: 600,
       type: "M.Com",
       isPopular: true,
-      category: "Finance"
+      category: "Finance",
+      description: "Advanced finance and accounting practices"
     },
     {
       id: 5,
@@ -458,7 +486,8 @@ const coursesData = {
       students: 200,
       type: "Executive MBA",
       isPopular: true,
-      category: "Analytics"
+      category: "Analytics",
+      description: "Data-driven decision making and business intelligence"
     },
     {
       id: 6,
@@ -472,6 +501,7 @@ const coursesData = {
       rating: 4.7,
       students: 300,
       type: "Certificate",
+      description: "Professional certification program",
       isPopular: true,
       category: "Marketing"
     },
@@ -488,7 +518,8 @@ const coursesData = {
       students: 250,
       type: "Certificate",
       isPopular: false,
-      category: "Management"
+      category: "Management",
+      description: "Project management and operational efficiency"
     },
     {
       id: 8,
@@ -503,8 +534,8 @@ const coursesData = {
       students: 180,
       type: "Certificate",
       isPopular: false,
-      category: "Operations"
-    }
+      category: "Operations",
+      description: "Supply chain and operational excellence"    }
   ],
   Design: [
     {
@@ -520,7 +551,8 @@ const coursesData = {
       students: 150,
       type: "B.Des",
       isPopular: true,
-      category: "Visual Design"
+      category: "Visual Design",
+      description: "Creative design and visual communication"
     },
     {
       id: 2,
@@ -535,7 +567,8 @@ const coursesData = {
       students: 200,
       type: "B.Des",
       isPopular: true,
-      category: "Digital Design"
+      category: "Digital Design",
+      description: "User experience and interface design"
     },
     {
       id: 3,
@@ -550,7 +583,8 @@ const coursesData = {
       students: 80,
       type: "M.Des",
       isPopular: false,
-      category: "Industrial Design"
+      category: "Industrial Design",
+      description: "Product development and industrial aesthetics"
     },
     {
       id: 4,
@@ -565,7 +599,8 @@ const coursesData = {
       students: 300,
       type: "B.Des",
       isPopular: true,
-      category: "Fashion"
+      category: "Fashion",
+      description: "Fashion design and apparel technology"
     },
     {
       id: 5,
@@ -580,7 +615,8 @@ const coursesData = {
       students: 120,
       type: "M.Des",
       isPopular: true,
-      category: "Fashion"
+      category: "Fashion",
+      description: "Fashion design and apparel technology"
     },
     {
       id: 6,
@@ -595,7 +631,8 @@ const coursesData = {
       students: 180,
       type: "B.Des",
       isPopular: false,
-      category: "Interior Design"
+      category: "Interior Design",
+      description: "Space planning and interior aesthetics"
     },
     {
       id: 7,
@@ -610,7 +647,8 @@ const coursesData = {
       students: 160,
       type: "B.Des",
       isPopular: true,
-      category: "Animation"
+      category: "Animation",
+      description: "3D animation and visual effects"
     },
     {
       id: 8,
@@ -625,7 +663,8 @@ const coursesData = {
       students: 100,
       type: "M.Des",
       isPopular: true,
-      category: "Communication"
+      category: "Communication",
+      description: "Visual storytelling and brand communication"
     }
   ],
   Healthcare: [
@@ -642,7 +681,8 @@ const coursesData = {
       students: 200,
       type: "MBBS",
       isPopular: true,
-      category: "Medicine"
+      category: "Medicine",
+      description: "Medical practice and patient care"
     },
     {
       id: 2,
@@ -657,7 +697,8 @@ const coursesData = {
       students: 100,
       type: "MD",
       isPopular: true,
-      category: "Medicine"
+      category: "Medicine",
+      description: "Medical practice and patient care"
     },
     {
       id: 3,
@@ -672,7 +713,8 @@ const coursesData = {
       students: 300,
       type: "B.Sc Nursing",
       isPopular: true,
-      category: "Nursing"
+      category: "Nursing",
+      description: "Healthcare and nursing practice"
     },
     {
       id: 4,
@@ -687,7 +729,8 @@ const coursesData = {
       students: 150,
       type: "M.Sc Nursing",
       isPopular: false,
-      category: "Nursing"
+      category: "Nursing",
+      description: "Healthcare and nursing practice"
     },
     {
       id: 5,
@@ -702,7 +745,8 @@ const coursesData = {
       students: 250,
       type: "B.Pharm",
       isPopular: false,
-      category: "Pharmacy"
+      category: "Pharmacy",
+      description: "Pharmaceutical sciences and drug therapy"
     },
     {
       id: 6,
@@ -717,7 +761,8 @@ const coursesData = {
       students: 120,
       type: "M.Pharm",
       isPopular: false,
-      category: "Pharmacy"
+      category: "Pharmacy",
+      description: "Pharmaceutical sciences and drug therapy"
     },
     {
       id: 7,
@@ -732,7 +777,8 @@ const coursesData = {
       students: 180,
       type: "BPT",
       isPopular: false,
-      category: "Physiotherapy"
+      category: "Physiotherapy",
+      description: "Physical therapy and rehabilitation"
     },
     {
       id: 8,
@@ -747,7 +793,8 @@ const coursesData = {
       students: 100,
       type: "MPT",
       isPopular: false,
-      category: "Physiotherapy"
+      category: "Physiotherapy",
+      description: "Physical therapy and rehabilitation"
     }
   ],
   Arts: [
@@ -764,7 +811,8 @@ const coursesData = {
       students: 150,
       type: "BA",
       isPopular: true,
-      category: "English Literature"
+      category: "English Literature",
+      description: "Literary studies and critical analysis"
     },
     {
       id: 2,
@@ -779,7 +827,8 @@ const coursesData = {
       students: 80,
       type: "MA",
       isPopular: true,
-      category: "English Literature"
+      category: "English Literature",
+      description: "Literary studies and critical analysis"
     },
     {
       id: 3,
@@ -794,7 +843,8 @@ const coursesData = {
       students: 100,
       type: "BFA",
       isPopular: true,
-      category: "Visual Arts"
+      category: "Visual Arts",
+      description: "Fine arts and creative expression"
     },
     {
       id: 4,
@@ -809,7 +859,8 @@ const coursesData = {
       students: 50,
       type: "MFA",
       isPopular: false,
-      category: "Visual Arts"
+      category: "Visual Arts",
+      description: "Fine arts and creative expression"
     },
     {
       id: 5,
@@ -824,7 +875,8 @@ const coursesData = {
       students: 80,
       type: "BA",
       isPopular: false,
-      category: "Classical Music"
+      category: "Classical Music",
+      description: "Music theory and performance"
     },
     {
       id: 6,
@@ -839,7 +891,8 @@ const coursesData = {
       students: 40,
       type: "MA",
       isPopular: false,
-      category: "Classical Music"
+      category: "Classical Music",
+      description: "Music theory and performance"
     },
     {
       id: 7,
@@ -854,7 +907,8 @@ const coursesData = {
       students: 60,
       type: "BA",
       isPopular: false,
-      category: "Theatre"
+      category: "Theatre",
+      description: "Dramatic arts and performance studies"
     },
     {
       id: 8,
@@ -869,7 +923,8 @@ const coursesData = {
       students: 30,
       type: "MA",
       isPopular: false,
-      category: "Theatre"
+      category: "Theatre",
+      description: "Dramatic arts and performance studies"
     }
   ],
   Science: [
@@ -886,7 +941,8 @@ const coursesData = {
       students: 200,
       type: "B.Sc",
       isPopular: true,
-      category: "Physics"
+      category: "Physics",
+      description: "Fundamental physics and research"
     },
     {
       id: 2,
@@ -901,7 +957,8 @@ const coursesData = {
       students: 100,
       type: "M.Sc",
       isPopular: true,
-      category: "Physics"
+      category: "Physics",
+      description: "Fundamental physics and research"
     },
     {
       id: 3,
@@ -916,7 +973,8 @@ const coursesData = {
       students: 180,
       type: "B.Sc",
       isPopular: true,
-      category: "Chemistry"
+      category: "Chemistry",
+      description: "Chemical analysis and laboratory techniques"
     },
     {
       id: 4,
@@ -931,7 +989,8 @@ const coursesData = {
       students: 90,
       type: "M.Sc",
       isPopular: false,
-      category: "Chemistry"
+      category: "Chemistry",
+      description: "Chemical analysis and laboratory techniques"
     },
     {
       id: 5,
@@ -946,7 +1005,8 @@ const coursesData = {
       students: 150,
       type: "B.Sc",
       isPopular: false,
-      category: "Mathematics"
+      category: "Mathematics",
+      description: "Mathematical theory and applications"
     },
     {
       id: 6,
@@ -961,7 +1021,8 @@ const coursesData = {
       students: 80,
       type: "M.Sc",
       isPopular: true,
-      category: "Mathematics"
+      category: "Mathematics",
+      description: "Mathematical theory and applications"
     },
     {
       id: 7,
@@ -976,7 +1037,8 @@ const coursesData = {
       students: 220,
       type: "B.Sc",
       isPopular: true,
-      category: "Biology"
+      category: "Biology",
+      description: "Life sciences and biological research"
     },
     {
       id: 8,
@@ -991,7 +1053,8 @@ const coursesData = {
       students: 120,
       type: "M.Sc",
       isPopular: false,
-      category: "Biology"
+      category: "Biology",
+      description: "Life sciences and biological research"
     }
   ]
 }
@@ -1011,6 +1074,7 @@ interface CourseItem {
   type: string;
   isPopular: boolean;
   category: string;
+  description: string;
 }
 
 interface CoursesData {
@@ -1033,14 +1097,6 @@ function TabSection({ title, data, sectionType }: { title: string; data: Courses
     setCurrentSlide(0)
   }
 
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case "Beginner": return "text-secondary bg-secondary/10"
-      case "Intermediate": return "text-primary bg-primary/10"
-      case "Advanced": return "text-purple-600 bg-purple-50"
-      default: return "text-muted bg-muted/20"
-    }
-  }
 
   return (
     <div className="max-w-7xl mx-auto mb-16">
@@ -1086,74 +1142,104 @@ function TabSection({ title, data, sectionType }: { title: string; data: Courses
             style={{ transform: `translateX(-${currentSlide * 33.333}%)` }}
           >
             {currentCards.slice(currentSlide * cardsPerSlide, currentSlide * cardsPerSlide + cardsPerSlide).map((item: CourseItem, index: number) => (
-              <div key={`${item.id}-${index}`} className="w-1/3 flex-shrink-0 px-4">
-                <div className="cursor-pointer group">
-                  <div className="relative bg-white rounded-2xl border border-gray-100 shadow-md hover:shadow-lg transition-all duration-500 hover:scale-[1.03] overflow-hidden">
+              <motion.div 
+                key={`${item.id}-${index}`} 
+                className="w-1/3 flex-shrink-0 px-4"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <motion.div 
+                  className="cursor-pointer group"
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="relative bg-white rounded-2xl border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden flex">
+                    
+                    {/* Left Gradient Bar */}
+                    <div className="w-1 bg-secondary flex-shrink-0"></div>
 
-                    {/* Popular Badge */}
-                    {item.isPopular && (
-                      <div className="absolute top-4 right-4 bg-[var(--primary)]/70 text-white px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 z-10 shadow-md">
-                        <Award className="w-4 h-4 text-white" />
-                        Popular
+                    {/* Card Content */}
+                    <div className="p-5 flex-1">
+                      {/* Header Row */}
+                      <div className="flex items-start justify-between mb-3">
+                        {/* Left: Logo & Info */}
+                        <div className="flex items-center gap-3 flex-1">
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center text-xl shadow-sm flex-shrink-0">
+                            {item.instructorLogo}
+                          </div>
+                          <div className="flex flex-col min-w-0">
+                            <span className="text-sm font-bold text-gray-900">{item.instructor}</span>
+                            <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-semibold inline-block w-fit mt-1">{item.type}</span>
+                          </div>
+                        </div>
+                        
+                        {/* Right: Popular Badge */}
+                        {item.isPopular && (
+                          <div className="bg-green-50 text-green-700 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1 shadow-md flex-shrink-0">
+                            <Award className="w-3 h-3" />
+                            Top
+                          </div>
+                        )}
                       </div>
-                    )}
 
-                    {/* Card Inner */}
-                    <div className="p-10 flex flex-col h-full">
                       {/* Title */}
-                      <h4 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-2 group-hover:text-[var(--primary)] transition-colors duration-300">
+                      <h4 className="text-lg font-bold text-gray-900 mb-1.5 line-clamp-2 group-hover:text-[var(--primary)] transition-colors duration-300 leading-snug">
                         {item.title}
                       </h4>
 
-                      {/* Instructor Info */}
-                      <div className="flex items-center gap-3 mb-2">
-                        {/* Instructor Avatar */}
-                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-semibold text-gray-600">
-                          {item.instructorLogo}
-                        </div>
+                      {/* Short Description */}
+                      <p className="text-xs text-gray-500 mb-3 line-clamp-1">
+                        {item.description}
+                      </p>
 
-                        {/* Instructor Info */}
-                        <div className="flex flex-col">
-                          <p className="text-sm font-medium text-gray-800" style={{marginBottom:"0.1em"}}>{item.instructor}</p>
-                          <p className="text-xs text-gray-500">{item.category}</p>
+                      {/* Stats Grid - 3 columns */}
+                      <div className="grid grid-cols-3 gap-2">
+                        {/* Rating */}
+                        <div className="flex flex-col items-start p-2 bg-white rounded-lg border border-primary/40">
+                          <div className="flex flex-row items-center w-full">
+                            <Star className="w-6 h-6 text-yellow-400 mr-2" />
+                            <div className="flex flex-col">
+                              <span className="text-sm font-bold text-gray-800">{item.rating}</span>
+                              <span className="text-xs text-gray-500">Rating</span>
+                            </div>
+                          </div>
+                        </div>
+                        {/* Duration */}
+                        <div className="flex flex-col items-start p-2 bg-white rounded-lg border border-secondary/40">
+                          <div className="flex flex-row items-center w-full">
+                            <Clock className="w-6 h-6 text-blue-400 mr-2" />
+                            <div className="flex flex-col">
+                              <span className="text-xs font-bold text-gray-800">{item.duration}</span>
+                              <span className="text-xs text-gray-500">Duration</span>
+                            </div>
+                          </div>
+                        </div>
+                        {/* Students */}
+                        <div className="flex flex-col items-start p-2 bg-white rounded-lg border border-primary/40">
+                          <div className="flex flex-row items-center w-full">
+                            <Users className="w-6 h-6 text-purple-400 mr-2" />
+                            <div className="flex flex-col">
+                              <span className="text-xs font-bold text-gray-800">{item.students >= 1000 ? `${(item.students / 1000).toFixed(1)}k` : item.students}</span>
+                              <span className="text-xs text-gray-500">Enrolled</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
 
-
-                      {/* Stats Section */}
-                      <div className="space-y-2 flex-1">
-                        {/* Rating & Level */}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1.5">
-                            <Star className="w-3.5 h-3.5 text-yellow-500 fill-current" />
-                            <span className="text-xs font-medium text-gray-700">{item.rating}</span>
-                            <span className="text-xs text-gray-500">({item.students.toLocaleString()})</span>
-                          </div>
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${getLevelColor(
-                              item.level
-                            )}`}
-                          >
+                      {/* Level Badge at Bottom */}
+                      <div className="mt-3 pt-3 border-t border-gray-100">
+                        <div className="flex items-center justify-center">
+                          <span className="px-3 py-1 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 text-xs font-semibold rounded-full border border-gray-200">
                             {item.level}
                           </span>
-                        </div>
-
-                        {/* Duration */}
-                        <div className="flex items-center gap-2 text-xs text-gray-600">
-                          <Clock className="w-3.5 h-3.5 text-gray-400" />
-                          <span>{item.duration}</span>
-                        </div>
-
-                        {/* Students */}
-                        <div className="flex items-center gap-2 text-xs text-gray-600">
-                          <Users className="w-3.5 h-3.5 text-gray-400" />
-                          <span>{item.students.toLocaleString()} students</span>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -1180,14 +1266,20 @@ export default function CompassCoursesAndCertifications() {
       </div>
 
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
           <h2 className="text-3xl md:text-5xl font-bold text-heading mb-4">
             Campus Courses
           </h2>
           <p className="text-muted text-lg">
             Discover courses and certifications from industry experts for your campus
           </p>
-        </div>
+        </motion.div>
         <TabSection title="" data={coursesData} sectionType="courses" />
         {/* <TabSection title="Professional Certifications" data={certificationsData} sectionType="certifications" /> */}
       </div>

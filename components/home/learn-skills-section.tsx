@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { ChevronLeft, ChevronRight, Star, Clock, Users, Award } from "lucide-react"
+import { motion } from "framer-motion"
+import { ChevronLeft, ChevronRight, Star, Clock, Award } from "lucide-react"
 
 // Skills categories
 const skillCategories = [
@@ -552,15 +553,6 @@ function TabSection({ title, data }: { title: string; data: SkillsCoursesData; s
     setCurrentSlide(0)
   }
 
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case "Beginner": return "text-secondary bg-secondary/10"
-      case "Intermediate": return "text-primary bg-primary/10"
-      case "Advanced": return "text-purple-600 bg-purple-50"
-      default: return "text-muted bg-muted/20"
-    }
-  }
-
   return (
     <div className="max-w-7xl mx-auto">
       <div className="overflow-x-auto justify-center items-center">
@@ -602,90 +594,78 @@ function TabSection({ title, data }: { title: string; data: SkillsCoursesData; s
             style={{ transform: `translateX(-${currentSlide * 33.333}%)` }}
           >
             {currentCards.slice(currentSlide * cardsPerSlide, currentSlide * cardsPerSlide + cardsPerSlide).map((item: SkillCourseItem, index: number) => (
-              <div
+              <motion.div
                 key={`${item.id}-${index}`}
-                className="w-1/3 flex-shrink-0 px-3"
+                className="w-1/3 flex-shrink-0 px-4"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <div className="cursor-pointer">
-                  <div className="relative bg-white rounded-2xl border border-gray-100 shadow-md hover:shadow-lg transition-all duration-500 hover:scale-[1.03] overflow-hidden">
+                <motion.div 
+                  className="cursor-pointer group"
+                  whileHover={{ y: -5 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="relative bg-gradient-to-br from-primary/5 via-white to-primary/10 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-primary/20">
 
-                    {/* Popular Badge */}
-                    {item.isPopular && (
-                      <div className="absolute top-3 right-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-md z-10">
-                        <Award className="w-3.5 h-3.5" />
-                        <span>Popular</span>
+                    {/* Card Content */}
+                    <div className="p-5">
+                      
+                      {/* Top Row: Popular Badge + Level */}
+                      <div className="flex items-center justify-between mb-3">
+                        {item.isPopular && (
+                          <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 border border-primary/30 rounded-md">
+                            <Award className="w-3 h-3 text-primary" />
+                            <span className="text-xs font-semibold text-primary">Popular</span>
+                          </div>
+                        )}
+                        {!item.isPopular && <div></div>}
+                        <span className="px-2 py-0.5 bg-secondary/10 text-secondary text-xs font-medium rounded-md border border-secondary/30">
+                          {item.level}
+                        </span>
                       </div>
-                    )}
 
-                    {/* Card Body */}
-                    <div className="p-4 flex flex-col h-full">
-
-                      {/* Title */}
-                      <h4 className="text-sm md:text-lg font-semibold text-gray-900 mt-2 mb-2 line-clamp-2 leading-snug">
+                      {/* Course Title */}
+                      <h4 className="text-lg font-bold text-heading mb-1.5 line-clamp-2 leading-snug">
                         {item.title}
                       </h4>
 
-                      {/* Instructor Info */}
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center text-xs font-semibold text-gray-700">
-                          {item.instructorLogo}
-                        </div>
+                      {/* Instructor */}
+                      <p className="text-sm text-muted mb-3">{item.instructor}</p>
+
+                      {/* Divider */}
+                      <div className="h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent mb-3"></div>
+
+                      {/* Rating */}
+                      <div className="flex items-center gap-1.5 mb-2.5">
+                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                        <span className="text-sm font-semibold text-heading">{item.rating}</span>
+                        <span className="text-sm text-muted">({item.students >= 1000 ? `${(item.students / 1000).toFixed(1)}k` : item.students} students)</span>
+                      </div>
+
+                      {/* Duration */}
+                      <div className="flex items-center gap-1.5 mb-3">
+                        <Clock className="w-4 h-4 text-primary/70" />
+                        <span className="text-sm text-text">{item.duration} • {item.category}</span>
+                      </div>
+
+                      {/* Bottom: Price + Enroll Button */}
+                      <div className="flex items-center justify-between pt-3 border-t border-primary/20">
                         <div className="flex flex-col">
-                          <p className="text-sm font-medium text-gray-800 leading-tight" style={{marginBottom:'0px'}}>{item.instructor}</p>
-                          <p className="text-[11px] text-gray-500">{item.category}</p>
+                          <span className="text-lg font-bold text-primary">{item.price}</span>
+                          <span className="text-xs text-muted line-through">{item.originalPrice}</span>
                         </div>
-                      </div>
-
-                      {/* Stats Section */}
-                      <div className="flex flex-col gap-2 flex-1">
-
-                        {/* Rating & Level */}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1">
-                            <Star className="w-3.5 h-3.5 text-yellow-400 fill-current" />
-                            <span className="text-xs font-semibold text-gray-700">{item.rating}</span>
-                            <span className="text-[11px] text-gray-500">({item.students.toLocaleString()})</span>
-                          </div>
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${getLevelColor(
-                              item.level
-                            )}`}
-                          >
-                            {item.level}
-                          </span>
-                        </div>
-
-                        {/* Duration */}
-                        <div className="flex items-center gap-1.5 text-gray-600 text-xs">
-                          <Clock className="w-3.5 h-3.5 text-secondary" />
-                          <span>{item.duration}</span>
-                        </div>
-
-                        {/* Students */}
-                        <div className="flex items-center gap-1.5 text-gray-600 text-xs">
-                          <Users className="w-3.5 h-3.5 text-primary" />
-                          <span>{item.students.toLocaleString()} students</span>
-                        </div>
-                      </div>
-
-                      {/* Footer Section */}
-                      <div className="flex items-center justify-between mt-4 pt-2 border-t border-gray-100">
-                        <span className="text-[11px] text-gray-500 font-medium tracking-wide">
-                          {item.type}
-                        </span>
-                        <button className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all duration-300 shadow-md hover:opacity-90 hover:shadow-lg">
-                          Start Learning
-                          <ChevronRight className="w-3 h-3" />
+                        <button className="text-primary text-sm font-semibold hover:text-primary/80 flex items-center gap-1 transition-colors">
+                          Enroll Now
+                          <ChevronRight className="w-4 h-4" />
                         </button>
                       </div>
 
                     </div>
                   </div>
-                </div>
-              </div>
-
-
-
+                </motion.div>
+              </motion.div>
 
             ))}
           </div>
@@ -700,14 +680,20 @@ export default function SkillsCoursesAndDevelopment() {
   return (
     <section className="bg-gradient-to-b from-surface to-background py-16 px-4">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
           <h2 className="text-3xl md:text-5xl font-bold text-heading mb-4">
             What skills do you want to develop?
           </h2>
           <p className="text-muted text-lg">
             Master professional skills and boost your career with expert-led courses
           </p>
-        </div>
+        </motion.div>
         <TabSection title=" Skills Courses" data={skillsCoursesData} sectionType="skills" />
       </div>
     </section>

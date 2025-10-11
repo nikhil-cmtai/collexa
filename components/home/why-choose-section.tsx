@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { ChevronLeft, ChevronRight, Search, GraduationCap, Sparkles, Handshake, Users, Award, Zap, Target, Shield, TrendingUp } from "lucide-react";
+import { motion } from "framer-motion";
+import { GraduationCap, Sparkles, Handshake, Users, Award, Target } from "lucide-react";
 
 // Why Choose Collexa Points with enhanced visuals
 const whyChoosePoints = [
@@ -80,107 +81,82 @@ const whyChoosePoints = [
 ];
 
 const WhyChooseSection = () => {
-  const [currentSlide, setCurrentSlide] = React.useState(0);
-  const cardsPerSlide = 3;
-  const totalSlides = Math.ceil(whyChoosePoints.length / cardsPerSlide);
-
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % totalSlides);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
-
   return (
-    <section className="bg-gradient-to-b from-background to-primary/5 py-16">
+    <section className="py-20">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold mb-6">
-            <Zap className="w-4 h-4" />
+        <motion.div 
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="text-3xl md:text-5xl font-bold text-heading mb-6">
             Why Choose Collexa?
-          </div>
-          <h2 className="text-4xl md:text-6xl font-bold text-heading mb-6 leading-tight">
-            The <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Smart Choice</span> for Your Career
           </h2>
-          <p className="text-xl text-muted max-w-3xl mx-auto leading-relaxed">
-            No confusion, only clarity! Compare, match, and win with India&apos;s most trusted education platform that has transformed <span className="font-bold text-primary">50,000+ careers</span>.
+          <p className="text-lg text-muted max-w-3xl mx-auto leading-relaxed">
+            Your trusted partner for educational guidance and career success
           </p>
-        </div>
+        </motion.div>
 
-        <div className="relative">
-          {/* Left Navigation Button */}
-          <button
-            onClick={prevSlide}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
-          >
-            <ChevronLeft className="w-5 h-5 text-gray-600" />
-          </button>
-
-          {/* Right Navigation Button */}
-          <button
-            onClick={nextSlide}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
-          >
-            <ChevronRight className="w-5 h-5 text-gray-600" />
-          </button>
-
-          <div className="overflow-hidden rounded-3xl py-12">
-            <div
-              className="flex transition-transform duration-700 ease-in-out"
-              style={{ transform: `translateX(-${currentSlide * 33.333}%)` }}
-            >
-              {whyChoosePoints.slice(currentSlide * cardsPerSlide, currentSlide * cardsPerSlide + cardsPerSlide).map((point, index) => {
-                const Icon = point.icon;
-                return (
-                  <div key={`${point.id}-${index}`} className="w-1/3 flex-shrink-0 px-4">
-                    <div className="cursor-pointer group">
-                      <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden transition-all duration-500 hover:scale-[1.05] hover:shadow-2xl relative border border-gray-100/50 hover:border-primary/30">
-                        {/* Badge */}
-                        <div className="absolute top-4 right-4 z-10">
-                          <span className={`bg-gradient-to-r ${point.gradient} text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-1`}>
-                            <span className="text-sm">{point.emoji}</span>
-                            {point.badge}
-                          </span>
-                        </div>
-
-                        {/* Header with Gradient Background */}
-                        <div className={`bg-gradient-to-br ${point.bgGradient} p-8 relative overflow-hidden`}>
-                          {/* Decorative Elements */}
-                          <div className="absolute top-0 right-0 w-20 h-20 bg-white/20 rounded-full -translate-y-10 translate-x-10"></div>
-                          <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full translate-y-8 -translate-x-8"></div>
-                          
-                          <div className="relative z-10 flex flex-col items-center text-center">
-                            <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${point.gradient} flex items-center justify-center shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                              <Icon className="w-10 h-10 text-white" />
-                            </div>
-                            <h4 className="text-xl font-bold text-gray-900 mb-2">
-                              {point.title}
-                            </h4>
-                            <div className={`text-sm font-semibold bg-gradient-to-r ${point.gradient} bg-clip-text text-transparent`}>
-                              {point.stats}
-                            </div>
-                            <div className="text-xs text-gray-600 mt-1 font-medium">
-                              {point.highlight}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {/* Content Section */}
-                        <div className="p-6">
-                          <p className="text-gray-600 leading-relaxed mb-6 text-center">
-                            {point.description}
-                          </p>
-                          
-                          <div className="flex items-center justify-center">
-                            <button className={`bg-gradient-to-r ${point.gradient} text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2`}>
-                              Explore More
-                              <TrendingUp className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+        {/* Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16">
+          {whyChoosePoints.map((point, index) => {
+            const Icon = point.icon;
+            const isPrimary = index % 2 === 0;
+            
+            return (
+              <motion.div 
+                key={point.id} 
+                className="group relative"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                {/* Feature Item */}
+                <motion.div 
+                  className="flex flex-col items-center text-center p-8 rounded-2xl hover:bg-white/50 transition-all duration-300"
+                  whileHover={{ y: -5 }}
+                >
+                  {/* Icon Circle with pulse effect */}
+                  <div className="relative mb-8">
+                    {/* Outer glow ring */}
+                    <div className={`absolute inset-0 ${isPrimary ? 'bg-primary/5' : 'bg-secondary/5'} rounded-full scale-150 group-hover:scale-[1.7] transition-transform duration-500`}></div>
+                    
+                    {/* Main icon container */}
+                    <motion.div 
+                      className={`relative w-24 h-24 rounded-full bg-gradient-to-br ${isPrimary ? 'from-primary/10 to-primary/5' : 'from-secondary/10 to-secondary/5'} flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg transition-all duration-300 border-2 ${isPrimary ? 'border-primary/20' : 'border-secondary/20'}`}
+                      whileHover={{ rotate: 360 }}
+                      transition={{ duration: 0.6 }}
+                    >
+                      <Icon className={`w-12 h-12 ${isPrimary ? 'text-primary' : 'text-secondary'}`} />
+                    </motion.div>
                   </div>
-                );
-              })}
-            </div>
-          </div>
+
+                  {/* Content */}
+                  <h3 className="text-2xl font-bold text-heading mb-3">
+                    {point.title}
+                  </h3>
+                  <p className={`text-base font-semibold ${isPrimary ? 'text-primary' : 'text-secondary'} mb-4`}>
+                    {point.stats}
+                  </p>
+                  <p className="text-base text-muted leading-relaxed max-w-sm">
+                    {point.description}
+                  </p>
+                  
+                  {/* Decorative bottom element */}
+                  <motion.div 
+                    className={`mt-6 w-12 h-1 bg-gradient-to-r from-transparent ${isPrimary ? 'via-primary/50' : 'via-secondary/50'} to-transparent rounded-full`}
+                    initial={{ width: 0 }}
+                    whileInView={{ width: 48 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
+                  ></motion.div>
+                </motion.div>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

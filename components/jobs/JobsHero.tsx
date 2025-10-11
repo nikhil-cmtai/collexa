@@ -38,7 +38,7 @@ export default function JobsHero() {
 
             <p className="mt-4 text-[15px] md:text-base text-[var(--muted-text)] leading-relaxed max-w-md">
               Explore thousands of verified jobs and internships from leading
-              companies. Whether you're a student, fresher, or experienced
+              companies. Whether you&apos;re a student, fresher, or experienced
               professional — find your next big role effortlessly.
             </p>
 

@@ -1,6 +1,7 @@
 "use client"
 import React from 'react';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 // Type definitions
 interface AvatarProps {
@@ -82,25 +83,25 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ author, text, href, c
   return (
     <Card
       {...(href ? { href, target: "_blank", rel: "noopener noreferrer" } : {})}
-      className={`flex flex-col rounded-lg border-t bg-gradient-to-b from-surface to-background p-4 text-start sm:p-6 hover:from-surface/80 hover:to-surface/50 max-w-[320px] sm:max-w-[320px] transition-colors duration-300 border border-border shadow-sm hover:shadow-md ${className}`}
+      className={`flex flex-col rounded-2xl bg-white p-6 text-start max-w-[340px] h-[220px] transition-all duration-300 border border-border shadow-sm hover:border-primary/30 ${className}`}
     >
-      <div className="flex items-center gap-3">
-        <Avatar className="h-12 w-12">
+      <div className="flex items-center gap-3 mb-4">
+        <Avatar className="h-12 w-12 ring-2 ring-primary/10">
           <AvatarImage src={author.avatar} alt={author.name} />
           <AvatarFallback>
             {author.name.split(' ').map((n: string) => n[0]).join('')}
           </AvatarFallback>
         </Avatar>
         <div className="flex flex-col items-start">
-          <h3 className="text-md font-semibold leading-none text-heading">
+          <h3 className="text-base font-bold leading-none text-heading">
             {author.name}
           </h3>
-          <p className="text-sm text-muted">
+          <p className="text-sm text-muted mt-1">
             {author.handle}
           </p>
         </div>
       </div>
-      <p className="sm:text-md mt-4 text-sm text-text">
+      <p className="text-sm text-text leading-relaxed line-clamp-4">
         {text}
       </p>
     </Card>
@@ -110,49 +111,72 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ author, text, href, c
 // Testimonials Section Component
 const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ title, description, testimonials, className = "" }) => {
   return (
-    <section className={`bg-background text-text py-12 sm:py-24 md:py-32 px-0 ${className}`}>
-      <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 text-center sm:gap-16">
-        <div className="flex flex-col items-center gap-4 px-4 sm:gap-8">
-          <div className="flex flex-col items-center gap-2">
+    <section className={`relative bg-gradient-to-b from-surface to-background text-text py-20 px-0 overflow-hidden ${className}`}>
+      <div className="mx-auto flex max-w-7xl flex-col items-center gap-16 text-center">
+        <motion.div 
+          className="flex flex-col items-center gap-8 px-4"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="flex flex-col items-center gap-4">
             
-            {/* Title with underline */}
-            <h2 className="relative inline-block max-w-[720px] text-3xl font-semibold leading-tight sm:text-5xl sm:leading-tight text-heading">
+            {/* Title */}
+            <h2 className="max-w-[720px] text-3xl font-bold leading-tight sm:text-5xl sm:leading-tight text-heading">
               {title}
-              <span className="absolute bottom-[-8px] left-0 w-full h-[6px] rounded-full 
-                bg-gradient-to-r from-[#18bba6] to-[#163683] opacity-90 rotate-[-1deg]"></span>
             </h2>
 
           </div>
-          <p className="text-md max-w-[600px] font-medium text-muted sm:text-xl">
+          <p className="text-lg max-w-[600px] text-muted leading-relaxed">
             {description}
           </p>
-        </div>
+        </motion.div>
         
-        <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
+        <div className="relative flex w-full flex-col items-center justify-center gap-8">
+          {/* First Row: Left to Right */}
           <div 
-            className="group flex overflow-hidden p-2 gap-4 flex-row"
+            className="group flex overflow-hidden p-2 gap-6 flex-row"
             style={{
               '--duration': '40s',
-              '--gap': '1rem'
+              '--gap': '1.5rem'
             } as React.CSSProperties}
           >
             <div 
-              className="flex shrink-0 justify-around gap-4 flex-row animate-[marquee_40s_linear_infinite] group-hover:[animation-play-state:paused]"
+              className="flex shrink-0 justify-around gap-6 flex-row animate-[marquee_40s_linear_infinite] group-hover:[animation-play-state:paused]"
             >
               {[...Array(3)].map((_, setIndex) => (
-                testimonials.map((testimonial: TestimonialCardProps, i: number) => (
+                testimonials.slice(0, Math.ceil(testimonials.length / 2)).map((testimonial: TestimonialCardProps, i: number) => (
                   <TestimonialCard 
-                    key={`${setIndex}-${i}`}
+                    key={`row1-${setIndex}-${i}`}
                     {...testimonial}
                   />
                 ))
               ))}
             </div>
           </div>
-          
-          {/* Gradient overlays */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-1/3 bg-gradient-to-r from-background sm:block" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/3 bg-gradient-to-l from-background sm:block" />
+
+          {/* Second Row: Right to Left */}
+          <div 
+            className="group flex overflow-hidden p-2 gap-6 flex-row"
+            style={{
+              '--duration': '40s',
+              '--gap': '1.5rem'
+            } as React.CSSProperties}
+          >
+            <div 
+              className="flex shrink-0 justify-around gap-6 flex-row animate-[marquee-reverse_40s_linear_infinite] group-hover:[animation-play-state:paused]"
+            >
+              {[...Array(3)].map((_, setIndex) => (
+                testimonials.slice(Math.ceil(testimonials.length / 2)).map((testimonial: TestimonialCardProps, i: number) => (
+                  <TestimonialCard 
+                    key={`row2-${setIndex}-${i}`}
+                    {...testimonial}
+                  />
+                ))
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>

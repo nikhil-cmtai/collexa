@@ -8,9 +8,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronDown, 
   X, 
-  GraduationCap, 
-  Briefcase, 
-  Zap,
   Home,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -19,9 +16,19 @@ import { cn } from '@/lib/utils';
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  navigationData: {
+    [key: string]: {
+      icon: React.ElementType;
+      items: Array<{
+        title: string;
+        items: Array<{ title: string; href: string }>;
+        badge?: string;
+      }>;
+    };
+  };
 }
 
-const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
+const MobileMenu = ({ isOpen, onClose, navigationData }: MobileMenuProps) => {
   const pathname = usePathname();
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
 
@@ -38,162 +45,6 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
       return pathname === '/';
     }
     return pathname.startsWith(href);
-  };
-
-  // Navigation data
-  const navigationData = {
-    "Campus Courses": {
-      icon: GraduationCap,
-      items: [
-        { title: "Engineering Courses", items: [
-          { title: "B.Tech Computer Science", href: "/campus-courses/btech-cs" },
-          { title: "B.Tech Electronics", href: "/campus-courses/btech-electronics" },
-          { title: "B.Tech Mechanical", href: "/campus-courses/btech-mechanical" },
-          { title: "M.Tech Programs", href: "/campus-courses/mtech" },
-          { title: "Diploma Engineering", href: "/campus-courses/diploma" }
-        ]},
-        { title: "Management Courses", items: [
-          { title: "MBA Programs", href: "/campus-courses/mba" },
-          { title: "BBA Programs", href: "/campus-courses/bba" },
-          { title: "PGDM", href: "/campus-courses/pgdm" },
-          { title: "Executive MBA", href: "/campus-courses/executive-mba" }
-        ]},
-        { title: "Computer Science", items: [
-          { title: "B.Sc Computer Science", href: "/campus-courses/bsc-cs" },
-          { title: "M.Sc Computer Science", href: "/campus-courses/msc-cs" },
-          { title: "BCA", href: "/campus-courses/bca" },
-          { title: "MCA", href: "/campus-courses/mca" }
-        ]},
-        { title: "Data Science", items: [
-          { title: "B.Sc Data Science", href: "/campus-courses/bsc-data-science" },
-          { title: "M.Sc Data Science", href: "/campus-courses/msc-data-science" },
-          { title: "AI/ML Programs", href: "/campus-courses/ai-ml" },
-          { title: "Business Analytics", href: "/campus-courses/business-analytics" }
-        ]},
-        { title: "Design Courses", items: [
-          { title: "B.Des Programs", href: "/campus-courses/bdes" },
-          { title: "M.Des Programs", href: "/campus-courses/mdes" },
-          { title: "Fashion Design", href: "/campus-courses/fashion-design" },
-          { title: "Interior Design", href: "/campus-courses/interior-design" }
-        ]}
-      ]
-    },
-    "Internships": {
-      icon: Briefcase,
-      items: [
-        { title: "Tech Internships", items: [
-          { title: "Software Development", href: "/internship/software-dev" },
-          { title: "Web Development", href: "/internship/web-dev" },
-          { title: "Mobile App Development", href: "/internship/mobile-dev" },
-          { title: "Data Science", href: "/internship/data-science" },
-          { title: "AI/ML", href: "/internship/ai-ml" },
-          { title: "Cybersecurity", href: "/internship/cybersecurity" }
-        ]},
-        { title: "Marketing Internships", items: [
-          { title: "Digital Marketing", href: "/internship/digital-marketing" },
-          { title: "Content Creation", href: "/internship/content-creation" },
-          { title: "Social Media Marketing", href: "/internship/social-media" },
-          { title: "SEO/SEM", href: "/internship/seo-sem" },
-          { title: "Brand Management", href: "/internship/brand-management" }
-        ]},
-        { title: "Finance Internships", items: [
-          { title: "Investment Banking", href: "/internship/investment-banking" },
-          { title: "Financial Analysis", href: "/internship/financial-analysis" },
-          { title: "Risk Management", href: "/internship/risk-management" },
-          { title: "Corporate Finance", href: "/internship/corporate-finance" }
-        ]},
-        { title: "Design Internships", items: [
-          { title: "UI/UX Design", href: "/internship/ui-ux" },
-          { title: "Graphic Design", href: "/internship/graphic-design" },
-          { title: "Product Design", href: "/internship/product-design" },
-          { title: "Web Design", href: "/internship/web-design" }
-        ]},
-        { title: "Business Internships", items: [
-          { title: "Business Development", href: "/internship/business-dev" },
-          { title: "Operations", href: "/internship/operations" },
-          { title: "Strategy", href: "/internship/strategy" },
-          { title: "Consulting", href: "/internship/consulting" }
-        ]}
-      ]
-    },
-    "Jobs": {
-      icon: Briefcase,
-      items: [
-        { title: "Top Locations", items: [
-          { title: "Work from Home", href: "/jobs/work-from-home" },
-          { title: "Jobs in Delhi", href: "/jobs/delhi" },
-          { title: "Jobs in Mumbai", href: "/jobs/mumbai" },
-          { title: "Jobs in Bangalore", href: "/jobs/bangalore" },
-          { title: "Jobs in Hyderabad", href: "/jobs/hyderabad" },
-          { title: "Jobs in Kolkata", href: "/jobs/kolkata" },
-          { title: "Jobs in Chennai", href: "/jobs/chennai" },
-          { title: "Jobs in Pune", href: "/jobs/pune" },
-          { title: "Jobs in Jaipur", href: "/jobs/jaipur" }
-        ]},
-        { title: "Top Categories", items: [
-          { title: "Software Engineer", href: "/jobs/software-engineer" },
-          { title: "Data Analyst", href: "/jobs/data-analyst" },
-          { title: "Product Manager", href: "/jobs/product-manager" },
-          { title: "Marketing Specialist", href: "/jobs/marketing-specialist" },
-          { title: "UI/UX Designer", href: "/jobs/ui-ux-designer" },
-          { title: "DevOps Engineer", href: "/jobs/devops-engineer" },
-          { title: "Business Analyst", href: "/jobs/business-analyst" },
-          { title: "Sales Executive", href: "/jobs/sales-executive" }
-        ]},
-        { title: "Explore More Jobs", items: [
-          { title: "View all jobs", href: "/jobs" },
-          { title: "Remote Jobs", href: "/jobs/remote" },
-          { title: "Part-time Jobs", href: "/jobs/part-time" },
-          { title: "Freelance Jobs", href: "/jobs/freelance" }
-        ]},
-        { title: "Placement Courses with AI", badge: "NEW", items: [
-          { title: "AI Placement Course", href: "/courses/ai-placement" },
-          { title: "Data Science Bootcamp", href: "/courses/data-science" },
-          { title: "Full Stack Development", href: "/courses/fullstack" },
-          { title: "Digital Marketing", href: "/courses/digital-marketing" }
-        ]}
-      ]
-    },
-    "Learn Skills": {
-      icon: Zap,
-      items: [
-        { title: "Programming Languages", items: [
-          { title: "Python Masterclass", href: "/skill-based-course/python" },
-          { title: "JavaScript Deep Dive", href: "/skill-based-course/javascript" },
-          { title: "Java Programming", href: "/skill-based-course/java" },
-          { title: "C++ Programming", href: "/skill-based-course/cpp" },
-          { title: "Go Programming", href: "/skill-based-course/go" }
-        ]},
-        { title: "Web Development", items: [
-          { title: "React Development", href: "/skill-based-course/react" },
-          { title: "Node.js Backend", href: "/skill-based-course/nodejs" },
-          { title: "Full Stack Development", href: "/skill-based-course/fullstack" },
-          { title: "Next.js Framework", href: "/skill-based-course/nextjs" },
-          { title: "Vue.js Development", href: "/skill-based-course/vuejs" }
-        ]},
-        { title: "Data Science & AI", items: [
-          { title: "Machine Learning", href: "/skill-based-course/machine-learning" },
-          { title: "Deep Learning", href: "/skill-based-course/deep-learning" },
-          { title: "Data Analytics", href: "/skill-based-course/data-analytics" },
-          { title: "Big Data", href: "/skill-based-course/big-data" },
-          { title: "AI Fundamentals", href: "/skill-based-course/ai-fundamentals" }
-        ]},
-        { title: "Digital Marketing", items: [
-          { title: "SEO Mastery", href: "/skill-based-course/seo" },
-          { title: "Google Ads", href: "/skill-based-course/google-ads" },
-          { title: "Social Media Marketing", href: "/skill-based-course/social-media" },
-          { title: "Content Marketing", href: "/skill-based-course/content-marketing" },
-          { title: "Email Marketing", href: "/skill-based-course/email-marketing" }
-        ]},
-        { title: "Design Skills", items: [
-          { title: "UI/UX Design", href: "/skill-based-course/ui-ux" },
-          { title: "Figma Mastery", href: "/skill-based-course/figma" },
-          { title: "Adobe Creative Suite", href: "/skill-based-course/adobe" },
-          { title: "Web Design", href: "/skill-based-course/web-design" },
-          { title: "Motion Graphics", href: "/skill-based-course/motion-graphics" }
-        ]}
-      ]
-    }
   };
 
   return (
@@ -226,7 +77,9 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
           >
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200/30 bg-white flex-shrink-0">
-            <Link href="/" className="flex items-center space-x-3 group" onClick={onClose}>
+            <Link href="/" className="flex items-center space-x-3 group" onClick={() => {
+              setTimeout(() => onClose(), 100);
+            }}>
               <Image 
                 src="/logo.png" 
                 alt="Collexa" 
@@ -257,7 +110,9 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                     ? "text-primary font-semibold" 
                     : "text-gray-800 hover:text-primary"
                 )}
-                onClick={onClose}
+                onClick={() => {
+                  setTimeout(() => onClose(), 100);
+                }}
               >
                 <Home className="mr-4 h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
                 Home
@@ -333,7 +188,9 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                                       "block px-4 py-2 text-sm text-gray-600 hover:text-primary transition-all duration-300",
                                       isActive(item.href) && "text-primary font-medium"
                                     )}
-                                    onClick={onClose}
+                                    onClick={() => {
+                                      setTimeout(() => onClose(), 100);
+                                    }}
                                   >
                                     {item.title}
                                   </Link>
@@ -359,7 +216,9 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 variant="outline"
                 className="w-full bg-white hover:bg-white text-secondary border-2 border-primary font-bold py-4 rounded-lg transition-all duration-300 hover:border-secondary hover:text-primary hover:shadow-lg hover:shadow-primary/25 hover:scale-105"
               >
-                <Link href="/login" onClick={onClose}>
+                <Link href="/login" onClick={() => {
+                  setTimeout(() => onClose(), 100);
+                }}>
                   Login / Signup
                 </Link>
               </Button>
