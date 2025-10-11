@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import MobileMenu from './mobile-menu';
 
 const Header = () => {
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const pathname = usePathname();
@@ -194,12 +195,7 @@ const Header = () => {
     ]
   };
 
-  const CategoryDropdown = ({ 
-    title, 
-    icon: Icon, 
-    data, 
-    dropdownKey 
-  }: { 
+  const CategoryDropdown = ({ title, icon: Icon, data,  dropdownKey  } : { 
     title: string; 
     icon: React.ElementType; 
     data: { categories: Array<{ title: string; items: Array<{ title: string; href: string }>; badge?: string }> }; 
@@ -286,17 +282,18 @@ const Header = () => {
               {(activeCategory || data.categories[0]) && (
                 <div className="space-y-2">
                   {data.categories.find(cat => cat.title === (activeCategory || data.categories[0].title))?.items.map((item, index) => (
-                    <Link
+                    <Link 
                       key={index}
-                      href={item.href}
+                      href={`${item.href}`}
                       className="block px-3 py-2 text-sm text-gray-700 hover:text-primary hover:bg-primary/5 transition-all duration-200 rounded-md"
-                      onClick={() => setActiveDropdown(null)}
+                      onClick={() =>setActiveDropdown(null)}
                     >
                       {item.title}
                     </Link>
                   ))}
                 </div>
               )}
+             
             </div>
           </div>
 

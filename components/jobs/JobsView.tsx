@@ -35,7 +35,7 @@ export default function JobsView({ presetLocation, presetType, presetQuery }: { 
   })
 
   return (
-    <div className="min-h-[70vh] bg-[var(--surface)]">
+    <div className="min-h-[70vh] ">
       <JobsHero />
       <JobsHighlights />
       <JobsHowItWorks />

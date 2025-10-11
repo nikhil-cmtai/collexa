@@ -1,64 +1,119 @@
 "use client"
 
-import React from "react"
+import React, { useEffect } from "react"
 import Image from "next/image"
-import jobHero from "@/public/images/job-hero.jpg"
+import AOS from "aos"
+import "aos/dist/aos.css"
+import careerHero from "@/public/img/image6.png"
 
 export default function JobsHero() {
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      easing: "ease-in-out",
+      once: true,
+    })
+  }, [])
+
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10 pb-4">
-      <div className="relative overflow-hidden rounded-3xl border border-[var(--border-color)] bg-gradient-to-br from-white to-blue-50 p-6 md:p-10">
-        <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.25),transparent_60%)]" />
-        <div className="absolute -bottom-16 -left-16 h-60 w-60 rounded-full bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.22),transparent_60%)]" />
+    <section className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-2">
+      <div
+        className="relative overflow-hidden rounded-3xl  p-2 md:p-5 "
+        data-aos="fade-up"
+      >
+        {/* Decorative Orbs */}
+        {/* <div className="absolute -top-24 -right-28 h-80 w-80 rounded-full bg-[radial-gradient(circle_at_center,rgba(14,165,233,0.2),transparent_70%)]" />
+        <div className="absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.15),transparent_70%)]" /> */}
 
-        <div className="relative grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          <div>
-          <span className="inline-flex items-center gap-2 rounded-full bg-blue-50 text-blue-700 px-3 py-1 text-xs font-semibold border border-blue-100">
-            Trusted by students and freshers
-          </span>
-          <h1 className="mt-3 text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-[var(--heading-color)]">
-            Find your first job faster with curated campus roles
-          </h1>
-          <p className="mt-3 text-[15px] md:text-base text-[var(--muted-text)] leading-relaxed">
-            Explore entry-level jobs and internships tailored for students and recent graduates. Filter by
-            location, role type, and more — all in one place.
-          </p>
-          <div className="mt-6 flex flex-wrap items-center gap-3 text-sm">
-            <div className="inline-flex items-center gap-2 rounded-md border border-[var(--border-color)] bg-white px-3 py-2">
-              <span className="h-2 w-2 rounded-full bg-green-500" /> Verified listings
+        {/* Grid Content */}
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          {/* Text Section */}
+          <div className="flex flex-col" data-aos="fade-right">
+
+            <h1 className="mt-5 text-2xl md:text-4xl font-extrabold leading-tight tracking-tight text-[var(--heading-color)]">
+              Discover top{" "}
+              <span className="text-blue-600">career opportunities</span> that
+              match your skills
+            </h1>
+
+            <p className="mt-4 text-[15px] md:text-base text-[var(--muted-text)] leading-relaxed max-w-md">
+              Explore thousands of verified jobs and internships from leading
+              companies. Whether you're a student, fresher, or experienced
+              professional — find your next big role effortlessly.
+            </p>
+
+            {/* Highlights */}
+            <div
+              className="mt-6 flex flex-wrap items-center gap-3 text-sm"
+              data-aos="fade-up"
+              data-aos-delay="100"
+            >
+              {[
+                { color: "bg-emerald-500", text: "Verified employers" },
+                { color: "bg-blue-500", text: "Smart job matches" },
+                { color: "bg-indigo-500", text: "Real-time alerts" },
+              ].map((feature, index) => (
+                <div
+                  key={index}
+                  className="inline-flex items-center gap-2 rounded-md border border-[var(--border-color)] bg-white/90 backdrop-blur px-3 py-2 shadow-sm hover:shadow-md transition-all"
+                >
+                  <span className={`h-2 w-2 rounded-full ${feature.color}`} />
+                  {feature.text}
+                </div>
+              ))}
             </div>
-            <div className="inline-flex items-center gap-2 rounded-md border border-[var(--border-color)] bg-white px-3 py-2">
-              <span className="h-2 w-2 rounded-full bg-blue-500" /> Remote & Onsite
-            </div>
-            <div className="inline-flex items-center gap-2 rounded-md border border-[var(--border-color)] bg-white px-3 py-2">
-              <span className="h-2 w-2 rounded-full bg-purple-500" /> AI-powered filters
+
+            {/* CTA Buttons */}
+            <div
+              className="mt-8 flex flex-wrap gap-4"
+              data-aos="fade-up"
+              data-aos-delay="200"
+            >
+              <button className="px-5 py-3 rounded-xl bg-blue-600 text-white text-sm font-semibold shadow-md hover:bg-blue-700 transition-all">
+                Explore Jobs
+              </button>
+              <button className="px-5 py-3 rounded-xl bg-white border border-[var(--border-color)] text-gray-700 text-sm font-semibold hover:bg-gray-50 transition-all">
+                Post a Job
+              </button>
             </div>
           </div>
-          </div>
 
-          <div className="relative">
-            <div className="relative h-64 md:h-80 lg:h-96 rounded-2xl overflow-hidden shadow-xl ring-1 ring-black/5 bg-white">
+          {/* Image Section */}
+          <div className="relative" data-aos="fade-left" data-aos-delay="100">
+            <div className="relative h-72 md:h-96 rounded-2xl overflow-hidden shadow-xl ring-1 ring-black/5 bg-white">
               <Image
-                src={jobHero}
-                alt="Students exploring campus jobs"
+                src={careerHero}
+                alt="Professionals collaborating in modern office"
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                 className="object-cover"
               />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-black/30 via-black/5 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
             </div>
 
-            {/* Floating stats */}
-            <div className="absolute -bottom-4 left-4 right-4 grid grid-cols-2 gap-3">
-              <div className="rounded-xl bg-white/90 backdrop-blur border border-[var(--border-color)] p-3 shadow-sm">
-                <p className="text-[11px] text-[var(--muted-text)]">Active openings</p>
-                <p className="text-sm font-semibold text-[var(--heading-color)]">1,200+ this week</p>
-              </div>
-              <div className="rounded-xl bg-white/90 backdrop-blur border border-[var(--border-color)] p-3 shadow-sm">
-                <p className="text-[11px] text-[var(--muted-text)]">Avg. time to apply</p>
-                <p className="text-sm font-semibold text-[var(--heading-color)]">Under 2 minutes</p>
-              </div>
+            {/* Floating Stats */}
+            <div
+              className="absolute -bottom-5 left-1/2 -translate-x-1/2 grid grid-cols-2 gap-4 w-[85%]"
+              data-aos="fade-up"
+              data-aos-delay="300"
+            >
+              {[
+                { label: "Active listings", value: "2,800+ jobs" },
+                { label: "Companies hiring", value: "500+ verified" },
+              ].map((stat, index) => (
+                <div
+                  key={index}
+                  className="rounded-xl bg-white/90 backdrop-blur-md border border-[var(--border-color)] p-4 text-center shadow-md hover:shadow-lg transition-all"
+                >
+                  <p className="text-[11px] text-[var(--muted-text)]">
+                    {stat.label}
+                  </p>
+                  <p className="text-sm font-semibold text-[var(--heading-color)] mt-0.5">
+                    {stat.value}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -66,5 +121,3 @@ export default function JobsHero() {
     </section>
   )
 }
-
-
