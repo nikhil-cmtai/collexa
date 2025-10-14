@@ -1,95 +1,286 @@
 "use client"
 
-import React, { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { useAppDispatch, useAppSelector, RootState } from "@/lib/redux/store"
-import { fetchCourses, setCourseLevel, setCourseMode, setCourseQuery, setSelectedCourse, Course } from "@/lib/redux/features/coursesSlice"
+import React, { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { Search, Filter, GraduationCap, Clock, MapPin, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks"
+import { fetchCourses, setCourseLevel, setCourseMode, setCourseQuery, Course } from "@/lib/redux/features/coursesSlice"
+import CampusCourseCard from "./CampusCourseCard"
 import CampusHero from "./Hero"
 import Highlights from "./Highlights"
 import FAQs from "./FAQs"
 import CTA from "./CTA"
-import ApplicationForm from "./ApplicationForm"
 
 export default function CoursesView({ presetQuery, presetLevel, presetMode }: { presetQuery?: string; presetLevel?: string; presetMode?: string }) {
-  const router = useRouter()
   const dispatch = useAppDispatch()
-  const { items, status, query, level, mode } = useAppSelector((s: RootState) => s.courses)
+  const { items: courses, status, query, level, mode } = useAppSelector((state) => state.courses)
 
-  useEffect(() => {
-    if (status === "idle") {
-      dispatch(fetchCourses({ q: presetQuery, level: presetLevel, mode: presetMode }))
-    }
-  }, [dispatch, status, presetQuery, presetLevel, presetMode])
+  // Local state for additional filters
+  const [showFilters, setShowFilters] = useState(false)
+  const [duration, setDuration] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 9
 
+  // Fetch courses on component mount
   useEffect(() => {
-    dispatch(setCourseQuery(presetQuery || ""))
-    dispatch(setCourseLevel(presetLevel || ""))
-    dispatch(setCourseMode(presetMode || ""))
+    dispatch(fetchCourses({ q: presetQuery, level: presetLevel, mode: presetMode }))
+  }, [dispatch])
+
+  // Set preset values
+  useEffect(() => {
+    if (presetQuery) dispatch(setCourseQuery(presetQuery))
+    if (presetLevel) dispatch(setCourseLevel(presetLevel))
+    if (presetMode) dispatch(setCourseMode(presetMode))
   }, [dispatch, presetQuery, presetLevel, presetMode])
 
-  const handleViewDetails = (course: Course) => {
-    dispatch(setSelectedCourse(course))
-    router.push(`/campus-courses/${course.id}`)
-  }
+  // Filter courses based on search criteria
+  const filtered = (courses || []).filter((course) => {
+    const matchesQuery = 
+      course.title.toLowerCase().includes(query.toLowerCase()) ||
+      course.university.toLowerCase().includes(query.toLowerCase()) ||
+      course.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()));
+    
+    const matchesLevel = 
+      !level || course.level.toLowerCase().includes(level.toLowerCase());
+    
+    const matchesMode = 
+      !mode || course.mode.toLowerCase().includes(mode.toLowerCase());
+    
+    const matchesDuration = 
+      !duration || course.duration.toLowerCase().includes(duration.toLowerCase());
 
-  const filtered = items.filter((c) => {
-    const haystack = (c.title + " " + c.university + " " + c.tags.join(" ")).toLowerCase()
-    const byQuery = query ? haystack.includes(query.toLowerCase()) : true
-    const byLevel = level ? c.level.toLowerCase() === level.toLowerCase() : true
-    const byMode = mode ? c.mode.toLowerCase().includes(mode.toLowerCase()) : true
-    return byQuery && byLevel && byMode
-  })
+    return matchesQuery && matchesLevel && matchesMode && matchesDuration;
+  });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentCourses = filtered.slice(startIndex, endIndex);
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Prevent scroll to top
+    window.scrollTo({ top: window.scrollY, behavior: 'smooth' });
+  };
+
+  // Clear all filters
+  const clearFilters = () => {
+    dispatch(setCourseQuery(""));
+    dispatch(setCourseLevel(""));
+    dispatch(setCourseMode(""));
+    setDuration("");
+    setCurrentPage(1);
+  };
 
   return (
-    <>
+    <div className="min-h-[70vh]">
       <CampusHero />
       <Highlights />
-      <section id="courses" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-      <div className="rounded-2xl p-6 bg-white border border-[var(--border-color)]">
-        <h1 className="text-2xl font-bold text-[var(--heading-color)]">Campus Courses</h1>
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-3">
-          <input value={query} onChange={(e) => dispatch(setCourseQuery(e.target.value))} placeholder="Search by title or university" className="rounded-lg px-4 py-3 text-[15px] bg-white border border-[var(--border-color)]" />
-          <input value={level} onChange={(e) => dispatch(setCourseLevel(e.target.value))} placeholder="Level (UG/PG/Executive)" className="rounded-lg px-4 py-3 text-[15px] bg-white border border-[var(--border-color)]" />
-          <input value={mode} onChange={(e) => dispatch(setCourseMode(e.target.value))} placeholder="Mode (Online/Distance/Hybrid)" className="rounded-lg px-4 py-3 text-[15px] bg-white border border-[var(--border-color)]" />
-          <button onClick={() => dispatch(fetchCourses({ q: query, level, mode }))} className="rounded-lg px-6 py-3 text-sm font-semibold bg-[var(--primary)] text-white">Search</button>
-        </div>
-      </div>
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((c) => (
-          <div key={c.id} className="rounded-xl border border-[var(--border-color)] bg-white p-5 shadow-sm">
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="text-lg font-semibold">{c.title}</h3>
-                <p className="text-sm text-[var(--muted-text)] mt-1">{c.university} • {c.level} • {c.mode}</p>
-              </div>
-              <span className="text-xs px-2 py-1 rounded bg-[var(--secondary)] text-white">{c.duration}</span>
-            </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {c.tags.map((t) => (
-                <span key={t} className="rounded-full bg-[var(--surface)] border border-[var(--border-color)] px-2.5 py-1 text-xs">{t}</span>
-              ))}
-            </div>
-            <div className="mt-4 flex justify-between">
-              <ApplicationForm courseTitle={c.title} university={c.university}>
-                <button className="text-sm font-semibold text-white bg-[var(--primary)] rounded-md px-4 py-2 hover:bg-[var(--primary)]/90 transition-colors">
-                  Apply
-                </button>
-              </ApplicationForm>
-              <button 
-                onClick={() => handleViewDetails(c)}
-                className="text-sm font-medium text-[var(--primary)] hover:underline"
-              >
-                View details
-              </button>
+      {/* Campus Courses Listings */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="rounded-2xl p-6 md:p-8 bg-white"
+        >
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-heading mb-3">
+              Discover <span className="text-primary">Campus Courses</span>
+            </h2>
+            <p className="text-lg text-muted max-w-2xl mx-auto">
+              Find the perfect courses and programs from top universities and institutions
+            </p>
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative mb-6">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
+              <input 
+                value={query} 
+                onChange={(e) => dispatch(setCourseQuery(e.target.value))} 
+                placeholder="Search by course, university, or specialization..." 
+                className="w-full rounded-xl pl-12 pr-4 py-3 text-base bg-white text-text border border-border focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all duration-300" 
+              />
             </div>
           </div>
-        ))}
-      </div>
+
+          {/* Filter Toggle */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center gap-2 px-3 py-2 bg-primary/5 text-primary rounded-lg hover:bg-primary/10 transition-all duration-300"
+              >
+                <Filter className="w-4 h-4" />
+                Advanced Filters
+              </button>
+              <span className="text-sm text-muted">
+                {filtered.length} courses found
+              </span>
+            </div>
+            <button
+              onClick={clearFilters}
+              className="text-sm text-muted hover:text-primary transition-colors duration-300"
+            >
+              Clear all filters
+            </button>
+          </div>
+
+          {/* Advanced Filters */}
+          <motion.div
+            initial={false}
+            animate={{ height: showFilters ? "auto" : 0, opacity: showFilters ? 1 : 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-4 bg-primary/5 rounded-xl border border-primary/20">
+              <div className="relative">
+                <GraduationCap className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-4 h-4" />
+                <input 
+                  value={level} 
+                  onChange={(e) => dispatch(setCourseLevel(e.target.value))} 
+                  placeholder="Level (UG/PG/Executive)" 
+                  className="w-full rounded-lg pl-10 pr-4 py-2.5 bg-white text-text border border-border focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all duration-300" 
+                />
+              </div>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-4 h-4" />
+                <input 
+                  value={mode} 
+                  onChange={(e) => dispatch(setCourseMode(e.target.value))} 
+                  placeholder="Mode (Online/Distance/Hybrid)" 
+                  className="w-full rounded-lg pl-10 pr-4 py-2.5 bg-white text-text border border-border focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all duration-300" 
+                />
+              </div>
+              <div className="relative">
+                <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-4 h-4" />
+                <input 
+                  value={duration} 
+                  onChange={(e) => setDuration(e.target.value)} 
+                  placeholder="Duration" 
+                  className="w-full rounded-lg pl-10 pr-4 py-2.5 bg-white text-text border border-border focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all duration-300" 
+                />
+              </div>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-4 h-4" />
+                <input 
+                  placeholder="Specialization" 
+                  className="w-full rounded-lg pl-10 pr-4 py-2.5 bg-white text-text border border-border focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all duration-300" 
+                />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center justify-center gap-4">
+            <button 
+              onClick={() => dispatch(fetchCourses({ q: query, level, mode }))} 
+              className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors duration-300"
+            >
+              Search Courses
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Courses Grid */}
+        <div className="mt-12">
+          {status === "loading" && (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <p className="mt-4 text-muted">Loading courses…</p>
+            </div>
+          )}
+          {status === "failed" && (
+            <div className="text-center py-12">
+              <p className="text-red-600 text-lg">Failed to load courses</p>
+              <button 
+                onClick={() => dispatch(fetchCourses({ q: query, level, mode }))}
+                className="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          )}
+
+          {status === "succeeded" && currentCourses.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-muted text-lg">No courses found matching your criteria</p>
+              <button 
+                onClick={clearFilters}
+                className="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Clear Filters
+              </button>
+            </div>
+          )}
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {currentCourses.map((course, index) => (
+              <CampusCourseCard key={course.id} course={course} index={index} />
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-8 flex items-center justify-center">
+              <div className="flex items-center gap-1 bg-white rounded-lg p-1 border border-border">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300 rounded-md hover:bg-primary/5"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Previous
+                </button>
+                
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 ${
+                        currentPage === page
+                          ? "bg-primary text-white"
+                          : "text-muted hover:text-primary hover:bg-primary/5"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                </div>
+                
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300 rounded-md hover:bg-primary/5"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Results Summary */}
+          {filtered.length > 0 && (
+            <div className="mt-8 text-center">
+              <p className="text-sm text-muted">
+                Showing {startIndex + 1}-{Math.min(endIndex, filtered.length)} of {filtered.length} courses
+              </p>
+            </div>
+          )}
+        </div>
       </section>
       <FAQs />
       <CTA />
-    </>
+    </div>
   )
 }
 

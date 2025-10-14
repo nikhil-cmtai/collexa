@@ -2,6 +2,7 @@
 
 import React from "react"
 import Image from "next/image"
+import { motion } from "framer-motion"
 import campusHero from "@/public/images/campus-courses/hero.jpg"
 
 export default function CampusHero() {
@@ -21,19 +22,39 @@ export default function CampusHero() {
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
         <div className="max-w-3xl">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[var(--primary)]/20 bg-white/70 backdrop-blur px-3 py-1 text-xs font-medium text-[var(--muted-text)] shadow-sm">
+          <motion.span 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/70 backdrop-blur px-3 py-1 text-xs font-medium text-muted shadow-sm"
+          >
             Campus Learning
-          </span>
-          <h1 className="mt-4 text-4xl md:text-5xl font-extrabold leading-tight text-[var(--heading-color)]">
+          </motion.span>
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="mt-4 text-4xl md:text-5xl font-extrabold leading-tight text-heading"
+          >
             Explore Accredited Campus Courses
-          </h1>
-          <p className="mt-3 text-[var(--text-color)]/80 text-lg">
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mt-3 text-text/80 text-lg"
+          >
             Discover undergraduate, postgraduate and diploma programs from reputed universities. Compare durations, modes and specializations.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <a href="#courses" className="px-6 py-3 rounded-full text-[var(--primary-foreground)] font-semibold shadow hover:brightness-110">Browse Courses</a>
-            <a href="#why" className="px-6 py-3 rounded-full border border-[var(--border-color)] bg-white text-[var(--heading-color)] font-semibold hover:bg-[var(--surface)]">Why Collexa?</a>
-          </div>
+          </motion.p>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-6 flex flex-wrap gap-3"
+          >
+            <a href="#courses" className="px-6 py-3 rounded-full bg-primary !text-white font-semibold shadow hover:bg-primary/90 transition-colors">Browse Courses</a>
+            <a href="#why" className="px-6 py-3 rounded-full border border-border bg-white text-heading font-semibold hover:bg-muted/50 transition-colors">Why Collexa?</a>
+          </motion.div>
         </div>
       </div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--background)]/50 to-transparent" />

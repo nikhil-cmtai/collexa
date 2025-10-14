@@ -7,7 +7,6 @@ import {
   MapPin, 
   Clock, 
   DollarSign, 
-  Briefcase, 
   Building2, 
   Users, 
   Calendar,
@@ -16,21 +15,28 @@ import {
   CheckCircle2,
   Send,
   FileText,
-  Award,
-  Target
+  Target,
+  GraduationCap
 } from "lucide-react"
 import Link from "next/link"
-import { useAppSelector } from "@/lib/redux/hooks"
-import type { Job } from "@/lib/redux/features/jobsSlice"
+import { Internship } from "@/lib/redux/features/internshipsSlice"
 
-// Extended job interface for detailed view
-interface DetailedJob extends Job {
+// Extended internship interface for detailed view
+interface DetailedInternship {
+  id: number
+  title: string
+  company: string
+  location: string
+  type: string
+  stipend: string
+  postedAt: string
+  tags: string[]
   description: string
   requirements: string[]
   responsibilities: string[]
   benefits: string[]
+  duration: string
   experience: string
-  salary: string
   companyInfo: {
     name: string
     description: string
@@ -41,11 +47,25 @@ interface DetailedJob extends Job {
   }
 }
 
-// Mock detailed job data - in real app, this would come from API
-const getDetailedJobData = (job: Job): DetailedJob => {
-  const detailedData: Record<string, Partial<DetailedJob>> = {
-    "j-1": {
-      description: "We are looking for a passionate Frontend Developer Intern to join our dynamic team. You will work on building modern web applications using React and TypeScript, gaining hands-on experience in a fast-paced startup environment.",
+// Sample internship data
+const internships = [
+  { id: 1, title: "Frontend Developer Intern", company: "Aviraj Infotech", location: "Remote", type: "Internship", stipend: "₹10,000 / month", postedAt: "2 days ago", tags: ["React", "JavaScript", "CSS"] },
+  { id: 2, title: "Data Analyst Intern", company: "TechNova Analytics", location: "Bengaluru", type: "Internship", stipend: "₹12,000 / month", postedAt: "5 days ago", tags: ["Python", "Excel", "SQL"] },
+  { id: 3, title: "UI/UX Design Intern", company: "DesignStudio", location: "Pune", type: "Internship", stipend: "₹8,000 / month", postedAt: "1 week ago", tags: ["Figma", "Prototyping", "User Research"] },
+  { id: 4, title: "Backend Developer Intern", company: "CodeCrafters", location: "Mumbai", type: "Internship", stipend: "₹15,000 / month", postedAt: "3 days ago", tags: ["Node.js", "Express", "MongoDB"] },
+  { id: 5, title: "Machine Learning Intern", company: "AI Labs", location: "Remote", type: "Internship", stipend: "₹20,000 / month", postedAt: "6 days ago", tags: ["Python", "TensorFlow", "ML"] },
+  { id: 6, title: "Marketing Intern", company: "BrandHive", location: "Delhi", type: "Internship", stipend: "₹7,000 / month", postedAt: "2 weeks ago", tags: ["SEO", "Content Marketing", "Social Media"] },
+  { id: 7, title: "Full Stack Developer Intern", company: "TechWave", location: "Bengaluru", type: "Internship", stipend: "₹18,000 / month", postedAt: "1 day ago", tags: ["React", "Node.js", "MongoDB"] },
+  { id: 8, title: "Graphic Design Intern", company: "Creative Minds", location: "Chennai", type: "Internship", stipend: "₹6,000 / month", postedAt: "4 days ago", tags: ["Photoshop", "Illustrator", "Figma"] },
+  { id: 9, title: "Business Analyst Intern", company: "BizSolutions", location: "Hyderabad", type: "Internship", stipend: "₹9,000 / month", postedAt: "5 days ago", tags: ["Excel", "SQL", "PowerBI"] },
+  { id: 10, title: "Content Writing Intern", company: "WriteRight", location: "Remote", type: "Internship", stipend: "₹5,000 / month", postedAt: "1 week ago", tags: ["Copywriting", "Blogging", "SEO"] }
+]
+
+// Mock detailed internship data
+const getDetailedInternshipData = (internship: Internship): DetailedInternship => {
+  const detailedData: Record<number, Partial<DetailedInternship>> = {
+    1: {
+      description: "Join our frontend development team as an intern and work on cutting-edge web applications using React and modern JavaScript frameworks. Gain hands-on experience in building responsive user interfaces.",
       requirements: [
         "Basic knowledge of React.js and JavaScript",
         "Understanding of HTML5, CSS3, and responsive design",
@@ -70,56 +90,19 @@ const getDetailedJobData = (job: Job): DetailedJob => {
         "Potential full-time offer",
         "Learning and development opportunities"
       ],
+      duration: "3 months",
       experience: "0-1 years",
-      salary: "₹15,000/mo",
       companyInfo: {
-        name: "Acme Labs",
-        description: "Acme Labs is a cutting-edge technology company focused on innovative software solutions and digital transformation.",
+        name: "Aviraj Infotech",
+        description: "Aviraj Infotech is a leading technology company focused on innovative software solutions and digital transformation.",
         size: "50-100 employees",
         industry: "Information Technology",
         founded: "2018",
-        website: "www.acmelabs.com"
+        website: "www.avirajinfotech.com"
       }
     },
-    "j-2": {
-      description: "Join our backend team as a Junior Backend Engineer and work on scalable server-side applications. You'll be responsible for developing APIs, managing databases, and ensuring system reliability.",
-      requirements: [
-        "Proficiency in Node.js and Express.js",
-        "Experience with MongoDB or similar NoSQL databases",
-        "Understanding of RESTful API design",
-        "Knowledge of authentication and authorization",
-        "Familiarity with cloud platforms (AWS/GCP)",
-        "Strong problem-solving and debugging skills"
-      ],
-      responsibilities: [
-        "Develop and maintain backend services and APIs",
-        "Design and implement database schemas",
-        "Ensure application security and performance",
-        "Collaborate with frontend developers",
-        "Write comprehensive tests for backend services",
-        "Monitor and optimize application performance"
-      ],
-      benefits: [
-        "Competitive salary package",
-        "Health insurance coverage",
-        "Professional development budget",
-        "Flexible work arrangements",
-        "Modern development tools and equipment",
-        "Career growth opportunities"
-      ],
-      experience: "1-2 years",
-      salary: "₹6-10 LPA",
-      companyInfo: {
-        name: "Nimbus Tech",
-        description: "Nimbus Tech specializes in cloud-based solutions and enterprise software development.",
-        size: "100-500 employees",
-        industry: "Cloud Computing",
-        founded: "2015",
-        website: "www.nimbustech.com"
-      }
-    },
-    "j-3": {
-      description: "We are seeking a Data Analyst Intern to help us extract insights from large datasets and support data-driven decision making across the organization.",
+    2: {
+      description: "Work with our data analytics team to extract insights from large datasets and support data-driven decision making. Learn advanced analytics tools and techniques in a real-world environment.",
       requirements: [
         "Basic knowledge of SQL and Excel",
         "Understanding of data analysis concepts",
@@ -144,56 +127,19 @@ const getDetailedJobData = (job: Job): DetailedJob => {
         "Networking opportunities",
         "Potential full-time conversion"
       ],
+      duration: "4 months",
       experience: "0-1 years",
-      salary: "₹12,000/mo",
       companyInfo: {
-        name: "Quantia",
-        description: "Quantia is a data-driven company specializing in business intelligence and analytics solutions.",
+        name: "TechNova Analytics",
+        description: "TechNova Analytics specializes in data-driven solutions and business intelligence for enterprises.",
         size: "100-200 employees",
         industry: "Data Analytics",
         founded: "2017",
-        website: "www.quantia.com"
+        website: "www.technovaanalytics.com"
       }
     },
-    "j-4": {
-      description: "Join our marketing team as a Marketing Associate and help drive brand awareness and customer acquisition through innovative marketing strategies.",
-      requirements: [
-        "Bachelor's degree in Marketing or related field",
-        "Knowledge of SEO and content marketing",
-        "Experience with social media platforms",
-        "Strong written and verbal communication skills",
-        "Creative thinking and problem-solving abilities",
-        "Familiarity with marketing analytics tools"
-      ],
-      responsibilities: [
-        "Develop and execute marketing campaigns",
-        "Create engaging content for various channels",
-        "Manage social media presence and engagement",
-        "Analyze marketing metrics and optimize performance",
-        "Collaborate with design and sales teams",
-        "Stay updated with marketing trends and best practices"
-      ],
-      benefits: [
-        "Competitive salary and performance bonuses",
-        "Health insurance and wellness programs",
-        "Professional development opportunities",
-        "Creative and collaborative work environment",
-        "Flexible working arrangements",
-        "Career advancement opportunities"
-      ],
-      experience: "1-3 years",
-      salary: "₹4-7 LPA",
-      companyInfo: {
-        name: "BrightWave",
-        description: "BrightWave is a leading digital marketing agency helping businesses grow through innovative marketing strategies.",
-        size: "50-100 employees",
-        industry: "Digital Marketing",
-        founded: "2016",
-        website: "www.brightwave.com"
-      }
-    },
-    "j-5": {
-      description: "We are looking for a creative UX/UI Designer Intern to join our design team and help create beautiful, user-friendly digital experiences.",
+    3: {
+      description: "Join our design team and work on creating beautiful, user-friendly digital experiences. Learn from experienced designers and contribute to real client projects.",
       requirements: [
         "Basic knowledge of Figma and design principles",
         "Understanding of user experience design",
@@ -218,21 +164,21 @@ const getDetailedJobData = (job: Job): DetailedJob => {
         "Certificate of completion",
         "Potential full-time offer"
       ],
+      duration: "3 months",
       experience: "0-1 years",
-      salary: "₹10,000/mo",
       companyInfo: {
-        name: "Designify",
-        description: "Designify is a creative design studio specializing in user experience and interface design for digital products.",
+        name: "DesignStudio",
+        description: "DesignStudio is a creative design agency specializing in user experience and interface design for digital products.",
         size: "20-50 employees",
         industry: "Design",
         founded: "2019",
-        website: "www.designify.com"
+        website: "www.designstudio.com"
       }
     }
   }
 
-  const defaultData: Partial<DetailedJob> = {
-    description: "We are looking for a talented professional to join our team. This role offers excellent growth opportunities and the chance to work with cutting-edge technologies.",
+  const defaultData: Partial<DetailedInternship> = {
+    description: "We are looking for a talented intern to join our team. This internship offers excellent learning opportunities and hands-on experience in a professional environment.",
     requirements: [
       "Relevant educational background",
       "Strong analytical and problem-solving skills",
@@ -248,51 +194,49 @@ const getDetailedJobData = (job: Job): DetailedJob => {
       "Continuous learning and skill development"
     ],
     benefits: [
-      "Competitive compensation",
-      "Health and wellness benefits",
-      "Professional development opportunities",
-      "Flexible work environment",
-      "Career advancement prospects"
+      "Hands-on professional experience",
+      "Mentorship from industry experts",
+      "Certificate of completion",
+      "Networking opportunities",
+      "Potential full-time offer"
     ],
-    experience: "1-3 years",
-    salary: job.stipend || "As per industry standards",
+    duration: "3 months",
+    experience: "0-1 years",
     companyInfo: {
-      name: job.company,
-      description: `${job.company} is a leading company in the industry, committed to innovation and excellence.`,
+      name: internship.company,
+      description: `${internship.company} is a leading company in the industry, committed to innovation and excellence.`,
       size: "50-200 employees",
       industry: "Technology",
       founded: "2020",
-      website: `www.${job.company.toLowerCase().replace(/\s+/g, '')}.com`
+      website: `www.${internship.company.toLowerCase().replace(/\s+/g, '')}.com`
     }
   }
 
   return {
-    ...job,
+    ...internship,
     ...defaultData,
-    ...detailedData[job.id]
-  } as DetailedJob
+    ...detailedData[internship.id]
+  } as DetailedInternship
 }
 
-const JobDetailsPage = () => {
+const InternshipDetailsPage = () => {
   const { slug } = useParams()
-  const jobs = useAppSelector((state) => state.jobs.items)
-  const status = useAppSelector((state) => state.jobs.status)
   
-  // Find job by slug
-  const baseJob = jobs.find(job => 
-    job.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') === slug
+  // Find internship by slug
+  const baseInternship = internships.find(internship => 
+    internship.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') === slug
   )
   
-  // Get detailed job data
-  const job = baseJob ? getDetailedJobData(baseJob) : null
+  // Get detailed internship data
+  const internship = baseInternship ? getDetailedInternshipData(baseInternship as Internship) : null
   
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     phone: "",
-    experience: "",
-    currentCompany: "",
-    expectedSalary: "",
+    university: "",
+    course: "",
+    graduationYear: "",
     coverLetter: "",
     resume: null as File | null
   })
@@ -309,36 +253,23 @@ const JobDetailsPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission
-    console.log("Application submitted:", formData)
+    console.log("Internship application submitted:", formData)
     alert("Application submitted successfully!")
   }
 
-  // Loading state
-  if (status === "loading") {
+  // Internship not found
+  if (!internship) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <h1 className="text-2xl font-bold text-heading mb-4">Loading Job Details...</h1>
-        </div>
-      </div>
-    )
-  }
-
-  // Job not found
-  if (!job) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-heading mb-4">Job Not Found</h1>
-          <p className="text-muted mb-6">The job you&apos;re looking for doesn&apos;t exist or has been removed.</p>
+          <h1 className="text-2xl font-bold text-heading mb-4">Internship Not Found</h1>
+          <p className="text-muted mb-6">The internship you&apos;re looking for doesn&apos;t exist or has been removed.</p>
           <Link 
-            href="/jobs" 
+            href="/internship" 
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Jobs
+            Back to Internships
           </Link>
         </div>
       </div>
@@ -355,35 +286,35 @@ const JobDetailsPage = () => {
       >
         <div className="max-w-7xl mx-auto px-4 py-6">
           <Link 
-            href="/jobs" 
+            href="/internship" 
             className="inline-flex items-center gap-2 text-muted hover:text-primary transition-colors mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Jobs
+            Back to Internships
           </Link>
           
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div className="flex-1">
               <h1 className="text-3xl md:text-4xl font-bold text-heading mb-2">
-                {job.title}
+                {internship.title}
               </h1>
               <div className="flex items-center gap-4 text-muted mb-4">
                 <div className="flex items-center gap-1">
                   <Building2 className="w-4 h-4" />
-                  <span>{job.company}</span>
+                  <span>{internship.company}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <MapPin className="w-4 h-4" />
-                  <span>{job.location}</span>
+                  <span>{internship.location}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
-                  <span>{job.postedAt}</span>
+                  <span>{internship.postedAt}</span>
                 </div>
               </div>
               
               <div className="flex flex-wrap gap-2">
-                {job.tags.map((tag, index) => (
+                {internship.tags.map((tag, index) => (
                   <span 
                     key={index}
                     className="px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full border border-primary/20"
@@ -399,7 +330,7 @@ const JobDetailsPage = () => {
                 Apply Now
               </button>
               <button className="px-6 py-3 border border-border text-heading rounded-lg font-semibold hover:bg-muted/50 transition-colors">
-                Save Job
+                Save Internship
               </button>
             </div>
           </div>
@@ -410,43 +341,43 @@ const JobDetailsPage = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Job Overview & Details Combined */}
+            {/* Internship Overview & Details Combined */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
               className="bg-white rounded-2xl p-8 border border-border"
             >
-              <h2 className="text-3xl font-bold text-heading mb-6">Job Details</h2>
+              <h2 className="text-3xl font-bold text-heading mb-6">Internship Details</h2>
               
-              {/* Job Stats */}
+              {/* Internship Stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div className="text-center p-4 bg-primary/5 rounded-xl border border-primary/10">
-                  <Briefcase className="w-6 h-6 text-primary mx-auto mb-2" />
-                  <p className="text-sm text-muted mb-1">Job Type</p>
-                  <p className="font-semibold text-heading">{job.type}</p>
+                  <GraduationCap className="w-6 h-6 text-primary mx-auto mb-2" />
+                  <p className="text-sm text-muted mb-1">Type</p>
+                  <p className="font-semibold text-heading">{internship.type}</p>
                 </div>
                 <div className="text-center p-4 bg-secondary/5 rounded-xl border border-secondary/10">
-                  <Award className="w-6 h-6 text-secondary mx-auto mb-2" />
-                  <p className="text-sm text-muted mb-1">Experience</p>
-                  <p className="font-semibold text-heading">{job.experience}</p>
+                  <Clock className="w-6 h-6 text-secondary mx-auto mb-2" />
+                  <p className="text-sm text-muted mb-1">Duration</p>
+                  <p className="font-semibold text-heading">{internship.duration}</p>
                 </div>
                 <div className="text-center p-4 bg-accent/5 rounded-xl border border-accent/10">
-                  <DollarSign className="w-6 h-6 text- mx-auto mb-2" />
-                  <p className="text-sm text-muted mb-1">Salary</p>
-                  <p className="font-semibold text-heading">{job.salary}</p>
+                  <DollarSign className="w-6 h-6 text-accent mx-auto mb-2" />
+                  <p className="text-sm text-muted mb-1">Stipend</p>
+                  <p className="font-semibold text-heading">{internship.stipend}</p>
                 </div>
                 <div className="text-center p-4 bg-primary/5 rounded-xl border border-primary/10">
                   <Calendar className="w-6 h-6 text-primary mx-auto mb-2" />
                   <p className="text-sm text-muted mb-1">Posted</p>
-                  <p className="font-semibold text-heading">{job.postedAt}</p>
+                  <p className="font-semibold text-heading">{internship.postedAt}</p>
                 </div>
               </div>
 
-              {/* Job Description */}
+              {/* Internship Description */}
               <div className="mb-8">
-                <h3 className="text-xl font-semibold text-heading mb-4">About this Role</h3>
-                <p className="text-muted leading-relaxed text-base">{job.description}</p>
+                <h3 className="text-xl font-semibold text-heading mb-4">About this Internship</h3>
+                <p className="text-muted leading-relaxed text-base">{internship.description}</p>
               </div>
 
               {/* Requirements & Responsibilities Combined */}
@@ -454,7 +385,7 @@ const JobDetailsPage = () => {
                 <div>
                   <h3 className="text-xl font-semibold text-heading mb-4">Requirements</h3>
                   <ul className="space-y-3">
-                    {job.requirements.map((req, index) => (
+                    {internship.requirements.map((req, index) => (
                       <li key={index} className="flex items-start gap-3">
                         <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <span className="text-muted leading-relaxed">{req}</span>
@@ -466,7 +397,7 @@ const JobDetailsPage = () => {
                 <div>
                   <h3 className="text-xl font-semibold text-heading mb-4">Responsibilities</h3>
                   <ul className="space-y-3">
-                    {job.responsibilities.map((resp, index) => (
+                    {internship.responsibilities.map((resp, index) => (
                       <li key={index} className="flex items-start gap-3">
                         <Target className="w-5 h-5 text-secondary mt-0.5 flex-shrink-0" />
                         <span className="text-muted leading-relaxed">{resp}</span>
@@ -480,7 +411,7 @@ const JobDetailsPage = () => {
               <div>
                 <h3 className="text-xl font-semibold text-heading mb-4">Benefits & Perks</h3>
                 <div className="grid md:grid-cols-2 gap-3">
-                  {job.benefits.map((benefit, index) => (
+                  {internship.benefits.map((benefit, index) => (
                     <div key={index} className="flex items-start gap-3 p-3 bg-primary/5 rounded-lg">
                       <Star className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                       <span className="text-muted leading-relaxed">{benefit}</span>
@@ -503,22 +434,22 @@ const JobDetailsPage = () => {
               <h3 className="text-xl font-bold text-heading mb-4">About Company</h3>
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-semibold text-heading mb-2">{job.companyInfo.name}</h4>
-                  <p className="text-sm text-muted leading-relaxed">{job.companyInfo.description}</p>
+                  <h4 className="font-semibold text-heading mb-2">{internship.companyInfo.name}</h4>
+                  <p className="text-sm text-muted leading-relaxed">{internship.companyInfo.description}</p>
                 </div>
                 
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 p-3 bg-muted/10 rounded-lg">
                     <Users className="w-4 h-4 text-primary" />
-                    <span className="text-sm text-muted">{job.companyInfo.size}</span>
+                    <span className="text-sm text-muted">{internship.companyInfo.size}</span>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-muted/10 rounded-lg">
                     <Building2 className="w-4 h-4 text-secondary" />
-                    <span className="text-sm text-muted">{job.companyInfo.industry}</span>
+                    <span className="text-sm text-muted">{internship.companyInfo.industry}</span>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-muted/10 rounded-lg">
                     <Calendar className="w-4 h-4 text-accent" />
-                    <span className="text-sm text-muted">Founded {job.companyInfo.founded}</span>
+                    <span className="text-sm text-muted">Founded {internship.companyInfo.founded}</span>
                   </div>
                 </div>
                 
@@ -528,30 +459,30 @@ const JobDetailsPage = () => {
               </div>
             </motion.div>
 
-            {/* Similar Jobs */}
+            {/* Similar Internships */}
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
               className="bg-white rounded-2xl p-6 border border-border"
             >
-              <h3 className="text-xl font-bold text-heading mb-4">Similar Jobs</h3>
+              <h3 className="text-xl font-bold text-heading mb-4">Similar Internships</h3>
               <div>
-                {jobs
-                  .filter(j => j.id !== job?.id)
+                {internships
+                  .filter(i => i.id !== internship?.id)
                   .slice(0, 3)
-                  .map((similarJob, index) => {
-                    const jobSlug = similarJob.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+                  .map((similarInternship, index) => {
+                    const internshipSlug = similarInternship.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
                     return (
-                      <div key={similarJob.id} className={index > 0 ? "mt-6" : ""}>
-                        <Link href={`/jobs/${jobSlug}`}>
+                      <div key={similarInternship.id} className={index > 0 ? "mt-6" : ""}>
+                        <Link href={`/internship/${internshipSlug}`}>
                           <div className="p-5 border border-border rounded-lg hover:border-primary/30 transition-colors cursor-pointer hover:shadow-sm">
-                            <h4 className="font-semibold text-heading mb-2 line-clamp-1">{similarJob.title}</h4>
-                            <p className="text-sm text-muted mb-3">{similarJob.company}</p>
+                            <h4 className="font-semibold text-heading mb-2 line-clamp-1">{similarInternship.title}</h4>
+                            <p className="text-sm text-muted mb-3">{similarInternship.company}</p>
                             <div className="flex items-center gap-4 text-xs text-muted">
-                              <span>{similarJob.location}</span>
-                              <span>{similarJob.type}</span>
-                              <span>{similarJob.stipend || "Competitive"}</span>
+                              <span>{similarInternship.location}</span>
+                              <span>{similarInternship.type}</span>
+                              <span>{similarInternship.stipend}</span>
                             </div>
                           </div>
                         </Link>
@@ -571,7 +502,7 @@ const JobDetailsPage = () => {
           className="mt-20 rounded-xl p-8 border border-border"
         >
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-heading mb-2">Apply for this Position</h2>
+            <h2 className="text-2xl font-bold text-heading mb-2">Apply for this Internship</h2>
             <p className="text-muted">Fill out the form below to submit your application</p>
           </div>
 
@@ -626,52 +557,54 @@ const JobDetailsPage = () => {
               
               <div>
                 <label className="block text-sm font-medium text-heading mb-1">
-                  Years of Experience *
+                  University/College *
                 </label>
-                <select
-                  name="experience"
-                  value={formData.experience}
+                <input
+                  type="text"
+                  name="university"
+                  value={formData.university}
                   onChange={handleInputChange}
                   required
                   className="w-full px-3 py-2 border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
-                >
-                  <option value="">Select experience</option>
-                  <option value="0-1">0-1 years</option>
-                  <option value="1-2">1-2 years</option>
-                  <option value="2-4">2-4 years</option>
-                  <option value="4-6">4-6 years</option>
-                  <option value="6+">6+ years</option>
-                </select>
+                  placeholder="Enter your university name"
+                />
               </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-heading mb-1">
-                  Current Company
+                  Course/Stream *
                 </label>
                 <input
                   type="text"
-                  name="currentCompany"
-                  value={formData.currentCompany}
+                  name="course"
+                  value={formData.course}
                   onChange={handleInputChange}
+                  required
                   className="w-full px-3 py-2 border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
-                  placeholder="Enter current company name"
+                  placeholder="e.g., Computer Science"
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-heading mb-1">
-                  Expected Salary
+                  Graduation Year *
                 </label>
-                <input
-                  type="text"
-                  name="expectedSalary"
-                  value={formData.expectedSalary}
+                <select
+                  name="graduationYear"
+                  value={formData.graduationYear}
                   onChange={handleInputChange}
+                  required
                   className="w-full px-3 py-2 border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
-                  placeholder="e.g., ₹8-12 LPA"
-                />
+                >
+                  <option value="">Select graduation year</option>
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                  <option value="2026">2026</option>
+                  <option value="2027">2027</option>
+                  <option value="2028">2028</option>
+                </select>
               </div>
             </div>
 
@@ -711,7 +644,7 @@ const JobDetailsPage = () => {
                 onChange={handleInputChange}
                 rows={4}
                 className="w-full px-3 py-2 border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary transition-colors resize-none"
-                placeholder="Tell us why you're interested in this position..."
+                placeholder="Tell us why you're interested in this internship..."
               />
             </div>
 
@@ -731,8 +664,4 @@ const JobDetailsPage = () => {
   )
 }
 
-export default JobDetailsPage
-
-
-
-
+export default InternshipDetailsPage

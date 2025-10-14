@@ -1,108 +1,133 @@
 "use client"
 
-import React, { useEffect, useState, useRef } from "react"
+import React from "react"
 import Image from "next/image"
-import AOS from "aos";
-import "aos/dist/aos.css"
-import heroIllustration from "@/public/img/image.png"
+import { motion } from "framer-motion"
+import careerHero from "@/public/img/image6.png"
 
-const AnimatedNumber = ({ value }: { value: number }) => {
-  const [count, setCount] = useState(0)
-  const ref = useRef<HTMLDivElement>(null)
-  const [hasAnimated, setHasAnimated] = useState(false)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !hasAnimated) {
-            let start = 0
-            const duration = 1000 // 1 second
-            const increment = value / (duration / 16)
-
-            const counter = setInterval(() => {
-              start += increment
-              if (start >= value) {
-                start = value
-                clearInterval(counter)
-              }
-              setCount(Math.floor(start))
-            }, 16)
-
-            setHasAnimated(true)
-          }
-        })
-      },
-      { threshold: 0.5 } // trigger when 50% visible
-    )
-
-    if (ref.current) {
-      observer.observe(ref.current)
-    }
-
-    return () => {
-      if (ref.current) observer.unobserve(ref.current)
-    }
-  }, [value, hasAnimated])
+export default function InternshipsHero() {
 
   return (
-    <div ref={ref}>
-      <p className="text-3xl font-bold text-gray-900">{count}+</p>
-    </div>
-  )
-}
+    <section className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="relative overflow-hidden rounded-3xl p-2 md:p-6"
+      >
+        {/* Grid Content */}
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          {/* Text Section */}
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="flex flex-col"
+          >
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="mt-5 text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight tracking-tight text-[var(--heading-color)]"
+            >
+              Launch your career with{" "}
+              <span className="text-secondary">real-world internships</span> from
+              top companies
+            </motion.h1>
 
-const InternshipsHero = () => {
-  useEffect(() => {
-    AOS.init({ duration: 800, once: true })
-  }, [])
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="mt-4 text-[15px] md:text-base text-[var(--muted-text)] leading-relaxed max-w-md"
+            >
+              Gain hands-on experience, build your portfolio, and kickstart your
+              professional journey with internships from leading companies.
+              Perfect for students and fresh graduates.
+            </motion.p>
 
-  return (
-    <section className="relative rounded-4xl  overflow-hidden">
+            {/* Highlights */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mt-6 flex flex-wrap items-center gap-3 text-sm"
+            >
+              {[
+                { color: "bg-secondary", text: "Hands-on experience" },
+                { color: "bg-primary", text: "Mentorship programs" },
+                { color: "bg-secondary", text: "Certificate of completion" },
+              ].map((feature, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
+                  whileHover={{ scale: 1.05 }}
+                  className="inline-flex items-center gap-2 rounded-md border border-[var(--border-color)] bg-white/90 backdrop-blur px-3 py-2 shadow-sm hover:shadow-md transition-all"
+                >
+                  <span className={`h-2 w-2 rounded-full ${feature.color}`} />
+                  {feature.text}
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
 
-      <div style={{ paddingTop: "5em", marginBottom: "3em" }} className="relative rounded-4xl mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 md:py-32 flex flex-col-reverse md:flex-row items-center justify-between gap-12">
-        
-        {/* Text Section */}
-        <div className="w-full md:w-1/2 text-center md:text-left" data-aos="fade-right">
-          <h1 className="text-4xl md:text-5xl lg:text-4xl font-extrabold text-gray-900 leading-tight">
-            Kickstart Your <span className="text-blue-600">Career</span> with Top Internships
-          </h1>
-          <p className="mt-6 text-lg md:text-xl text-gray-700 max-w-md">
-            Discover curated internships across startups and global companies. Gain real-world experience, build your skills, and grow your career—all from one platform.
-          </p>
-         
+          {/* Image Section */}
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="relative"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="relative h-72 md:h-96 rounded-2xl overflow-hidden shadow-xl ring-1 ring-black/5 bg-white"
+            >
+              <Image
+                src={careerHero}
+                alt="Students and interns working on projects in modern office"
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+            </motion.div>
+
+            {/* Floating Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="absolute -bottom-5 left-1/2 -translate-x-1/2 grid grid-cols-2 gap-4 w-[85%]"
+            >
+              {[
+                { label: "Active internships", value: "1,200+ opportunities" },
+                { label: "Partner companies", value: "300+ verified" },
+              ].map((stat, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  className="rounded-xl bg-white/90 backdrop-blur-md border border-[var(--border-color)] p-4 text-center shadow-md hover:shadow-lg transition-all"
+                >
+                  <p className="text-[11px] text-[var(--muted-text)]">
+                    {stat.label}
+                  </p>
+                  <p className="text-sm font-semibold text-[var(--heading-color)] mt-0.5">
+                    {stat.value}
+                  </p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
         </div>
-
-        {/* Illustration/Image Section */}
-        <div className="w-full md:w-1/2 relative h-72 md:h-96 lg:h-[28rem]" data-aos="fade-left" data-aos-delay="400">
-          <Image
-            src={heroIllustration}
-            alt="Students working on internships"
-            className="object-contain border-1 rounded-2xl"
-            priority
-          />
-        </div>
-      </div>
-
-      {/* Bottom floating stats */}
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-full max-w-4xl px-4 sm:px-6 lg:px-8" data-aos="fade-up" data-aos-delay="600">
-        <div className="bg-white/90 backdrop-blur-md border border-gray-200 rounded-xl shadow-md p-6 flex justify-around items-center gap-6 flex-wrap">
-          <div className="text-center">
-            <AnimatedNumber value={500} />
-            <p className="text-sm text-gray-600">Internships This Month</p>
-          </div>
-          <div className="text-center">
-            <AnimatedNumber value={300} />
-            <p className="text-sm text-gray-600">Companies</p>
-          </div>
-          <div className="text-center">
-            <AnimatedNumber value={10000} />
-            <p className="text-sm text-gray-600">Students Placed</p>
-          </div>
-        </div>
-      </div>
+      </motion.div>
     </section>
   )
 }
-
-export default InternshipsHero

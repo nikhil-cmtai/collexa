@@ -33,15 +33,15 @@ export default function JobsHowItWorks() {
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-3xl md:text-4xl font-extrabold text-gray-900"
+          className="text-4xl sm:text-5xl font-extrabold text-gray-900"
         >
-          How It <span className="text-blue-600">Works</span>
+          How It <span className="text-secondary">Works</span>
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.6 }}
-          className="mt-3 text-gray-600 text-base md:text-lg max-w-2xl mx-auto"
+          className="mt-3 text-gray-600 text-base sm:text-lg max-w-2xl mx-auto"
         >
           A quick and simple process to land your next opportunity.
         </motion.p>
@@ -56,18 +56,14 @@ export default function JobsHowItWorks() {
               transition={{ delay: idx * 0.15, duration: 0.5 }}
               className="relative bg-white border border-gray-100 rounded-2xl p-8 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
             >
-              {/* Step Number Circle */}
-              <div className="absolute top-4 left-4 h-10 w-10 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold shadow-md">
-                {idx + 1}
-              </div>
 
               {/* Icon */}
-              <div className="h-12 w-12 mx-auto rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+              <div className="p-3 h-12 w-12 mx-auto rounded-xl bg-primary text-white flex items-center justify-center">
                 <s.icon className="size-6" />
               </div>
 
               {/* Text */}
-              <h3 className="mt-5 text-lg font-semibold text-gray-900">{s.title}</h3>
+              <h3 className="mt-5 text-lg sm:text-xl font-semibold text-gray-900">{s.title}</h3>
               <p className="mt-2 text-sm text-gray-600 leading-relaxed">{s.desc}</p>
             </motion.div>
           ))}
@@ -75,7 +71,7 @@ export default function JobsHowItWorks() {
 
         {/* Flow line connector (optional aesthetic touch) */}
         <div className="hidden md:block mt-12 relative">
-          <div className="absolute left-1/2 transform -translate-x-1/2 w-[80%] h-[2px] bg-gradient-to-r from-blue-300 via-blue-500 to-indigo-400 rounded-full opacity-30"></div>
+          <div className="absolute left-1/2 transform -translate-x-1/2 w-[80%] h-[2px] bg-gradient-to-r from-secondary via-primary to-secondary rounded-full opacity-30"></div>
         </div>
       </div>
     </section>
