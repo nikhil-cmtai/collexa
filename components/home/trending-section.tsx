@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, TrendingUp } from "lucide-react";
 import Image from "next/image";
@@ -33,6 +33,24 @@ const circularItems = [...trendingItems, ...trendingItems, ...trendingItems];
 export default function TrendingSection() {
   const [currentIndex, setCurrentIndex] = useState(trendingItems.length); // Start from middle
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [cardsPerSlide, setCardsPerSlide] = useState(3);
+
+  // Update cards per slide based on screen size
+  useEffect(() => {
+    const updateCardsPerSlide = () => {
+      if (window.innerWidth < 640) {
+        setCardsPerSlide(1); // Extra small: 1 card
+      } else if (window.innerWidth < 1024) {
+        setCardsPerSlide(2); // Small & Medium: 2 cards
+      } else {
+        setCardsPerSlide(3); // Large: 3 cards
+      }
+    };
+
+    updateCardsPerSlide();
+    window.addEventListener('resize', updateCardsPerSlide);
+    return () => window.removeEventListener('resize', updateCardsPerSlide);
+  }, []);
 
   const nextSlide = () => {
     if (isTransitioning) return;
@@ -71,22 +89,22 @@ export default function TrendingSection() {
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <motion.div
-          className="mb-12"
+          className="mb-8 md:mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex items-center gap-3">
-            <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+          <div className="flex items-center gap-2 md:gap-3">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
               Trending now
             </h2>
             <motion.div
-              className="mb-2 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center"
+              className="mb-1 md:mb-2 w-6 h-6 md:w-8 md:h-8 bg-blue-600 rounded-full flex items-center justify-center"
               animate={{ rotate: [0, 10, -10, 0] }}
               transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
             >
-              <TrendingUp className="w-6 h-6 text-white" />
+              <TrendingUp className="w-4 h-4 md:w-6 md:h-6 text-white" />
             </motion.div>
           </div>
         </motion.div>
@@ -102,41 +120,46 @@ export default function TrendingSection() {
           {/* Left Navigation Button */}
           <motion.button
             onClick={prevSlide}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 md:-translate-x-4 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             type="button"
           >
-            <ChevronLeft className="w-5 h-5 text-gray-600" />
+            <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-gray-600" />
           </motion.button>
 
           {/* Right Navigation Button */}
           <motion.button
             onClick={nextSlide}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 md:translate-x-4 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             type="button"
           >
-            <ChevronRight className="w-5 h-5 text-gray-600" />
+            <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-gray-600" />
           </motion.button>
 
-          <div className="overflow-hidden rounded-3xl">
+          <div className="overflow-hidden rounded-2xl md:rounded-3xl">
             <div
               className={`flex ${isTransitioning ? "" : "transition-transform duration-700 ease-in-out"}`}
-              style={{ transform: `translateX(-${currentIndex * 33.333}%)` }}
+              style={{ 
+                transform: `translateX(-${currentIndex * (100 / 3) * (3 / cardsPerSlide)}%)` 
+              }}
             >
               {circularItems.map((item, index) => (
-                <div key={`${item.id}-${index}`} className="w-1/3 flex-shrink-0 px-4">
+                <div 
+                  key={`${item.id}-${index}`} 
+                  className="flex-shrink-0 px-2 md:px-4 w-full sm:w-1/2 lg:w-1/3"
+                >
                   <Link href={item.href || "#"}>
                     <div className="cursor-pointer">
-                      <div className="relative h-64 rounded-2xl overflow-hidden shadow-xl">
+                      <div className="relative h-48 md:h-56 lg:h-64 rounded-xl md:rounded-2xl overflow-hidden shadow-lg md:shadow-xl">
                         <Image
                           src={item.image || "/placeholder.svg"}
                           alt="Trending opportunity"
                           fill
                           className="object-cover"
-                          sizes="(max-width: 768px) 100vw, 33vw"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         />
                       </div>
                     </div>

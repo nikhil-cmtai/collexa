@@ -22,7 +22,7 @@ const publicRoutes = [
     // Website public sections
   '/campus-courses',
   '/internships',
-  '/courses',
+  '/jobs',
   '/learn-skills',
   '/enquiry',
   '/blogs',

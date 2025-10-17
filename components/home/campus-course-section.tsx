@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { ChevronLeft, ChevronRight, Star, Clock, Users, Award } from "lucide-react"
 
@@ -1084,9 +1084,9 @@ interface CoursesData {
 function TabSection({ title, data, sectionType }: { title: string; data: CoursesData; sectionType: "courses" | "certifications" }) {
   const [activeCategory, setActiveCategory] = useState(sectionType === "courses" ? "Engineering" : "Management")
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [cardsPerSlide, setCardsPerSlide] = useState(3)
 
   const currentCards = data[activeCategory] || []
-  const cardsPerSlide = 3
   const totalSlides = Math.ceil(currentCards.length / cardsPerSlide)
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % totalSlides)
@@ -1097,6 +1097,23 @@ function TabSection({ title, data, sectionType }: { title: string; data: Courses
     setCurrentSlide(0)
   }
 
+  // Update cards per slide based on screen size
+  useEffect(() => {
+    const updateCardsPerSlide = () => {
+      if (window.innerWidth < 640) {
+        setCardsPerSlide(1) // Extra small: 1 card
+      } else if (window.innerWidth < 1024) {
+        setCardsPerSlide(2) // Small & Medium: 2 cards
+      } else {
+        setCardsPerSlide(3) // Large: 3 cards
+      }
+    }
+
+    updateCardsPerSlide()
+    window.addEventListener('resize', updateCardsPerSlide)
+    return () => window.removeEventListener('resize', updateCardsPerSlide)
+  }, [])
+
 
   return (
     <div className="max-w-7xl mx-auto mb-16">
@@ -1104,7 +1121,7 @@ function TabSection({ title, data, sectionType }: { title: string; data: Courses
         <h3 className="text-2xl font-semibold text-heading mb-4">{title}</h3>
       </div>
       <div className="overflow-x-auto justify-center items-center">
-        <div className="flex gap-3 min-w-max pb-2 justify-center">
+        <div className="flex gap-3 min-w-max pb-6 justify-center">
           {categories.map((category) => (
             <button
               key={category}
@@ -1123,28 +1140,28 @@ function TabSection({ title, data, sectionType }: { title: string; data: Courses
         {/* Left Navigation Button */}
         <button
           onClick={prevSlide}
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
+          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 md:-translate-x-4 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
         >
-          <ChevronLeft className="w-5 h-5 text-gray-600" />
+          <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-gray-600" />
         </button>
 
         {/* Right Navigation Button */}
         <button
           onClick={nextSlide}
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
+          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 md:translate-x-4 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
         >
-          <ChevronRight className="w-5 h-5 text-gray-600" />
+          <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-gray-600" />
         </button>
 
-        <div className="overflow-hidden rounded-3xl py-12">
+        <div className="overflow-hidden rounded-2xl md:rounded-3xl py-8 md:py-12">
           <div
             className="flex transition-transform duration-700 ease-in-out"
-            style={{ transform: `translateX(-${currentSlide * 33.333}%)` }}
+            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
           >
-            {currentCards.slice(currentSlide * cardsPerSlide, currentSlide * cardsPerSlide + cardsPerSlide).map((item: CourseItem, index: number) => (
+            {currentCards.map((item: CourseItem, index: number) => (
               <motion.div 
                 key={`${item.id}-${index}`} 
-                className="w-1/3 flex-shrink-0 px-4"
+                className="flex-shrink-0 px-2 md:px-4 w-full sm:w-1/2 lg:w-1/3"
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
@@ -1161,77 +1178,77 @@ function TabSection({ title, data, sectionType }: { title: string; data: Courses
                     <div className="w-1 bg-secondary flex-shrink-0"></div>
 
                     {/* Card Content */}
-                    <div className="p-5 flex-1">
+                    <div className="p-3 md:p-5 flex-1">
                       {/* Header Row */}
-                      <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-start justify-between mb-2 md:mb-3">
                         {/* Left: Logo & Info */}
-                        <div className="flex items-center gap-3 flex-1">
-                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center text-xl shadow-sm flex-shrink-0">
+                        <div className="flex items-center gap-2 md:gap-3 flex-1">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center text-lg md:text-xl shadow-sm flex-shrink-0">
                             {item.instructorLogo}
                           </div>
                           <div className="flex flex-col min-w-0">
-                            <span className="text-sm font-bold text-gray-900">{item.instructor}</span>
-                            <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-semibold inline-block w-fit mt-1">{item.type}</span>
+                            <span className="text-xs md:text-sm font-bold text-gray-900 truncate">{item.instructor}</span>
+                            <span className="text-[10px] md:text-xs px-1.5 md:px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-semibold inline-block w-fit mt-0.5 md:mt-1">{item.type}</span>
                           </div>
                         </div>
                         
                         {/* Right: Popular Badge */}
                         {item.isPopular && (
-                          <div className="bg-green-50 text-green-700 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1 shadow-md flex-shrink-0">
-                            <Award className="w-3 h-3" />
+                          <div className="bg-green-50 text-green-700 px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg text-[10px] md:text-xs font-bold flex items-center gap-0.5 md:gap-1 shadow-md flex-shrink-0">
+                            <Award className="w-2.5 h-2.5 md:w-3 md:h-3" />
                             Top
                           </div>
                         )}
                       </div>
 
                       {/* Title */}
-                      <h4 className="text-lg font-bold text-gray-900 mb-1.5 line-clamp-2 group-hover:text-[var(--primary)] transition-colors duration-300 leading-snug">
+                      <h4 className="text-base md:text-lg font-bold text-gray-900 mb-1 md:mb-1.5 line-clamp-2 group-hover:text-[var(--primary)] transition-colors duration-300 leading-snug">
                         {item.title}
                       </h4>
 
                       {/* Short Description */}
-                      <p className="text-xs text-gray-500 mb-3 line-clamp-1">
+                      <p className="text-[10px] md:text-xs text-gray-500 mb-2 md:mb-3 line-clamp-1">
                         {item.description}
                       </p>
 
                       {/* Stats Grid - 3 columns */}
-                      <div className="grid grid-cols-3 gap-2">
+                      <div className="grid grid-cols-3 gap-1 md:gap-2">
                         {/* Rating */}
-                        <div className="flex flex-col items-start p-2 bg-white rounded-lg border border-primary/40">
+                        <div className="flex flex-col items-start p-1 md:p-2 bg-white rounded-lg border border-primary/40">
                           <div className="flex flex-row items-center w-full">
-                            <Star className="w-6 h-6 text-yellow-400 mr-2" />
+                            <Star className="w-4 h-4 md:w-6 md:h-6 text-yellow-400 mr-1 md:mr-2" />
                             <div className="flex flex-col">
-                              <span className="text-sm font-bold text-gray-800">{item.rating}</span>
-                              <span className="text-xs text-gray-500">Rating</span>
+                              <span className="text-xs md:text-sm font-bold text-gray-800">{item.rating}</span>
+                              <span className="text-[10px] md:text-xs text-gray-500">Rating</span>
                             </div>
                           </div>
                         </div>
                         {/* Duration */}
-                        <div className="flex flex-col items-start p-2 bg-white rounded-lg border border-secondary/40">
+                        <div className="flex flex-col items-start p-1 md:p-2 bg-white rounded-lg border border-secondary/40">
                           <div className="flex flex-row items-center w-full">
-                            <Clock className="w-6 h-6 text-blue-400 mr-2" />
+                            <Clock className="w-4 h-4 md:w-6 md:h-6 text-blue-400 mr-1 md:mr-2" />
                             <div className="flex flex-col">
-                              <span className="text-xs font-bold text-gray-800">{item.duration}</span>
-                              <span className="text-xs text-gray-500">Duration</span>
+                              <span className="text-[10px] md:text-xs font-bold text-gray-800">{item.duration}</span>
+                              <span className="text-[10px] md:text-xs text-gray-500">Duration</span>
                             </div>
                           </div>
                         </div>
                         {/* Students */}
-                        <div className="flex flex-col items-start p-2 bg-white rounded-lg border border-primary/40">
+                        <div className="flex flex-col items-start p-1 md:p-2 bg-white rounded-lg border border-primary/40">
                           <div className="flex flex-row items-center w-full">
-                            <Users className="w-6 h-6 text-purple-400 mr-2" />
+                            <Users className="w-4 h-4 md:w-6 md:h-6 text-purple-400 mr-1 md:mr-2" />
                             <div className="flex flex-col">
-                              <span className="text-xs font-bold text-gray-800">{item.students >= 1000 ? `${(item.students / 1000).toFixed(1)}k` : item.students}</span>
-                              <span className="text-xs text-gray-500">Enrolled</span>
+                              <span className="text-[10px] md:text-xs font-bold text-gray-800">{item.students >= 1000 ? `${(item.students / 1000).toFixed(1)}k` : item.students}</span>
+                              <span className="text-[10px] md:text-xs text-gray-500">Enrolled</span>
                             </div>
                           </div>
                         </div>
                       </div>
 
                       {/* Level Badge at Bottom */}
-                      <div className="mt-3 pt-3 border-t border-gray-100">
+                      <div className="mt-2 md:mt-3 pt-2 md:pt-3 border-t border-gray-100">
                         <div className="flex items-center justify-center">
-                          <span className="px-3 py-1 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 text-xs font-semibold rounded-full border border-gray-200">
+                          <span className="px-2 md:px-3 py-0.5 md:py-1 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 text-[10px] md:text-xs font-semibold rounded-full border border-gray-200">
                             {item.level}
                           </span>
                         </div>

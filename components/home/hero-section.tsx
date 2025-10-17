@@ -15,7 +15,7 @@ const HeroSection = () => {
     buttons: [
       {
         text: "Explore Courses",
-        href: "/courses",
+        href: "/campus-courses",
         variant: "default" as const,
         icon: ArrowRight,
         primary: true
@@ -38,34 +38,34 @@ const HeroSection = () => {
   return (
     <div className="relative overflow-hidden">
       {/* Hero Section */}
-      <div className="bg-white h-[60vh] flex items-center">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div className="bg-white min-h-[70vh] md:min-h-[60vh] flex items-center py-8 md:py-12">
+        <div className="max-w-7xl mx-auto px-4 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
             {/* Left Content */}
             <motion.div 
-              className="space-y-8"
+              className="space-y-4 md:space-y-8 order-2 lg:order-1"
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
             >
               {/* Main Headline */}
               <motion.div 
-                className="space-y-4"
+                className="space-y-3 md:space-y-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <h1 className="text-3xl lg:text-6xl font-bold leading-tight">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
                   {heroContent.heading}
                 </h1>
-                <p className="text-base lg:text-lg !text-gray-600 leading-relaxed">
+                <p className="text-sm sm:text-base lg:text-lg !text-gray-600 leading-relaxed">
                   {heroContent.subHeading}
                 </p>
               </motion.div>
 
               {/* CTA Section */}
               <motion.div 
-                className="space-y-4"
+                className="space-y-3 md:space-y-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
@@ -75,7 +75,7 @@ const HeroSection = () => {
                   className={`flex ${
                     heroContent.buttons.length === 1
                       ? "justify-start"
-                      : "flex-col sm:flex-row gap-4"
+                      : "flex-col sm:flex-row gap-3 md:gap-4"
                   }`}
                 >
                   {heroContent.buttons.map((button, index) => {
@@ -85,16 +85,17 @@ const HeroSection = () => {
                         key={index}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
+                        className="w-full sm:w-auto"
                       >
                         <Button
                           asChild
                           size="lg"
                           variant={button.variant}
-                          className={`h-12 px-6 text-base font-semibold ${button.primary ? '!text-white' : 'text-primary'}`}
+                          className={`h-10 md:h-12 px-4 md:px-6 text-sm md:text-base font-semibold w-full sm:w-auto ${button.primary ? '!text-white' : 'text-primary'}`}
                         >
                           <Link href={button.href}>
                             {button.text}
-                            {Icon && <Icon className="ml-2 size-4" />}
+                            {Icon && <Icon className="ml-2 size-3 md:size-4" />}
                           </Link>
                         </Button>
                       </motion.div>
@@ -106,13 +107,13 @@ const HeroSection = () => {
 
             {/* Right Visual */}
             <motion.div 
-              className="relative"
+              className="relative order-1 lg:order-2"
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
               <motion.div 
-                className="relative z-10"
+                className="relative z-10 max-w-[300px] sm:max-w-[400px] md:max-w-[500px] mx-auto"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
@@ -122,13 +123,13 @@ const HeroSection = () => {
                   alt={heroContent.image.alt}
                   width={heroContent.image.width}
                   height={heroContent.image.height}
-                  className="object-contain mx-auto"
+                  className="object-contain mx-auto w-full h-auto"
                 />
               </motion.div>
 
               {/* Abstract Graphics */}
               <motion.div 
-                className="absolute top-10 right-10 w-32 h-32 bg-primary/20 rounded-full blur-xl"
+                className="absolute top-5 md:top-10 right-5 md:right-10 w-20 h-20 md:w-32 md:h-32 bg-primary/20 rounded-full blur-xl"
                 animate={{ 
                   scale: [1, 1.2, 1],
                   opacity: [0.3, 0.5, 0.3]
@@ -140,7 +141,7 @@ const HeroSection = () => {
                 }}
               ></motion.div>
               <motion.div 
-                className="absolute bottom-20 left-10 w-24 h-24 bg-secondary/20 rounded-full blur-xl"
+                className="absolute bottom-10 md:bottom-20 left-5 md:left-10 w-16 h-16 md:w-24 md:h-24 bg-secondary/20 rounded-full blur-xl"
                 animate={{ 
                   scale: [1, 1.3, 1],
                   opacity: [0.3, 0.6, 0.3]
@@ -153,7 +154,7 @@ const HeroSection = () => {
                 }}
               ></motion.div>
               <motion.div 
-                className="absolute top-1/2 right-0 w-40 h-40 bg-primary/10 rounded-full blur-2xl"
+                className="absolute top-1/2 right-0 w-24 h-24 md:w-40 md:h-40 bg-primary/10 rounded-full blur-2xl"
                 animate={{ 
                   scale: [1, 1.1, 1],
                   opacity: [0.2, 0.4, 0.2]

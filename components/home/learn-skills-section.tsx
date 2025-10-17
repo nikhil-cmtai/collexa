@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { ChevronLeft, ChevronRight, Star, Clock, Award } from "lucide-react"
 
@@ -540,10 +540,27 @@ interface SkillsCoursesData {
 function TabSection({ title, data }: { title: string; data: SkillsCoursesData; sectionType: "skills" }) {
   const [activeCategory, setActiveCategory] = useState("Digital Skills")
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [cardsPerSlide, setCardsPerSlide] = useState(3)
 
   const currentCards = data[activeCategory] || []
-  const cardsPerSlide = 3
   const totalSlides = Math.ceil(currentCards.length / cardsPerSlide)
+
+  // Update cards per slide based on screen size
+  useEffect(() => {
+    const updateCardsPerSlide = () => {
+      if (window.innerWidth < 640) {
+        setCardsPerSlide(1) // Extra small: 1 card
+      } else if (window.innerWidth < 1024) {
+        setCardsPerSlide(2) // Small & Medium: 2 cards
+      } else {
+        setCardsPerSlide(3) // Large: 3 cards
+      }
+    }
+
+    updateCardsPerSlide()
+    window.addEventListener('resize', updateCardsPerSlide)
+    return () => window.removeEventListener('resize', updateCardsPerSlide)
+  }, [])
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % totalSlides)
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides)
@@ -556,7 +573,7 @@ function TabSection({ title, data }: { title: string; data: SkillsCoursesData; s
   return (
     <div className="max-w-7xl mx-auto">
       <div className="overflow-x-auto justify-center items-center">
-        <div className="flex gap-3 min-w-max pb-2 justify-center">
+        <div className="flex gap-3 min-w-max pb-6 justify-center">
           {skillCategories.map((category) => (
             <button
               key={category}
@@ -575,28 +592,28 @@ function TabSection({ title, data }: { title: string; data: SkillsCoursesData; s
         {/* Left Navigation Button */}
         <button
           onClick={prevSlide}
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
+          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 md:-translate-x-4 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
         >
-          <ChevronLeft className="w-5 h-5 text-gray-600" />
+          <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-gray-600" />
         </button>
 
         {/* Right Navigation Button */}
         <button
           onClick={nextSlide}
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
+          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 md:translate-x-4 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
         >
-          <ChevronRight className="w-5 h-5 text-gray-600" />
+          <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-gray-600" />
         </button>
 
-        <div className="overflow-hidden rounded-3xl py-12">
+        <div className="overflow-hidden rounded-2xl md:rounded-3xl py-8 md:py-12">
           <div
             className="flex transition-transform duration-700 ease-in-out"
-            style={{ transform: `translateX(-${currentSlide * 33.333}%)` }}
+            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
           >
-            {currentCards.slice(currentSlide * cardsPerSlide, currentSlide * cardsPerSlide + cardsPerSlide).map((item: SkillCourseItem, index: number) => (
+            {currentCards.map((item: SkillCourseItem, index: number) => (
               <motion.div
                 key={`${item.id}-${index}`}
-                className="w-1/3 flex-shrink-0 px-4"
+                className="flex-shrink-0 px-2 md:px-4 w-full sm:w-1/2 lg:w-1/3"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -607,58 +624,58 @@ function TabSection({ title, data }: { title: string; data: SkillsCoursesData; s
                   whileHover={{ y: -5 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="relative bg-gradient-to-br from-primary/5 via-white to-primary/10 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-primary/20">
+                  <div className="relative bg-gradient-to-br from-primary/5 via-white to-primary/10 rounded-xl md:rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-primary/20">
 
                     {/* Card Content */}
-                    <div className="p-5">
+                    <div className="p-3 md:p-5">
                       
                       {/* Top Row: Popular Badge + Level */}
-                      <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center justify-between mb-2 md:mb-3">
                         {item.isPopular && (
-                          <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 border border-primary/30 rounded-md">
-                            <Award className="w-3 h-3 text-primary" />
-                            <span className="text-xs font-semibold text-primary">Popular</span>
+                          <div className="inline-flex items-center gap-1 px-1.5 md:px-2 py-0.5 bg-primary/10 border border-primary/30 rounded-md">
+                            <Award className="w-2.5 h-2.5 md:w-3 md:h-3 text-primary" />
+                            <span className="text-[10px] md:text-xs font-semibold text-primary">Popular</span>
                           </div>
                         )}
                         {!item.isPopular && <div></div>}
-                        <span className="px-2 py-0.5 bg-secondary/10 text-secondary text-xs font-medium rounded-md border border-secondary/30">
+                        <span className="px-1.5 md:px-2 py-0.5 bg-secondary/10 text-secondary text-[10px] md:text-xs font-medium rounded-md border border-secondary/30">
                           {item.level}
                         </span>
                       </div>
 
                       {/* Course Title */}
-                      <h4 className="text-lg font-bold text-heading mb-1.5 line-clamp-2 leading-snug">
+                      <h4 className="text-base md:text-lg font-bold text-heading mb-1 md:mb-1.5 line-clamp-2 leading-snug">
                         {item.title}
                       </h4>
 
                       {/* Instructor */}
-                      <p className="text-sm text-muted mb-3">{item.instructor}</p>
+                      <p className="text-xs md:text-sm text-muted mb-2 md:mb-3">{item.instructor}</p>
 
                       {/* Divider */}
-                      <div className="h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent mb-3"></div>
+                      <div className="h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent mb-2 md:mb-3"></div>
 
                       {/* Rating */}
-                      <div className="flex items-center gap-1.5 mb-2.5">
-                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                        <span className="text-sm font-semibold text-heading">{item.rating}</span>
-                        <span className="text-sm text-muted">({item.students >= 1000 ? `${(item.students / 1000).toFixed(1)}k` : item.students} students)</span>
+                      <div className="flex items-center gap-1 md:gap-1.5 mb-2 md:mb-2.5">
+                        <Star className="w-3.5 h-3.5 md:w-4 md:h-4 text-yellow-400 fill-yellow-400 flex-shrink-0" />
+                        <span className="text-xs md:text-sm font-semibold text-heading">{item.rating}</span>
+                        <span className="text-xs md:text-sm text-muted line-clamp-1">({item.students >= 1000 ? `${(item.students / 1000).toFixed(1)}k` : item.students} students)</span>
                       </div>
 
                       {/* Duration */}
-                      <div className="flex items-center gap-1.5 mb-3">
-                        <Clock className="w-4 h-4 text-primary/70" />
-                        <span className="text-sm text-text">{item.duration} • {item.category}</span>
+                      <div className="flex items-center gap-1 md:gap-1.5 mb-2 md:mb-3">
+                        <Clock className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary/70 flex-shrink-0" />
+                        <span className="text-xs md:text-sm text-text line-clamp-1">{item.duration} • {item.category}</span>
                       </div>
 
                       {/* Bottom: Price + Enroll Button */}
-                      <div className="flex items-center justify-between pt-3 border-t border-primary/20">
+                      <div className="flex items-center justify-between pt-2 md:pt-3 border-t border-primary/20">
                         <div className="flex flex-col">
-                          <span className="text-lg font-bold text-primary">{item.price}</span>
-                          <span className="text-xs text-muted line-through">{item.originalPrice}</span>
+                          <span className="text-base md:text-lg font-bold text-primary">{item.price}</span>
+                          <span className="text-[10px] md:text-xs text-muted line-through">{item.originalPrice}</span>
                         </div>
-                        <button className="text-primary text-sm font-semibold hover:text-primary/80 flex items-center gap-1 transition-colors">
+                        <button className="text-primary text-xs md:text-sm font-semibold hover:text-primary/80 flex items-center gap-0.5 md:gap-1 transition-colors">
                           Enroll Now
-                          <ChevronRight className="w-4 h-4" />
+                          <ChevronRight className="w-3.5 h-3.5 md:w-4 md:h-4" />
                         </button>
                       </div>
 

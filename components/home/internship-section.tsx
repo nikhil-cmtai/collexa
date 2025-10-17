@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
@@ -335,10 +335,27 @@ const internshipsData = {
 function InternshipsSection() {
   const [activeCategory, setActiveCategory] = useState("MBA")
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [cardsPerSlide, setCardsPerSlide] = useState(3)
 
   const currentCards = internshipsData[activeCategory as keyof typeof internshipsData] || []
-  const cardsPerSlide = 3
   const totalSlides = Math.ceil(currentCards.length / cardsPerSlide)
+
+  // Update cards per slide based on screen size
+  useEffect(() => {
+    const updateCardsPerSlide = () => {
+      if (window.innerWidth < 640) {
+        setCardsPerSlide(1) // Extra small: 1 card
+      } else if (window.innerWidth < 1024) {
+        setCardsPerSlide(2) // Small & Medium: 2 cards
+      } else {
+        setCardsPerSlide(3) // Large: 3 cards
+      }
+    }
+
+    updateCardsPerSlide()
+    window.addEventListener('resize', updateCardsPerSlide)
+    return () => window.removeEventListener('resize', updateCardsPerSlide)
+  }, [])
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % totalSlides)
@@ -356,7 +373,7 @@ function InternshipsSection() {
   return (
     <div className="max-w-7xl mx-auto mb-16">
       <div className="overflow-x-auto justify-center items-center">
-        <div className="flex gap-3 min-w-max pb-2 justify-center">
+        <div className="flex gap-3 min-w-max pb-6 justify-center">
           {categories.map((category) => (
             <button
               key={category}
@@ -375,28 +392,28 @@ function InternshipsSection() {
         {/* Left Navigation Button */}
         <button
           onClick={prevSlide}
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
+          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 md:-translate-x-4 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
         >
-          <ChevronLeft className="w-5 h-5 text-gray-600" />
+          <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-gray-600" />
         </button>
 
         {/* Right Navigation Button */}
         <button
           onClick={nextSlide}
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
+          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 md:translate-x-4 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white shadow-lg flex items-center justify-center z-10"
         >
-          <ChevronRight className="w-5 h-5 text-gray-600" />
+          <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-gray-600" />
         </button>
 
-        <div className="overflow-hidden rounded-3xl py-12">
+        <div className="overflow-hidden rounded-2xl md:rounded-3xl py-8 md:py-12">
           <div
             className="flex transition-transform duration-700 ease-in-out"
-            style={{ transform: `translateX(-${currentSlide * 33.333}%)` }}
+            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
           >
-            {currentCards.slice(currentSlide * cardsPerSlide, currentSlide * cardsPerSlide + cardsPerSlide).map((item: InternshipItem, index: number) => (
+            {currentCards.map((item: InternshipItem, index: number) => (
               <motion.div 
                 key={`${item.id}-${index}`} 
-                className="w-1/3 flex-shrink-0 px-4"
+                className="flex-shrink-0 px-2 md:px-4 w-full sm:w-1/2 lg:w-1/3"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -407,65 +424,65 @@ function InternshipsSection() {
                   whileHover={{ y: -5 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="relative bg-gradient-to-br from-purple-50/30 via-white to-pink-50/30 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-purple-100">
+                  <div className="relative bg-gradient-to-br from-purple-50/30 via-white to-pink-50/30 rounded-xl md:rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-purple-100">
 
                     {/* Card Content */}
-                    <div className="p-5">
+                    <div className="p-3 md:p-5">
                       
                       {/* Actively Hiring Badge */}
                       {item.isHiring && (
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 rounded-lg mb-3">
-                          <svg className="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="inline-flex items-center gap-1 md:gap-1.5 px-2 md:px-2.5 py-0.5 md:py-1 bg-green-50 border border-green-200 rounded-md md:rounded-lg mb-2 md:mb-3">
+                          <svg className="w-3 h-3 md:w-3.5 md:h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                           </svg>
-                          <span className="text-xs font-semibold text-green-700">Actively hiring</span>
+                          <span className="text-[10px] md:text-xs font-semibold text-green-700">Actively hiring</span>
                         </div>
                       )}
 
                       {/* Internship Title */}
-                      <h4 className="text-lg font-bold text-gray-800 mb-1.5 line-clamp-2 leading-snug">
+                      <h4 className="text-base md:text-lg font-bold text-gray-800 mb-1 md:mb-1.5 line-clamp-2 leading-snug">
                         {item.title}
                       </h4>
 
                       {/* Company Name */}
-                      <p className="text-sm text-gray-500 mb-3">{item.company}</p>
+                      <p className="text-xs md:text-sm text-gray-500 mb-2 md:mb-3">{item.company}</p>
 
                       {/* Divider */}
-                      <div className="h-px bg-gradient-to-r from-transparent via-purple-200 to-transparent mb-3"></div>
+                      <div className="h-px bg-gradient-to-r from-transparent via-purple-200 to-transparent mb-2 md:mb-3"></div>
 
                       {/* Location */}
-                      <div className="flex items-center gap-1.5 mb-2.5">
-                        <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="flex items-center gap-1 md:gap-1.5 mb-2 md:mb-2.5">
+                        <svg className="w-3.5 h-3.5 md:w-4 md:h-4 text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
-                        <span className="text-sm text-gray-700">{item.workType}</span>
+                        <span className="text-xs md:text-sm text-gray-700">{item.workType}</span>
                       </div>
 
                       {/* Salary */}
-                      <div className="flex items-center gap-1.5 mb-2.5">
-                        <svg className="w-4 h-4 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="flex items-center gap-1 md:gap-1.5 mb-2 md:mb-2.5">
+                        <svg className="w-3.5 h-3.5 md:w-4 md:h-4 text-pink-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
-                        <span className="text-sm text-gray-700">{item.salary}</span>
+                        <span className="text-xs md:text-sm text-gray-700 line-clamp-1">{item.salary}</span>
                       </div>
 
                       {/* Duration */}
-                      <div className="flex items-center gap-1.5 mb-3">
-                        <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="flex items-center gap-1 md:gap-1.5 mb-2 md:mb-3">
+                        <svg className="w-3.5 h-3.5 md:w-4 md:h-4 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span className="text-sm text-gray-700">{item.duration}</span>
+                        <span className="text-xs md:text-sm text-gray-700">{item.duration}</span>
                       </div>
 
                       {/* Bottom: Internship Type + Apply Button */}
-                      <div className="flex items-center justify-between pt-3 border-t border-purple-100">
-                        <span className="px-2.5 py-1 bg-purple-50 text-purple-700 text-xs font-medium rounded-lg border border-purple-200">
+                      <div className="flex items-center justify-between pt-2 md:pt-3 border-t border-purple-100">
+                        <span className="px-2 md:px-2.5 py-0.5 md:py-1 bg-purple-50 text-purple-700 text-[10px] md:text-xs font-medium rounded-md md:rounded-lg border border-purple-200">
                           {item.type}
                         </span>
-                        <button className="text-purple-600 text-sm font-semibold hover:text-purple-700 flex items-center gap-1 transition-colors">
+                        <button className="text-purple-600 text-xs md:text-sm font-semibold hover:text-purple-700 flex items-center gap-0.5 md:gap-1 transition-colors">
                           Apply Now
-                          <ChevronRight className="w-4 h-4" />
+                          <ChevronRight className="w-3.5 h-3.5 md:w-4 md:h-4" />
                         </button>
                       </div>
 
