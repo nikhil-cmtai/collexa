@@ -19,16 +19,14 @@ const publicRoutes = [
   '/privacy-policy',
   '/terms',
   'cookie-policy',
-  '/products',
-  '/our-doctors',
-  // Website public sections
-  '/jobs',
+    // Website public sections
   '/campus-courses',
-  '/internship',
   '/internships',
   '/courses',
-  '/skill-based-course',
+  '/learn-skills',
   '/enquiry',
+  '/blogs',
+  '/testimonials',
 ]
 
 export function middleware(request: NextRequest) {

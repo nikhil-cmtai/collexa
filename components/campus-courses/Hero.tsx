@@ -3,63 +3,127 @@
 import React from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import campusHero from "@/public/images/campus-courses/hero.jpg"
+import campusHero from "@/public/img/image6.png"
 
-export default function CampusHero() {
+export default function CampusCoursesHero() {
   return (
-    <section className="relative overflow-hidden bg-[var(--background)]">
-      {/* Background image */}
-      <div className="absolute inset-0 -z-10">
-        <Image
-          src={campusHero}
-          alt="Campus hero background"
-          fill
-          priority
-          className="object-cover opacity-30"
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--surface)]/90 via-[var(--background)]/70 to-[var(--background)]" />
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[var(--background)] to-transparent" />
-      </div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
-        <div className="max-w-3xl">
-          <motion.span 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/70 backdrop-blur px-3 py-1 text-xs font-medium text-muted shadow-sm"
-          >
-            Campus Learning
-          </motion.span>
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="mt-4 text-4xl md:text-5xl font-extrabold leading-tight text-heading"
-          >
-            Explore Accredited Campus Courses
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mt-3 text-text/80 text-lg"
-          >
-            Discover undergraduate, postgraduate and diploma programs from reputed universities. Compare durations, modes and specializations.
-          </motion.p>
+    <section className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="relative overflow-hidden rounded-3xl p-2 md:p-6"
+      >
+        {/* Grid Content */}
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          {/* Text Section */}
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-6 flex flex-wrap gap-3"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="flex flex-col"
           >
-            <a href="#courses" className="px-6 py-3 rounded-full bg-primary !text-white font-semibold shadow hover:bg-primary/90 transition-colors">Browse Courses</a>
-            <a href="#why" className="px-6 py-3 rounded-full border border-border bg-white text-heading font-semibold hover:bg-muted/50 transition-colors">Why Collexa?</a>
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="mt-5 text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight tracking-tight text-[var(--heading-color)]"
+            >
+              Discover top{" "}
+              <span className="text-secondary">campus courses</span> to accelerate your learning
+            </motion.h1>
+
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="mt-4 text-[15px] md:text-base text-[var(--muted-text)] leading-relaxed max-w-md"
+            >
+              Explore a curated selection of verified courses from leading educators. Whether you&apos;re looking to upskill, explore a new field, or advance your academic journey — find the perfect course for you.
+            </motion.p>
+
+            {/* Highlights */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mt-6 flex flex-wrap items-center gap-3 text-sm"
+            >
+              {[
+                { color: "bg-secondary", text: "Expert instructors" },
+                { color: "bg-primary", text: "Campus-verified content" },
+                { color: "bg-secondary", text: "Certification on completion" },
+              ].map((feature, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
+                  whileHover={{ scale: 1.05 }}
+                  className="inline-flex items-center gap-2 rounded-md border border-[var(--border-color)] bg-white/90 backdrop-blur px-3 py-2 shadow-sm hover:shadow-md transition-all"
+                >
+                  <span className={`h-2 w-2 rounded-full ${feature.color}`} />
+                  {feature.text}
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          {/* Image Section */}
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="relative"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="relative h-72 md:h-96 rounded-2xl overflow-hidden shadow-xl ring-1 ring-black/5 bg-white"
+            >
+              <Image
+                src={campusHero}
+                alt="Students engaged in learning on campus"
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+            </motion.div>
+
+            {/* Floating Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="absolute -bottom-5 left-1/2 -translate-x-1/2 grid grid-cols-2 gap-4 w-[85%]"
+            >
+              {[
+                { label: "Available courses", value: "1,200+ options" },
+                { label: "Campuses collaborating", value: "100+ institutions" },
+              ].map((stat, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  className="rounded-xl bg-white/90 backdrop-blur-md border border-[var(--border-color)] p-4 text-center shadow-md hover:shadow-lg transition-all"
+                >
+                  <p className="text-[11px] text-[var(--muted-text)]">
+                    {stat.label}
+                  </p>
+                  <p className="text-sm font-semibold text-[var(--heading-color)] mt-0.5">
+                    {stat.value}
+                  </p>
+                </motion.div>
+              ))}
+            </motion.div>
           </motion.div>
         </div>
-      </div>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--background)]/50 to-transparent" />
+      </motion.div>
     </section>
-  )
+  );
 }
-
-

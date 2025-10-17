@@ -4,7 +4,6 @@ import React from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { GraduationCap, Clock, MapPin } from "lucide-react"
-import ApplicationForm from "./ApplicationForm"
 
 interface CampusCourseCardProps {
   course: {
@@ -29,9 +28,9 @@ export default function CampusCourseCard({ course, index }: CampusCourseCardProp
       initial={{ opacity: 0, y: 20 }} 
       animate={{ opacity: 1, y: 0 }} 
       transition={{ duration: 0.4, delay: index * 0.05 }} 
-      className="group rounded-xl border border-border bg-white hover:border-primary/30 transition-all duration-300 overflow-hidden"
+      className="group rounded-xl border border-border bg-white hover:border-primary/30 transition-all duration-300 overflow-hidden flex flex-col h-full"
     >
-      <div className="p-5">
+      <div className="p-5 flex-1">
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-heading group-hover:text-primary transition-colors duration-300 line-clamp-2">
@@ -58,7 +57,7 @@ export default function CampusCourseCard({ course, index }: CampusCourseCardProp
           </div>
         </div>
         
-        <div className="flex flex-wrap gap-1.5 mb-3">
+        <div className="flex flex-wrap gap-1.5">
           {course.tags.slice(0, 3).map((tag: string) => (
             <span key={tag} className="rounded-md bg-primary/5 text-primary border border-primary/10 px-2 py-1 text-xs font-medium">
               {tag}
@@ -72,18 +71,10 @@ export default function CampusCourseCard({ course, index }: CampusCourseCardProp
         </div>
       </div>
       
-      <div className="bg-primary/5 border-t border-border p-4 flex items-center justify-between">
-        <ApplicationForm 
-          courseTitle={course.title} 
-          university={course.university}
-        >
-          <button className="text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-md px-5 py-2 transition-colors duration-300">
-            Apply Now
-          </button>
-        </ApplicationForm>
+      <div className="bg-primary/5 border-t border-border p-4">
         <Link 
           href={`/campus-courses/${courseSlug}`}
-          className="text-sm font-medium text-primary hover:text-primary/80 transition-colors duration-300"
+          className="block text-right text-sm font-medium text-primary hover:text-primary/80 transition-colors duration-300"
         >
           View details →
         </Link>

@@ -276,11 +276,10 @@ const Header = () => {
                     <Link 
                       key={index}
                       href={item.href}
-                      passHref
                       className="block px-3 py-2 text-sm text-gray-700 hover:text-primary hover:bg-primary/5 transition-all duration-200 rounded-md"
-                      onClick={() => {
-                        // Allow navigation to happen first
-                        setTimeout(() => setActiveDropdown(null), 100);
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveDropdown(null);
                       }}
                     >
                       {item.title}
@@ -311,8 +310,9 @@ const Header = () => {
                         key={index}
                         href={item.href}
                         className="block px-3 py-2 text-sm text-gray-700 hover:text-primary hover:bg-primary/5 transition-all duration-200 rounded-md"
-                        onClick={() => {
-                          setTimeout(() => setActiveDropdown(null), 100);
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveDropdown(null);
                         }}
                       >
                         {item.title}

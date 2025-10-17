@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Search, Filter, GraduationCap, Clock, MapPin, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks"
-import { fetchCourses, setCourseLevel, setCourseMode, setCourseQuery, Course } from "@/lib/redux/features/coursesSlice"
+import { fetchCourses, setCourseLevel, setCourseMode, setCourseQuery } from "@/lib/redux/features/coursesSlice"
 import CampusCourseCard from "./CampusCourseCard"
 import CampusHero from "./Hero"
 import Highlights from "./Highlights"
@@ -230,24 +230,24 @@ export default function CoursesView({ presetQuery, presetLevel, presetMode }: { 
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-8 flex items-center justify-center">
-              <div className="flex items-center gap-1 bg-white rounded-lg p-1 border border-border">
+              <div className="flex items-center gap-2 bg-white rounded-2xl px-4 py-3 border border-border shadow-sm">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300 rounded-md hover:bg-primary/5"
+                  className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Previous
                 </button>
                 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2">
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                     <button
                       key={page}
                       onClick={() => handlePageChange(page)}
-                      className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 ${
+                      className={`min-w-[40px] h-[40px] flex items-center justify-center text-sm font-medium rounded-xl transition-all duration-300 ${
                         currentPage === page
-                          ? "bg-primary text-white"
+                          ? "bg-primary text-white shadow-md"
                           : "text-muted hover:text-primary hover:bg-primary/5"
                       }`}
                     >
@@ -259,7 +259,7 @@ export default function CoursesView({ presetQuery, presetLevel, presetMode }: { 
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300 rounded-md hover:bg-primary/5"
+                  className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
                 >
                   Next
                   <ChevronRight className="w-4 h-4" />
