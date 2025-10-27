@@ -12,16 +12,14 @@ const Header = () => {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const dropdownContainerRef = useRef<HTMLDivElement | null>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      Object.values(dropdownRefs.current).forEach(ref => {
-        if (ref && !ref.contains(event.target as Node)) {
-          setActiveDropdown(null);
-        }
-      });
+      if (dropdownContainerRef.current && !dropdownContainerRef.current.contains(event.target as Node)) {
+        setActiveDropdown(null);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -193,17 +191,15 @@ const Header = () => {
     dropdownKey: string;
   }) => {
     const isActive = activeDropdown === dropdownKey;
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     
     const handleMouseEnter = () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
       }
       setActiveDropdown(dropdownKey);
-      // Set first category as active by default
-      if (data.categories.length > 0) {
+      if (data.categories.length > 0 && !activeCategory) {
         setActiveCategory(data.categories[0].title);
       }
     };
@@ -212,16 +208,17 @@ const Header = () => {
       timeoutRef.current = setTimeout(() => {
         setActiveDropdown(null);
         setActiveCategory(null);
-      }, 150);
+      }, 200);
+    };
+
+    const handleLinkClick = () => {
+      setActiveDropdown(null);
+      setActiveCategory(null);
     };
     
     return (
       <div 
         className="custom-dropdown-container relative"
-        ref={(el) => {
-          dropdownRefs.current[dropdownKey] = el;
-        }}
-        data-active={isActive}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
@@ -230,7 +227,17 @@ const Header = () => {
             "custom-nav-button flex items-center gap-2 px-4 py-2 text-md font-medium transition-all duration-300 rounded-lg hover:bg-primary/5",
             isActive ? "text-primary bg-primary/5" : "text-foreground hover:text-primary"
           )}
-          onClick={() => setActiveDropdown(isActive ? null : dropdownKey)}
+          onClick={() => {
+            if (isActive) {
+              setActiveDropdown(null);
+              setActiveCategory(null);
+            } else {
+              setActiveDropdown(dropdownKey);
+              if (data.categories.length > 0) {
+                setActiveCategory(data.categories[0].title);
+              }
+            }
+          }}
         >
           <Icon className="h-4 w-4" />
           {title}
@@ -240,90 +247,86 @@ const Header = () => {
           )} />
         </button>
         
-        <div className="nav-dropdown absolute top-full left-0 mt-2 w-[600px] max-w-[90vw] rounded-lg border shadow-lg z-50 bg-white overflow-hidden">
-          {/* Desktop Layout */}
-          <div className="hidden md:flex">
-            {/* Left Side - Categories */}
-            <div className="w-2/5 bg-gray-50 rounded-l-lg p-4">
-              <div className="space-y-1">
-                {data.categories.map((category) => (
-                  <div
-                    key={category.title}
-                    className={cn(
-                      "flex items-center justify-between px-3 py-2 text-md font-medium rounded-md cursor-pointer transition-all duration-200",
-                      activeCategory === category.title 
-                        ? "bg-primary text-white" 
-                        : "text-gray-700 hover:bg-primary/10 hover:text-primary"
-                    )}
-                    onMouseEnter={() => setActiveCategory(category.title)}
-                  >
-                    <span>{category.title}</span>
-                    {category.badge && (
-                      <span className="bg-orange-500 text-white text-sm px-2 py-1 rounded-full">
-                        {category.badge}
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            {/* Right Side - Items */}
-            <div className="w-3/5 p-4">
-              {(activeCategory || data.categories[0]) && (
-                <div className="space-y-2">
-                  {data.categories.find(cat => cat.title === (activeCategory || data.categories[0].title))?.items.map((item, index) => (
-                    <Link 
-                      key={index}
-                      href={item.href}
-                      className="block px-3 py-2 text-sm text-gray-700 hover:text-primary hover:bg-primary/5 transition-all duration-200 rounded-md"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveDropdown(null);
-                      }}
+        {isActive && (
+          <div className="nav-dropdown absolute top-full left-0 mt-2 w-[600px] max-w-[90vw] rounded-lg border shadow-lg z-50 bg-white overflow-hidden">
+            {/* Desktop Layout */}
+            <div className="hidden md:flex">
+              {/* Left Side - Categories */}
+              <div className="w-2/5 bg-gray-50 rounded-l-lg p-4">
+                <div className="space-y-1">
+                  {data.categories.map((category) => (
+                    <div
+                      key={category.title}
+                      className={cn(
+                        "flex items-center justify-between px-3 py-2 text-md font-medium rounded-md cursor-pointer transition-all duration-200",
+                        activeCategory === category.title 
+                          ? "bg-primary text-white" 
+                          : "text-gray-700 hover:bg-primary/10 hover:text-primary"
+                      )}
+                      onMouseEnter={() => setActiveCategory(category.title)}
                     >
-                      {item.title}
-                    </Link>
+                      <span>{category.title}</span>
+                      {category.badge && (
+                        <span className="bg-orange-500 text-white text-sm px-2 py-1 rounded-full">
+                          {category.badge}
+                        </span>
+                      )}
+                    </div>
                   ))}
                 </div>
-              )}
-             
-            </div>
-          </div>
-
-          {/* Mobile Layout - Collapsible */}
-          <div className="md:hidden max-h-[70vh] overflow-y-auto">
-            <div className="p-4">
-              {data.categories.map((category) => (
-                <div key={category.title} className="mb-4">
-                  <div className="flex items-center justify-between px-3 py-2 text-sm font-medium text-primary bg-primary/5 rounded-md mb-2">
-                    <span>{category.title}</span>
-                    {category.badge && (
-                      <span className="bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
-                        {category.badge}
-                      </span>
-                    )}
-                  </div>
-                  <div className="pl-4 space-y-1">
-                    {category.items.map((item, index) => (
-                      <Link
+              </div>
+              
+              {/* Right Side - Items */}
+              <div className="w-3/5 p-4">
+                {(activeCategory || data.categories[0]) && (
+                  <div className="space-y-2">
+                    {data.categories.find(cat => cat.title === (activeCategory || data.categories[0].title))?.items.map((item, index) => (
+                      <Link 
                         key={index}
                         href={item.href}
                         className="block px-3 py-2 text-sm text-gray-700 hover:text-primary hover:bg-primary/5 transition-all duration-200 rounded-md"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveDropdown(null);
-                        }}
+                        onClick={handleLinkClick}
                       >
                         {item.title}
                       </Link>
                     ))}
                   </div>
-                </div>
-              ))}
+                )}
+               
+              </div>
+            </div>
+
+            {/* Mobile Layout - Collapsible */}
+            <div className="md:hidden max-h-[70vh] overflow-y-auto">
+              <div className="p-4">
+                {data.categories.map((category) => (
+                  <div key={category.title} className="mb-4">
+                    <div className="flex items-center justify-between px-3 py-2 text-sm font-medium text-primary bg-primary/5 rounded-md mb-2">
+                      <span>{category.title}</span>
+                      {category.badge && (
+                        <span className="bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
+                          {category.badge}
+                        </span>
+                      )}
+                    </div>
+                    <div className="pl-4 space-y-1">
+                      {category.items.map((item, index) => (
+                        <Link
+                          key={index}
+                          href={item.href}
+                          className="block px-3 py-2 text-sm text-gray-700 hover:text-primary hover:bg-primary/5 transition-all duration-200 rounded-md"
+                          onClick={handleLinkClick}
+                        >
+                          {item.title}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     );
   };
@@ -345,7 +348,7 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1 relative z-50">
+          <nav ref={dropdownContainerRef} className="hidden md:flex items-center space-x-1 relative z-50">
             <CategoryDropdown
               title="Campus Courses"
               icon={GraduationCap}
