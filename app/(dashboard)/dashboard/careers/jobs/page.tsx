@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { 
   Search, 
   Grid3X3, 
@@ -34,330 +34,215 @@ import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Label } from '@/components/ui/label'
+import { RootState, useAppDispatch, useAppSelector } from '@/lib/redux/store'
+import {
+  fetchJobs,
+  createJob,
+  fetchJobsStats,
+  fetchJobById,
+  setQuery,
+  setLocation,
+  setType,
+  clearSelectedJob,
+  updateJob,
+  deleteJob
+} from '@/lib/redux/features/jobsSlice'
+import type { Job } from '@/lib/redux/features/jobsSlice'
 
-// Dummy data for jobs
-const dummyJobs = [
-  {
-    id: 1,
-    title: "Senior Software Engineer",
-    company: "TechCorp Solutions",
-    location: "Bangalore, India",
-    type: "Full-time",
-    experience: "3-5 years",
-    salary: 1200000,
-    category: "Technology",
-    status: "active",
-    postedDate: "2024-03-15",
-    applicationDeadline: "2024-04-15",
-    description: "Join our development team and work on cutting-edge web applications using React, Node.js, and cloud technologies.",
-    requirements: ["Bachelor's degree in Computer Science", "3+ years of programming experience", "Strong knowledge of web technologies"],
-    responsibilities: ["Develop and maintain web applications", "Lead technical discussions", "Mentor junior developers", "Architect scalable solutions"],
-    benefits: ["Health insurance", "Stock options", "Flexible working hours", "Professional development budget"],
-    skills: ["JavaScript", "React", "Node.js", "Git", "Problem Solving"],
-    contactEmail: "hr@techcorp.com",
-    contactPhone: "+91 98765 43210",
-    website: "https://techcorp.com",
-    applicants: 45,
-    maxApplicants: 100,
-    rating: 4.8,
-    companySize: "100-500 employees",
-    industry: "Information Technology"
-  },
-  {
-    id: 2,
-    title: "Marketing Manager",
-    company: "Digital Marketing Pro",
-    location: "Mumbai, India",
-    type: "Full-time",
-    experience: "2-4 years",
-    salary: 800000,
-    category: "Marketing",
-    status: "active",
-    postedDate: "2024-03-14",
-    applicationDeadline: "2024-04-10",
-    description: "Lead digital marketing campaigns, social media management, and content creation for various clients.",
-    requirements: ["Bachelor's degree in Marketing or Business", "2+ years of marketing experience", "Strong analytical skills"],
-    responsibilities: ["Lead marketing campaigns", "Manage social media strategy", "Analyze marketing metrics", "Client relationship management"],
-    benefits: ["Health insurance", "Performance bonus", "Career growth opportunities", "Flexible schedule"],
-    skills: ["Social Media Marketing", "Content Creation", "Analytics", "Communication", "Leadership"],
-    contactEmail: "careers@digitalmarketingpro.com",
-    contactPhone: "+91 87654 32109",
-    website: "https://digitalmarketingpro.com",
-    applicants: 32,
-    maxApplicants: 50,
-    rating: 4.6,
-    companySize: "50-100 employees",
-    industry: "Digital Marketing"
-  },
-  {
-    id: 3,
-    title: "Data Scientist",
-    company: "Analytics Hub",
-    location: "Pune, India",
-    type: "Full-time",
-    experience: "2-5 years",
-    salary: 1000000,
-    category: "Data Science",
-    status: "active",
-    postedDate: "2024-03-13",
-    applicationDeadline: "2024-04-20",
-    description: "Work on real-world data science projects involving machine learning, statistical analysis, and data visualization.",
-    requirements: ["Master's degree in Statistics/Mathematics", "2+ years of Python programming", "Strong ML knowledge"],
-    responsibilities: ["Data analysis and visualization", "Model development", "Report generation", "Team collaboration"],
-    benefits: ["Health insurance", "Stock options", "Learning budget", "Research opportunities"],
-    skills: ["Python", "Machine Learning", "Statistics", "Data Visualization", "SQL"],
-    contactEmail: "careers@analyticshub.com",
-    contactPhone: "+91 76543 21098",
-    website: "https://analyticshub.com",
-    applicants: 28,
-    maxApplicants: 30,
-    rating: 4.9,
-    companySize: "20-50 employees",
-    industry: "Data Analytics"
-  },
-  {
-    id: 4,
-    title: "UI/UX Designer",
-    company: "Creative Studio",
-    location: "Delhi, India",
-    type: "Full-time",
-    experience: "2-4 years",
-    salary: 900000,
-    category: "Design",
-    status: "active",
-    postedDate: "2024-03-12",
-    applicationDeadline: "2024-04-05",
-    description: "Design user interfaces and experiences for mobile and web applications. Work with a creative team on various projects.",
-    requirements: ["Bachelor's degree in Design", "2+ years of Figma/Adobe XD experience", "Strong portfolio required"],
-    responsibilities: ["UI/UX design", "User research", "Prototyping", "Design system development"],
-    benefits: ["Health insurance", "Creative freedom", "Portfolio projects", "Design mentorship"],
-    skills: ["Figma", "Adobe XD", "User Research", "Prototyping", "Design Thinking"],
-    contactEmail: "careers@creativestudio.com",
-    contactPhone: "+91 65432 10987",
-    website: "https://creativestudio.com",
-    applicants: 38,
-    maxApplicants: 25,
-    rating: 4.7,
-    companySize: "10-20 employees",
-    industry: "Design & Creative"
-  },
-  {
-    id: 5,
-    title: "Business Development Manager",
-    company: "Growth Ventures",
-    location: "Hyderabad, India",
-    type: "Full-time",
-    experience: "3-6 years",
-    salary: 1100000,
-    category: "Business",
-    status: "active",
-    postedDate: "2024-03-11",
-    applicationDeadline: "2024-04-12",
-    description: "Lead business development activities, market research, and client relationship management.",
-    requirements: ["MBA or Business degree", "3+ years of BD experience", "Strong communication skills"],
-    responsibilities: ["Market research", "Client outreach", "Proposal development", "Sales strategy"],
-    benefits: ["Health insurance", "Performance bonus", "Commission opportunities", "Career growth"],
-    skills: ["Business Analysis", "Communication", "Market Research", "Sales", "Leadership"],
-    contactEmail: "careers@growthventures.com",
-    contactPhone: "+91 54321 09876",
-    website: "https://growthventures.com",
-    applicants: 25,
-    maxApplicants: 40,
-    rating: 4.5,
-    companySize: "100-500 employees",
-    industry: "Business Consulting"
-  },
-  {
-    id: 6,
-    title: "Content Writer",
-    company: "Content Masters",
-    location: "Chennai, India",
-    type: "Full-time",
-    experience: "1-3 years",
-    salary: 600000,
-    category: "Content",
-    status: "active",
-    postedDate: "2024-03-10",
-    applicationDeadline: "2024-04-08",
-    description: "Create engaging content for blogs, social media, and marketing materials. Work with various clients across industries.",
-    requirements: ["Bachelor's degree in English/Journalism", "1+ years of writing experience", "Strong research skills"],
-    responsibilities: ["Blog writing", "Social media content", "SEO optimization", "Content strategy"],
-    benefits: ["Health insurance", "Diverse writing experience", "Client portfolio", "SEO training"],
-    skills: ["Content Writing", "SEO", "Social Media", "Research", "Editing"],
-    contactEmail: "careers@contentmasters.com",
-    contactPhone: "+91 43210 98765",
-    website: "https://contentmasters.com",
-    applicants: 42,
-    maxApplicants: 60,
-    rating: 4.4,
-    companySize: "20-50 employees",
-    industry: "Content & Media"
-  },
-  {
-    id: 7,
-    title: "Cybersecurity Analyst",
-    company: "SecureTech Solutions",
-    location: "Bangalore, India",
-    type: "Full-time",
-    experience: "2-4 years",
-    salary: 1000000,
-    category: "Cybersecurity",
-    status: "active",
-    postedDate: "2024-03-09",
-    applicationDeadline: "2024-04-18",
-    description: "Implement cybersecurity practices, vulnerability assessment, and security monitoring in a real-world environment.",
-    requirements: ["Bachelor's degree in Computer Science", "2+ years of security experience", "Linux expertise"],
-    responsibilities: ["Security monitoring", "Vulnerability assessment", "Incident response", "Security documentation"],
-    benefits: ["Health insurance", "Security certifications", "Hands-on experience", "Career growth"],
-    skills: ["Cybersecurity", "Linux", "Network Security", "Incident Response", "Risk Assessment"],
-    contactEmail: "careers@securetech.com",
-    contactPhone: "+91 32109 87654",
-    website: "https://securetech.com",
-    applicants: 19,
-    maxApplicants: 20,
-    rating: 4.8,
-    companySize: "50-100 employees",
-    industry: "Cybersecurity"
-  },
-  {
-    id: 8,
-    title: "Financial Analyst",
-    company: "FinanceFirst",
-    location: "Mumbai, India",
-    type: "Full-time",
-    experience: "2-5 years",
-    salary: 950000,
-    category: "Finance",
-    status: "active",
-    postedDate: "2024-03-08",
-    applicationDeadline: "2024-04-25",
-    description: "Conduct financial analysis, budgeting, and investment research. Work with experienced finance professionals.",
-    requirements: ["Bachelor's degree in Finance/Economics", "2+ years of finance experience", "Advanced Excel skills"],
-    responsibilities: ["Financial modeling", "Budget analysis", "Investment research", "Report preparation"],
-    benefits: ["Health insurance", "Performance bonus", "Financial modeling training", "Career advancement"],
-    skills: ["Financial Analysis", "Excel", "Financial Modeling", "Investment Research", "Accounting"],
-    contactEmail: "careers@financefirst.com",
-    contactPhone: "+91 21098 76543",
-    website: "https://financefirst.com",
-    applicants: 35,
-    maxApplicants: 35,
-    rating: 4.6,
-    companySize: "100-500 employees",
-    industry: "Financial Services"
-  }
-]
+type ExtendedJob = Job & {
+  status?: string;
+  category?: string;
+  experience?: string;
+  salary?: number;
+  applicants?: number;
+  maxApplicants?: number;
+  applicationDeadline?: string;
+  postedDate?: string;
+  description?: string;
+  requirements?: string[];
+  responsibilities?: string[];
+  benefits?: string[];
+  skills?: string[];
+  contactEmail?: string;
+  contactPhone?: string;
+  website?: string;
+  companySize?: string;
+  industry?: string;
+};
 
+const parseSalaryFromStipend = (stipend?: string | null) => {
+  if (!stipend) return 0
+  const numeric = stipend.replace(/[^\d.]/g, '')
+  return Number(numeric) || 0
+}
+
+const mapFormToJobPayload = (data: Partial<ExtendedJob>): Omit<Job, 'id' | 'postedAt'> => ({
+  title: data.title || '',
+  company: data.company || '',
+  location: data.location || '',
+  stipend: data.stipend ?? null,
+  type: data.type || 'Full-time',
+  duration: data.duration ?? null,
+  tags: (Array.isArray(data.tags) && data.tags.length
+    ? data.tags
+    : Array.isArray(data.skills) && data.skills.length
+      ? data.skills
+      : []),
+})
+
+// Helper constants
 const jobCategories = ["All", "Technology", "Marketing", "Data Science", "Design", "Business", "Content", "Cybersecurity", "Finance"]
 const jobTypes = ["All", "Full-time", "Part-time", "Remote", "Hybrid"]
 const jobStatuses = ["All", "active", "closed", "paused"]
 const locations = ["All", "Bangalore, India", "Mumbai, India", "Pune, India", "Delhi, India", "Hyderabad, India", "Chennai, India"]
 
 const JobsPage = () => {
-  const [jobs, setJobs] = useState(dummyJobs)
+  const dispatch = useAppDispatch()
+  const { items, query, location, type, stats, selectedJob } = useAppSelector((s: RootState) => s.jobs)
+  const jobs = useMemo(() => (items || []) as ExtendedJob[], [items])
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [searchTerm, setSearchTerm] = useState('')
+  const [searchTerm, setSearchTerm] = useState(query)
   const [selectedCategory, setSelectedCategory] = useState('All')
-  const [selectedType, setSelectedType] = useState('All')
+  const [selectedType, setSelectedType] = useState(type || 'All')
   const [selectedStatus, setSelectedStatus] = useState('All')
-  const [selectedLocation, setSelectedLocation] = useState('All')
+  const [selectedLocation, setSelectedLocation] = useState(location || 'All')
   const [showViewModal, setShowViewModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [selectedJob, setSelectedJob] = useState<typeof dummyJobs[0] | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isActionLoading, setIsActionLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
+  const [jobToEdit, setJobToEdit] = useState<ExtendedJob | null>(null)
+  const [jobToDelete, setJobToDelete] = useState<ExtendedJob | null>(null)
+  const [jobToView, setJobToView] = useState<ExtendedJob | null>(null)
   const itemsPerPage = 12
 
-  // Filter jobs
-  const filteredJobs = useMemo(() => {
-    return jobs.filter(job => {
-      const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           job.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           job.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
-      const matchesCategory = selectedCategory === 'All' || job.category === selectedCategory
-      const matchesType = selectedType === 'All' || job.type === selectedType
-      const matchesStatus = selectedStatus === 'All' || job.status === selectedStatus
-      const matchesLocation = selectedLocation === 'All' || job.location === selectedLocation
-      
-      return matchesSearch && matchesCategory && matchesType && matchesStatus && matchesLocation
-    })
-  }, [jobs, searchTerm, selectedCategory, selectedType, selectedStatus, selectedLocation])
+  useEffect(() => {
+    dispatch(
+      fetchJobs({
+        q: query || undefined,
+        location: location || undefined,
+        type: type || undefined,
+      })
+    )
+  }, [dispatch, query, location, type])
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredJobs.length / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const endIndex = startIndex + itemsPerPage
-  const paginatedJobs = filteredJobs.slice(startIndex, endIndex)
+  useEffect(() => {
+    dispatch(fetchJobsStats())
+  }, [dispatch])
 
-  // Reset to first page when filters change
-  React.useEffect(() => {
+  useEffect(() => {
+    setSearchTerm(query)
+  }, [query])
+
+  useEffect(() => {
+    setSelectedLocation(location || 'All')
+  }, [location])
+
+  useEffect(() => {
+    setSelectedType(type || 'All')
+  }, [type])
+
+  useEffect(() => {
     setCurrentPage(1)
   }, [searchTerm, selectedCategory, selectedType, selectedStatus, selectedLocation])
 
-  const handleUpdateJob = async (jobId: number, updatedJob: typeof dummyJobs[0]) => {
-    setIsLoading(true)
+  useEffect(() => {
+    if (!selectedJob) return
+    if (jobToView && jobToView.id === selectedJob.id) {
+      setJobToView((prev) => (prev ? { ...prev, ...selectedJob } : (selectedJob as ExtendedJob)))
+    }
+    if (jobToEdit && jobToEdit.id === selectedJob.id) {
+      setJobToEdit((prev) => (prev ? { ...prev, ...selectedJob } : (selectedJob as ExtendedJob)))
+    }
+  }, [selectedJob, jobToView, jobToEdit])
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value)
+    dispatch(setQuery(value))
+  }
+
+  const handleTypeChange = (value: string) => {
+    setSelectedType(value)
+    dispatch(setType(value === 'All' ? '' : value))
+  }
+
+  const handleLocationChange = (value: string) => {
+    setSelectedLocation(value)
+    dispatch(setLocation(value === 'All' ? '' : value))
+  }
+
+  const handleAddJob = async (formData: ExtendedJob) => {
+    setIsActionLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setJobs(jobs.map(job => 
-        job.id === jobId 
-          ? { ...job, ...updatedJob }
-          : job
-      ))
+      await dispatch(createJob(mapFormToJobPayload(formData))).unwrap()
+      setShowAddModal(false)
+    } catch (err) {
+      console.error('Failed to create job', err)
     } finally {
-      setIsLoading(false)
+      setIsActionLoading(false)
     }
   }
 
-  const handleAddJob = async (newJob: typeof dummyJobs[0]) => {
-    setIsLoading(true)
+  const handleUpdateJob = async (jobId: string, formData: ExtendedJob) => {
+    setIsActionLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      const job = {
-        ...newJob,
-        id: Math.max(...jobs.map(j => j.id)) + 1,
-        applicants: 0,
-        rating: 0,
-        postedDate: new Date().toISOString().split('T')[0]
-      }
-      setJobs([...jobs, job])
+      await dispatch(updateJob({ jobId, data: mapFormToJobPayload(formData) })).unwrap()
+      setShowEditModal(false)
+      setJobToEdit(null)
+    } catch (err) {
+      console.error('Failed to update job', err)
     } finally {
-      setIsLoading(false)
+      setIsActionLoading(false)
     }
   }
 
   const handleDeleteJob = async () => {
-    setIsLoading(true)
+    if (!jobToDelete) return
+    setIsActionLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setJobs(jobs.filter(job => job.id !== selectedJob!.id))
+      await dispatch(deleteJob(jobToDelete.id)).unwrap()
       setShowDeleteModal(false)
-      setSelectedJob(null)
+      setJobToDelete(null)
+    } catch (err) {
+      console.error('Failed to delete job', err)
     } finally {
-      setIsLoading(false)
+      setIsActionLoading(false)
     }
   }
 
-  const openViewModal = (job: typeof dummyJobs[0]) => {
-    setSelectedJob(job)
+  const openViewModal = (job: ExtendedJob) => {
+    setJobToView(job)
     setShowViewModal(true)
+    dispatch(fetchJobById(job.id))
   }
 
-  const openEditModal = (job: typeof dummyJobs[0]) => {
-    setSelectedJob(job)
+  const openEditModal = (job: ExtendedJob) => {
+    setJobToEdit(job)
     setShowEditModal(true)
+    dispatch(fetchJobById(job.id))
   }
 
-  const openDeleteModal = (job: typeof dummyJobs[0]) => {
-    setSelectedJob(job)
+  const openDeleteModal = (job: ExtendedJob) => {
+    setJobToDelete(job)
     setShowDeleteModal(true)
+  }
+
+  const closeViewModal = () => {
+    setShowViewModal(false)
+    setJobToView(null)
+    dispatch(clearSelectedJob())
+  }
+
+  const closeEditModal = () => {
+    setShowEditModal(false)
+    setJobToEdit(null)
+    dispatch(clearSelectedJob())
+  }
+
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false)
+    setJobToDelete(null)
   }
 
   const getStatusColor = (status: string) => {
@@ -383,6 +268,45 @@ const JobsPage = () => {
     }
   }
 
+  const filteredJobs = useMemo(() => {
+    return jobs.filter((job) => {
+      const tags = Array.isArray(job.tags) ? job.tags : []
+      const matchesSearch =
+        job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      const matchesType = selectedType === 'All' || job.type === selectedType
+      const matchesLocation =
+        selectedLocation === 'All' ||
+        (job.location || '').toLowerCase().includes(selectedLocation.toLowerCase())
+      const jobStatus = job.status || 'active'
+      const matchesStatus = selectedStatus === 'All' || jobStatus === selectedStatus
+      const matchesCategory =
+        selectedCategory === 'All' ||
+        job.category === selectedCategory ||
+        tags.some((tag) => tag.toLowerCase().includes(selectedCategory.toLowerCase()))
+
+      return matchesSearch && matchesType && matchesLocation && matchesStatus && matchesCategory
+    })
+  }, [jobs, searchTerm, selectedCategory, selectedType, selectedStatus, selectedLocation])
+
+  const totalPages = Math.ceil(filteredJobs.length / itemsPerPage) || 1
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedJobs = filteredJobs.slice(startIndex, endIndex)
+
+  const totalJobsStat = stats?.totalJobs ?? jobs.length
+  const activeJobsStat =
+    stats?.activeJobs ?? jobs.filter((job) => (job.status || 'active') === 'active').length
+  const totalApplicantsStat =
+    stats?.totalApplicants ?? jobs.reduce((sum, job) => sum + (job.applicants || 0), 0)
+  const averageSalaryValue =
+    stats?.averageSalary ??
+    (jobs.length
+      ? jobs.reduce((sum, job) => sum + parseSalaryFromStipend(job.stipend), 0) / jobs.length
+      : 0)
+  const averageSalaryStat = `₹${((averageSalaryValue as number) / 100000).toFixed(1)}L`
+
   return (
     <TooltipProvider>
       <div className="space-y-6">
@@ -405,7 +329,7 @@ const JobsPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Jobs</p>
-                  <p className="text-2xl font-bold text-foreground">{jobs.length}</p>
+                  <p className="text-2xl font-bold text-foreground">{totalJobsStat as number}</p>
                 </div>
                 <Briefcase className="w-8 h-8 text-primary" />
               </div>
@@ -416,7 +340,7 @@ const JobsPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Active Posts</p>
-                  <p className="text-2xl font-bold text-foreground">{jobs.filter(j => j.status === 'active').length}</p>
+                  <p className="text-2xl font-bold text-foreground">{activeJobsStat as number}</p>
                 </div>
                 <Star className="w-8 h-8 text-emerald-500" />
               </div>
@@ -427,7 +351,7 @@ const JobsPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Applicants</p>
-                  <p className="text-2xl font-bold text-foreground">{jobs.reduce((sum, j) => sum + j.applicants, 0)}</p>
+                  <p className="text-2xl font-bold text-foreground">{totalApplicantsStat as number}</p>
                 </div>
                 <Users className="w-8 h-8 text-blue-600" />
               </div>
@@ -438,7 +362,7 @@ const JobsPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Avg. Salary</p>
-                  <p className="text-2xl font-bold text-foreground">₹{(jobs.reduce((sum, j) => sum + j.salary, 0) / jobs.length / 100000).toFixed(1)}L</p>
+                  <p className="text-2xl font-bold text-foreground">{averageSalaryStat as string}</p>
                 </div>
                 <DollarSign className="w-8 h-8 text-green-600" />
               </div>
@@ -457,7 +381,7 @@ const JobsPage = () => {
                   type="text"
                   placeholder="Search jobs, companies, or skills..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => handleSearchChange(e.target.value)}
                   className="pl-10"
                 />
               </div>
@@ -477,7 +401,7 @@ const JobsPage = () => {
               </Select>
 
               {/* Type Filter */}
-              <Select value={selectedType} onValueChange={setSelectedType}>
+              <Select value={selectedType} onValueChange={handleTypeChange}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
@@ -505,7 +429,7 @@ const JobsPage = () => {
               </Select>
 
               {/* Location Filter */}
-              <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+              <Select value={selectedLocation} onValueChange={handleLocationChange}>
                 <SelectTrigger className="w-[200px]">
                   <SelectValue placeholder="Select location" />
                 </SelectTrigger>
@@ -558,94 +482,108 @@ const JobsPage = () => {
         {/* Jobs Display */}
         {viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {paginatedJobs.map(job => (
-              <Card key={job.id} className="overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg line-clamp-2">{job.title}</CardTitle>
-                    <div className="flex gap-2">
-                      <Badge variant={getStatusColor(job.status) as 'default' | 'secondary' | 'destructive' | 'outline'}>
-                        {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
-                      </Badge>
-                      <Badge variant={getCategoryColor(job.category) as 'default' | 'secondary' | 'destructive' | 'outline'}>
-                        {job.category}
-                      </Badge>
-                    </div>
-                  </div>
-                  <CardDescription className="flex items-center gap-2">
-                    <Building className="w-4 h-4" />
-                    {job.company}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3 flex-1 flex flex-col">
-                  <div className="space-y-3 flex-1">
+            {paginatedJobs.map((job) => {
+              const jobStatus = job.status || 'active'
+              const jobCategory =
+                job.category || (Array.isArray(job.tags) && job.tags.length ? job.tags[0] : 'General')
+              const applicantsCount = job.applicants ?? (Array.isArray(job.tags) ? job.tags.length : 0)
+              const stipendValue = parseSalaryFromStipend(job.stipend)
+              const deadlineLabel = job.applicationDeadline || job.postedAt || ''
+              const durationLabel = job.duration || job.experience || 'N/A'
+
+              return (
+                <Card key={job.id} className="overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full">
+                  <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Location:</span>
-                      <span className="text-sm font-medium flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
-                        {job.location}
-                      </span>
+                      <CardTitle className="text-lg line-clamp-2">{job.title}</CardTitle>
+                      <div className="flex gap-2">
+                        <Badge variant={getStatusColor(jobStatus) as 'default' | 'secondary' | 'destructive' | 'outline'}>
+                          {jobStatus.charAt(0).toUpperCase() + jobStatus.slice(1)}
+                        </Badge>
+                        <Badge variant={getCategoryColor(jobCategory) as 'default' | 'secondary' | 'destructive' | 'outline'}>
+                          {jobCategory}
+                        </Badge>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Experience:</span>
-                      <span className="text-sm font-medium flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {job.experience}
-                      </span>
+                    <CardDescription className="flex items-center gap-2">
+                      <Building className="w-4 h-4" />
+                      {job.company}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3 flex-1 flex flex-col">
+                    <div className="space-y-3 flex-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Location:</span>
+                        <span className="text-sm font-medium flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          {job.location}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Experience:</span>
+                        <span className="text-sm font-medium flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {durationLabel}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Salary:</span>
+                        <span className="text-lg font-bold text-foreground">
+                          {stipendValue ? `₹${(stipendValue / 100000).toFixed(1)}L` : 'Not specified'}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Type:</span>
+                        <span className="text-sm font-medium">{job.type}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Applicants:</span>
+                        <span className="text-sm font-medium">{applicantsCount}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Deadline:</span>
+                        <span className="text-sm font-medium">
+                          {deadlineLabel ? new Date(deadlineLabel).toLocaleDateString() : 'N/A'}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Salary:</span>
-                      <span className="text-lg font-bold text-foreground">₹{(job.salary / 100000).toFixed(1)}L</span>
+                    <div className="flex gap-2 pt-2 mt-auto">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            onClick={() => openViewModal(job)}
+                            className="flex-1 gap-2"
+                            size="sm"
+                            variant="outline"
+                          >
+                            <Eye className="w-4 h-4" />
+                            View
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>View job details</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            onClick={() => openEditModal(job)}
+                            className="flex-1 gap-2"
+                            size="sm"
+                          >
+                            <Edit className="w-4 h-4" />
+                            Edit
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Edit job</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Type:</span>
-                      <span className="text-sm font-medium">{job.type}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Applicants:</span>
-                      <span className="text-sm font-medium">{job.applicants}/{job.maxApplicants}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Deadline:</span>
-                      <span className="text-sm font-medium">{new Date(job.applicationDeadline).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 pt-2 mt-auto">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          onClick={() => openViewModal(job)}
-                          className="flex-1 gap-2"
-                          size="sm"
-                          variant="outline"
-                        >
-                          <Eye className="w-4 h-4" />
-                          View
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>View job details</p>
-                      </TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          onClick={() => openEditModal(job)}
-                          className="flex-1 gap-2"
-                          size="sm"
-                        >
-                          <Edit className="w-4 h-4" />
-                          Edit
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Edit job</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              )
+            })}
           </div>
         ) : (
           <Card>
@@ -664,84 +602,92 @@ const JobsPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedJobs.map(job => (
-                  <TableRow key={job.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium text-foreground">{job.title}</p>
-                        <p className="text-sm text-muted-foreground">{job.category}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Building className="w-3 h-3 text-muted-foreground" />
-                        <span>{job.company}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-muted-foreground" />
-                        <span>{job.location}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>{job.type}</TableCell>
-                    <TableCell>{job.experience}</TableCell>
-                    <TableCell className="font-medium">₹{(job.salary / 100000).toFixed(1)}L</TableCell>
-                    <TableCell>{job.applicants}/{job.maxApplicants}</TableCell>
-                    <TableCell>
-                      <Badge variant={getStatusColor(job.status) as 'default' | 'secondary' | 'destructive' | 'outline'}>
-                        {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              onClick={() => openViewModal(job)}
-                              variant="ghost"
-                              size="icon"
-                            >
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>View job</p>
-                          </TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              onClick={() => openEditModal(job)}
-                              variant="ghost"
-                              size="icon"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Edit job</p>
-                          </TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              onClick={() => openDeleteModal(job)}
-                              variant="ghost"
-                              size="icon"
-                              className="text-destructive hover:bg-destructive/10"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Delete job</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {paginatedJobs.map((job) => {
+                  const jobStatus = job.status || 'active'
+                  const applicantsCount = job.applicants ?? (Array.isArray(job.tags) ? job.tags.length : 0)
+                  const stipendValue = parseSalaryFromStipend(job.stipend)
+                  const durationLabel = job.duration || job.experience || 'N/A'
+
+                  return (
+                    <TableRow key={job.id}>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium text-foreground">{job.title}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <Building className="w-3 h-3 text-muted-foreground" />
+                          <span>{job.company}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-muted-foreground" />
+                          <span>{job.location}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>{job.type}</TableCell>
+                      <TableCell>{durationLabel}</TableCell>
+                      <TableCell className="font-medium">
+                        {stipendValue ? `₹${(stipendValue / 100000).toFixed(1)}L` : 'Not specified'}
+                      </TableCell>
+                      <TableCell>{applicantsCount}</TableCell>
+                      <TableCell>
+                        <Badge variant={getStatusColor(jobStatus) as 'default' | 'secondary' | 'destructive' | 'outline'}>
+                          {jobStatus.charAt(0).toUpperCase() + jobStatus.slice(1)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                onClick={() => openViewModal(job)}
+                                variant="ghost"
+                                size="icon"
+                              >
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>View job</p>
+                            </TooltipContent>
+                          </Tooltip>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                onClick={() => openEditModal(job)}
+                                variant="ghost"
+                                size="icon"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Edit job</p>
+                            </TooltipContent>
+                          </Tooltip>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                onClick={() => openDeleteModal(job)}
+                                variant="ghost"
+                                size="icon"
+                                className="text-destructive hover:bg-destructive/10"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Delete job</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
               </TableBody>
             </Table>
           </Card>
@@ -794,15 +740,15 @@ const JobsPage = () => {
         )}
 
         {/* View Job Modal */}
-        <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
+        <Dialog open={showViewModal} onOpenChange={(open) => (open ? setShowViewModal(true) : closeViewModal())}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Job Details - {selectedJob?.title}</DialogTitle>
+              <DialogTitle>Job Details - {jobToView?.title}</DialogTitle>
               <DialogDescription>
                 Complete job information and application details.
               </DialogDescription>
             </DialogHeader>
-            {selectedJob && (
+            {jobToView && (
               <div className="space-y-6">
                 {/* Job Summary */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -813,26 +759,26 @@ const JobsPage = () => {
                     <CardContent className="space-y-3">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Company:</span>
-                        <span className="font-medium">{selectedJob.company}</span>
+                        <span className="font-medium">{jobToView.company}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Category:</span>
-                        <Badge variant={getCategoryColor(selectedJob.category) as 'default' | 'secondary' | 'destructive' | 'outline'}>
-                          {selectedJob.category}
+                        <Badge variant={getCategoryColor(jobToView.category || 'General') as 'default' | 'secondary' | 'destructive' | 'outline'}>
+                          {jobToView.category || 'General'}
                         </Badge>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Type:</span>
-                        <span className="font-medium">{selectedJob.type}</span>
+                        <span className="font-medium">{jobToView.type}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Experience:</span>
-                        <span className="font-medium">{selectedJob.experience}</span>
+                        <span className="font-medium">{jobToView.experience || jobToView.duration || 'N/A'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Status:</span>
-                        <Badge variant={getStatusColor(selectedJob.status) as 'default' | 'secondary' | 'destructive' | 'outline'}>
-                          {selectedJob.status.charAt(0).toUpperCase() + selectedJob.status.slice(1)}
+                        <Badge variant={getStatusColor(jobToView.status || 'active') as 'default' | 'secondary' | 'destructive' | 'outline'}>
+                          {(jobToView.status || 'active').charAt(0).toUpperCase() + (jobToView.status || 'active').slice(1)}
                         </Badge>
                       </div>
                     </CardContent>
@@ -845,23 +791,39 @@ const JobsPage = () => {
                     <CardContent className="space-y-3">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Location:</span>
-                        <span className="font-medium">{selectedJob.location}</span>
+                        <span className="font-medium">{jobToView.location}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Salary:</span>
-                        <span className="font-bold text-lg">₹{(selectedJob.salary / 100000).toFixed(1)}L</span>
+                        <span className="font-bold text-lg">
+                          {parseSalaryFromStipend(jobToView.stipend)
+                            ? `₹${(parseSalaryFromStipend(jobToView.stipend) / 100000).toFixed(1)}L`
+                            : 'Not specified'}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Applicants:</span>
-                        <span className="font-medium">{selectedJob.applicants}/{selectedJob.maxApplicants}</span>
+                        <span className="font-medium">
+                          {(jobToView.applicants ?? 0)}/{jobToView.maxApplicants ?? 0}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Deadline:</span>
-                        <span className="font-medium">{new Date(selectedJob.applicationDeadline).toLocaleDateString()}</span>
+                        <span className="font-medium">
+                          {jobToView.applicationDeadline
+                            ? new Date(jobToView.applicationDeadline).toLocaleDateString()
+                            : 'N/A'}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Posted:</span>
-                        <span className="font-medium">{new Date(selectedJob.postedDate).toLocaleDateString()}</span>
+                        <span className="font-medium">
+                          {jobToView.postedAt
+                            ? new Date(jobToView.postedAt).toLocaleDateString()
+                            : jobToView.postedDate
+                              ? new Date(jobToView.postedDate).toLocaleDateString()
+                              : 'N/A'}
+                        </span>
                       </div>
                     </CardContent>
                   </Card>
@@ -873,7 +835,7 @@ const JobsPage = () => {
                     <CardTitle>Description</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground">{selectedJob.description}</p>
+                    <p className="text-muted-foreground">{jobToView.description || 'No description provided'}</p>
                   </CardContent>
                 </Card>
 
@@ -884,7 +846,7 @@ const JobsPage = () => {
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
-                      {selectedJob.requirements.map((req, index) => (
+                      {Array.isArray(jobToView.requirements) && jobToView.requirements.map((req, index) => (
                         <li key={index} className="flex items-start gap-2">
                           <span className="text-primary mt-1">•</span>
                           <span className="text-muted-foreground">{req}</span>
@@ -901,7 +863,7 @@ const JobsPage = () => {
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
-                      {selectedJob.responsibilities.map((resp, index) => (
+                      {Array.isArray(jobToView.responsibilities) && jobToView.responsibilities.map((resp, index) => (
                         <li key={index} className="flex items-start gap-2">
                           <span className="text-primary mt-1">•</span>
                           <span className="text-muted-foreground">{resp}</span>
@@ -918,7 +880,7 @@ const JobsPage = () => {
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
-                      {selectedJob.benefits.map((benefit, index) => (
+                      {Array.isArray(jobToView.benefits) && jobToView.benefits.map((benefit, index) => (
                         <li key={index} className="flex items-start gap-2">
                           <span className="text-primary mt-1">•</span>
                           <span className="text-muted-foreground">{benefit}</span>
@@ -935,11 +897,12 @@ const JobsPage = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-2">
-                      {selectedJob.skills.map((skill, index) => (
-                        <Badge key={index} variant="outline">
-                          {skill}
-                        </Badge>
-                      ))}
+                      {Array.isArray(jobToView.skills ?? jobToView.tags) &&
+                        (jobToView.skills ?? jobToView.tags)?.map((skill, index) => (
+                          <Badge key={index} variant="outline">
+                            {skill}
+                          </Badge>
+                        ))}
                     </div>
                   </CardContent>
                 </Card>
@@ -952,25 +915,34 @@ const JobsPage = () => {
                   <CardContent className="space-y-3">
                     <div className="flex items-center gap-2">
                       <Mail className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm">{selectedJob.contactEmail}</span>
+                      <span className="text-sm">{jobToView.contactEmail || 'Not provided'}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm">{selectedJob.contactPhone}</span>
+                      <span className="text-sm">{jobToView.contactPhone || 'Not provided'}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Globe className="w-4 h-4 text-muted-foreground" />
-                      <a href={selectedJob.website} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline flex items-center gap-1">
-                        {selectedJob.website}
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
+                      {jobToView.website ? (
+                        <a
+                          href={jobToView.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline flex items-center gap-1"
+                        >
+                          {jobToView.website}
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      ) : (
+                        <span className="text-sm">Not provided</span>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
               </div>
             )}
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowViewModal(false)}>
+              <Button variant="outline" onClick={closeViewModal}>
                 Close
               </Button>
             </DialogFooter>
@@ -990,13 +962,13 @@ const JobsPage = () => {
               job={null}
               onSubmit={handleAddJob}
               onCancel={() => setShowAddModal(false)}
-              isLoading={isLoading}
+              isLoading={isActionLoading}
             />
           </DialogContent>
         </Dialog>
 
         {/* Edit Job Modal */}
-        <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <Dialog open={showEditModal} onOpenChange={(open) => (open ? setShowEditModal(true) : closeEditModal())}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Job</DialogTitle>
@@ -1004,39 +976,38 @@ const JobsPage = () => {
                 Update job information and details.
               </DialogDescription>
             </DialogHeader>
-            {selectedJob && (
+            {jobToEdit && (
               <JobForm
-                job={selectedJob}
+                job={jobToEdit}
                 onSubmit={(updatedJob) => {
-                  handleUpdateJob(selectedJob.id, updatedJob)
-                  setShowEditModal(false)
+                  handleUpdateJob(jobToEdit.id, updatedJob)
                 }}
-                onCancel={() => setShowEditModal(false)}
-                isLoading={isLoading}
+                onCancel={closeEditModal}
+                isLoading={isActionLoading}
               />
             )}
           </DialogContent>
         </Dialog>
 
         {/* Delete Confirmation Modal */}
-        <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <Dialog open={showDeleteModal} onOpenChange={(open) => (open ? setShowDeleteModal(true) : closeDeleteModal())}>
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Delete Job</DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete the job &quot;{selectedJob?.title}&quot;? This action cannot be undone.
+                Are you sure you want to delete the job &quot;{jobToDelete?.title}&quot;? This action cannot be undone.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowDeleteModal(false)} disabled={isLoading}>
+              <Button variant="outline" onClick={closeDeleteModal} disabled={isActionLoading}>
                 Cancel
               </Button>
               <Button 
                 variant="destructive" 
                 onClick={handleDeleteJob} 
-                disabled={isLoading}
+                disabled={isActionLoading}
               >
-                {isLoading ? (
+                {isActionLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Deleting...
@@ -1055,8 +1026,8 @@ const JobsPage = () => {
 
 // Job Form Component
 const JobForm = ({ job, onSubmit, onCancel, isLoading }: {
-  job: typeof dummyJobs[0] | null
-  onSubmit: (jobData: typeof dummyJobs[0]) => void
+  job: ExtendedJob | null
+  onSubmit: (jobData: ExtendedJob) => void
   onCancel: () => void
   isLoading: boolean
 }) => {
@@ -1065,17 +1036,19 @@ const JobForm = ({ job, onSubmit, onCancel, isLoading }: {
     company: job?.company || '',
     location: job?.location || '',
     type: job?.type || 'Full-time',
+    duration: job?.duration || job?.experience || '',
     experience: job?.experience || '',
-    salary: job?.salary || 0,
+    stipend: job?.stipend || '',
     category: job?.category || 'Technology',
     status: job?.status || 'active',
-    postedDate: job?.postedDate || new Date().toISOString().split('T')[0],
+    postedDate: job?.postedAt || job?.postedDate || new Date().toISOString().split('T')[0],
     applicationDeadline: job?.applicationDeadline || '',
     description: job?.description || '',
     requirements: job?.requirements || [],
     responsibilities: job?.responsibilities || [],
     benefits: job?.benefits || [],
-    skills: job?.skills || [],
+    skills: job?.skills || job?.tags || [],
+    tags: job?.tags || [],
     contactEmail: job?.contactEmail || '',
     contactPhone: job?.contactPhone || '',
     website: job?.website || '',
@@ -1083,6 +1056,34 @@ const JobForm = ({ job, onSubmit, onCancel, isLoading }: {
     companySize: job?.companySize || '',
     industry: job?.industry || ''
   })
+
+  useEffect(() => {
+    setFormData({
+      title: job?.title || '',
+      company: job?.company || '',
+      location: job?.location || '',
+      type: job?.type || 'Full-time',
+      duration: job?.duration || job?.experience || '',
+      experience: job?.experience || '',
+      stipend: job?.stipend || '',
+      category: job?.category || 'Technology',
+      status: job?.status || 'active',
+      postedDate: job?.postedAt || job?.postedDate || new Date().toISOString().split('T')[0],
+      applicationDeadline: job?.applicationDeadline || '',
+      description: job?.description || '',
+      requirements: job?.requirements || [],
+      responsibilities: job?.responsibilities || [],
+      benefits: job?.benefits || [],
+      skills: job?.skills || job?.tags || [],
+      tags: job?.tags || [],
+      contactEmail: job?.contactEmail || '',
+      contactPhone: job?.contactPhone || '',
+      website: job?.website || '',
+      maxApplicants: job?.maxApplicants || 50,
+      companySize: job?.companySize || '',
+      industry: job?.industry || ''
+    })
+  }, [job])
 
   const [requirementsInput, setRequirementsInput] = useState('')
   const [responsibilitiesInput, setResponsibilitiesInput] = useState('')
@@ -1093,78 +1094,87 @@ const JobForm = ({ job, onSubmit, onCancel, isLoading }: {
     e.preventDefault()
     const completeData = {
       ...formData,
-      id: job?.id || Date.now(),
+      id: job?.id || Date.now().toString(),
       applicants: job?.applicants || 0,
-      rating: job?.rating || 0
-    }
+      postedAt: job?.postedAt || job?.postedDate || new Date().toISOString(),
+      tags: Array.isArray(formData.skills) && formData.skills.length ? formData.skills : formData.tags || []
+    } as ExtendedJob
     onSubmit(completeData)
   }
 
   const addRequirement = () => {
     if (requirementsInput.trim()) {
-      setFormData({
-        ...formData,
-        requirements: [...formData.requirements, requirementsInput.trim()]
-      })
+      setFormData((prev) => ({
+        ...prev,
+        requirements: [...prev.requirements, requirementsInput.trim()]
+      }))
       setRequirementsInput('')
     }
   }
 
   const removeRequirement = (index: number) => {
-    setFormData({
-      ...formData,
-      requirements: formData.requirements.filter((_, i) => i !== index)
-    })
+    setFormData((prev) => ({
+      ...prev,
+      requirements: prev.requirements.filter((_, i: number) => i !== index)
+    }))
   }
 
   const addResponsibility = () => {
     if (responsibilitiesInput.trim()) {
-      setFormData({
-        ...formData,
-        responsibilities: [...formData.responsibilities, responsibilitiesInput.trim()]
-      })
+      setFormData((prev) => ({
+        ...prev,
+        responsibilities: [...prev.responsibilities, responsibilitiesInput.trim()]
+      }))
       setResponsibilitiesInput('')
     }
   }
 
   const removeResponsibility = (index: number) => {
-    setFormData({
-      ...formData,
-      responsibilities: formData.responsibilities.filter((_, i) => i !== index)
-    })
+    setFormData((prev) => ({
+      ...prev,
+      responsibilities: prev.responsibilities.filter((_, i: number) => i !== index)
+    }))
   }
 
   const addBenefit = () => {
     if (benefitsInput.trim()) {
-      setFormData({
-        ...formData,
-        benefits: [...formData.benefits, benefitsInput.trim()]
-      })
+      setFormData((prev) => ({
+        ...prev,
+        benefits: [...prev.benefits, benefitsInput.trim()]
+      }))
       setBenefitsInput('')
     }
   }
 
   const removeBenefit = (index: number) => {
-    setFormData({
-      ...formData,
-      benefits: formData.benefits.filter((_, i) => i !== index)
-    })
+    setFormData((prev) => ({
+      ...prev,
+      benefits: prev.benefits.filter((_, i: number) => i !== index)
+    }))
   }
 
   const addSkill = () => {
     if (skillsInput.trim()) {
-      setFormData({
-        ...formData,
-        skills: [...formData.skills, skillsInput.trim()]
+      setFormData((prev) => {
+        const updatedSkills = [...prev.skills, skillsInput.trim()]
+        return {
+          ...prev,
+          skills: updatedSkills,
+          tags: updatedSkills
+        }
       })
       setSkillsInput('')
     }
   }
 
   const removeSkill = (index: number) => {
-    setFormData({
-      ...formData,
-      skills: formData.skills.filter((_, i) => i !== index)
+    setFormData((prev) => {
+      const updatedSkills = prev.skills.filter((_, i: number) => i !== index)
+      return {
+        ...prev,
+        skills: updatedSkills,
+        tags: updatedSkills
+      }
     })
   }
 
@@ -1223,13 +1233,21 @@ const JobForm = ({ job, onSubmit, onCancel, isLoading }: {
           />
         </div>
         <div>
-          <Label htmlFor="salary">Salary (₹)</Label>
+          <Label htmlFor="duration">Duration</Label>
           <Input
-            id="salary"
-            type="number"
-            value={formData.salary}
-            onChange={(e) => setFormData({...formData, salary: parseInt(e.target.value)})}
-            required
+            id="duration"
+            value={formData.duration}
+            onChange={(e) => setFormData({...formData, duration: e.target.value})}
+            placeholder="e.g., 6 months"
+          />
+        </div>
+        <div>
+          <Label htmlFor="stipend">Stipend / Salary</Label>
+          <Input
+            id="stipend"
+            value={formData.stipend}
+            onChange={(e) => setFormData({...formData, stipend: e.target.value})}
+            placeholder="e.g., ₹50,000 / month"
           />
         </div>
         <div>
@@ -1279,7 +1297,7 @@ const JobForm = ({ job, onSubmit, onCancel, isLoading }: {
             id="maxApplicants"
             type="number"
             value={formData.maxApplicants}
-            onChange={(e) => setFormData({...formData, maxApplicants: parseInt(e.target.value)})}
+            onChange={(e) => setFormData({...formData, maxApplicants: parseInt(e.target.value) || 0})}
             required
           />
         </div>
@@ -1322,14 +1340,14 @@ const JobForm = ({ job, onSubmit, onCancel, isLoading }: {
               value={requirementsInput}
               onChange={(e) => setRequirementsInput(e.target.value)}
               placeholder="Add requirement"
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addRequirement())}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addRequirement(); } }}
             />
             <Button type="button" onClick={addRequirement} variant="outline">
               Add
             </Button>
           </div>
           <div className="space-y-1">
-            {formData.requirements.map((req, index) => (
+            {Array.isArray(formData.requirements) && formData.requirements.map((req, index) => (
               <div key={index} className="flex items-center justify-between p-2 bg-muted rounded-lg">
                 <span className="text-sm">{req}</span>
                 <Button
@@ -1355,14 +1373,14 @@ const JobForm = ({ job, onSubmit, onCancel, isLoading }: {
               value={responsibilitiesInput}
               onChange={(e) => setResponsibilitiesInput(e.target.value)}
               placeholder="Add responsibility"
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addResponsibility())}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addResponsibility(); } }}
             />
             <Button type="button" onClick={addResponsibility} variant="outline">
               Add
             </Button>
           </div>
           <div className="space-y-1">
-            {formData.responsibilities.map((resp, index) => (
+            {Array.isArray(formData.responsibilities) && formData.responsibilities.map((resp, index) => (
               <div key={index} className="flex items-center justify-between p-2 bg-muted rounded-lg">
                 <span className="text-sm">{resp}</span>
                 <Button
@@ -1388,14 +1406,14 @@ const JobForm = ({ job, onSubmit, onCancel, isLoading }: {
               value={benefitsInput}
               onChange={(e) => setBenefitsInput(e.target.value)}
               placeholder="Add benefit"
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addBenefit())}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addBenefit(); } }}
             />
             <Button type="button" onClick={addBenefit} variant="outline">
               Add
             </Button>
           </div>
           <div className="space-y-1">
-            {formData.benefits.map((benefit, index) => (
+            {Array.isArray(formData.benefits) && formData.benefits.map((benefit, index) => (
               <div key={index} className="flex items-center justify-between p-2 bg-muted rounded-lg">
                 <span className="text-sm">{benefit}</span>
                 <Button
@@ -1421,14 +1439,14 @@ const JobForm = ({ job, onSubmit, onCancel, isLoading }: {
               value={skillsInput}
               onChange={(e) => setSkillsInput(e.target.value)}
               placeholder="Add skill"
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addSkill(); } }}
             />
             <Button type="button" onClick={addSkill} variant="outline">
               Add
             </Button>
           </div>
           <div className="space-y-1">
-            {formData.skills.map((skill, index) => (
+            {Array.isArray(formData.skills) && formData.skills.map((skill, index) => (
               <div key={index} className="flex items-center justify-between p-2 bg-muted rounded-lg">
                 <span className="text-sm">{skill}</span>
                 <Button

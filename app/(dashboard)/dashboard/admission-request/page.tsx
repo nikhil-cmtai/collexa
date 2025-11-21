@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { 
   Search, 
   Grid3X3, 
@@ -30,209 +30,106 @@ import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Label } from '@/components/ui/label'
+import { useAppDispatch, useAppSelector } from '@/lib/redux/store'
+import {
+  fetchAdmissionRequests,
+  updateAdmissionRequest,
+  deleteAdmissionRequest,
+  fetchAdmissionRequestById,
+  fetchAdmissionRequestsStats,
+  setAdmissionRequestQuery,
+  setAdmissionRequestStatusFilter,
+  setAdmissionRequestPriorityFilter,
+  setAdmissionRequestCourseFilter,
+  clearSelectedAdmissionRequest,
+  type AdmissionRequest,
+} from '@/lib/redux/features/admission-requestSlice'
 
-// Dummy data for admission requests
-const dummyAdmissionRequests = [
-  {
-    id: 1,
-    name: "Arjun Sharma",
-    email: "arjun.sharma@email.com",
-    phone: "+91 98765 43210",
-    course: "MBA in Healthcare Management",
-    university: "Delhi University",
-    location: "New Delhi",
-    status: "pending",
-    priority: "high",
-    applicationDate: "2024-03-15",
-    lastContact: "2024-03-15",
-    createdAt: "2024-03-15",
-    assignedTo: "Admission Team A",
-    notes: "Interested in healthcare management program, has relevant work experience",
-    documents: ["Resume", "Transcripts", "Recommendation Letters"],
-    expectedStartDate: "2024-09-01"
-  },
-  {
-    id: 2,
-    name: "Priya Patel",
-    email: "priya.patel@email.com",
-    phone: "+91 87654 32109",
-    course: "BSc in Nutrition",
-    university: "Mumbai University",
-    location: "Mumbai",
-    status: "under-review",
-    priority: "medium",
-    applicationDate: "2024-03-14",
-    lastContact: "2024-03-14",
-    createdAt: "2024-03-12",
-    assignedTo: "Admission Team B",
-    notes: "Fresh graduate, excellent academic record",
-    documents: ["Transcripts", "Personal Statement", "Recommendation Letters"],
-    expectedStartDate: "2024-09-01"
-  },
-  {
-    id: 3,
-    name: "Rahul Kumar",
-    email: "rahul.kumar@email.com",
-    phone: "+91 76543 21098",
-    course: "MSc in Public Health",
-    university: "Bangalore University",
-    location: "Bangalore",
-    status: "approved",
-    priority: "high",
-    applicationDate: "2024-03-13",
-    lastContact: "2024-03-13",
-    createdAt: "2024-03-10",
-    assignedTo: "Admission Team A",
-    notes: "Experienced healthcare professional, strong background",
-    documents: ["Resume", "Transcripts", "Work Experience Certificate"],
-    expectedStartDate: "2024-09-01"
-  },
-  {
-    id: 4,
-    name: "Sneha Reddy",
-    email: "sneha.reddy@email.com",
-    phone: "+91 65432 10987",
-    course: "BSc in Psychology",
-    university: "Hyderabad University",
-    location: "Hyderabad",
-    status: "rejected",
-    priority: "low",
-    applicationDate: "2024-03-12",
-    lastContact: "2024-03-12",
-    createdAt: "2024-03-08",
-    assignedTo: "Admission Team C",
-    notes: "Incomplete application, missing required documents",
-    documents: ["Transcripts"],
-    expectedStartDate: "2024-09-01"
-  },
-  {
-    id: 5,
-    name: "Vikram Singh",
-    email: "vikram.singh@email.com",
-    phone: "+91 54321 09876",
-    course: "PhD in Health Sciences",
-    university: "Pune University",
-    location: "Pune",
-    status: "waitlisted",
-    priority: "medium",
-    applicationDate: "2024-03-11",
-    lastContact: "2024-03-11",
-    createdAt: "2024-03-05",
-    assignedTo: "Admission Team A",
-    notes: "Strong research background, waiting for supervisor approval",
-    documents: ["Research Proposal", "Transcripts", "Publications"],
-    expectedStartDate: "2024-09-01"
-  },
-  {
-    id: 6,
-    name: "Anita Desai",
-    email: "anita.desai@email.com",
-    phone: "+91 43210 98765",
-    course: "MSc in Clinical Research",
-    university: "Chennai University",
-    location: "Chennai",
-    status: "enrolled",
-    priority: "high",
-    applicationDate: "2024-03-10",
-    lastContact: "2024-03-10",
-    createdAt: "2024-02-28",
-    assignedTo: "Admission Team B",
-    notes: "Successfully enrolled, classes started",
-    documents: ["All Required Documents"],
-    expectedStartDate: "2024-09-01"
-  },
-  {
-    id: 7,
-    name: "Rohit Gupta",
-    email: "rohit.gupta@email.com",
-    phone: "+91 32109 87654",
-    course: "BSc in Physiotherapy",
-    university: "Kolkata University",
-    location: "Kolkata",
-    status: "pending",
-    priority: "medium",
-    applicationDate: "2024-03-09",
-    lastContact: "2024-03-09",
-    createdAt: "2024-02-25",
-    assignedTo: "Admission Team C",
-    notes: "Waiting for entrance exam results",
-    documents: ["Application Form", "Entrance Exam Score"],
-    expectedStartDate: "2024-09-01"
-  },
-  {
-    id: 8,
-    name: "Kavita Joshi",
-    email: "kavita.joshi@email.com",
-    phone: "+91 21098 76543",
-    course: "MSc in Dietetics",
-    university: "Ahmedabad University",
-    location: "Ahmedabad",
-    status: "under-review",
-    priority: "high",
-    applicationDate: "2024-03-08",
-    lastContact: "2024-03-08",
-    createdAt: "2024-03-08",
-    assignedTo: "Admission Team B",
-    notes: "Experienced nutritionist, excellent recommendations",
-    documents: ["Resume", "Transcripts", "Recommendation Letters", "Portfolio"],
-    expectedStartDate: "2024-09-01"
-  },
-  {
-    id: 9,
-    name: "Deepak Mehta",
-    email: "deepak.mehta@email.com",
-    phone: "+91 10987 65432",
-    course: "BSc in Sports Science",
-    university: "Chandigarh University",
-    location: "Chandigarh",
-    status: "approved",
-    priority: "medium",
-    applicationDate: "2024-03-07",
-    lastContact: "2024-03-07",
-    createdAt: "2024-03-05",
-    assignedTo: "Admission Team A",
-    notes: "Former athlete, strong sports background",
-    documents: ["Sports Certificates", "Transcripts", "Medical Certificate"],
-    expectedStartDate: "2024-09-01"
-  },
-  {
-    id: 10,
-    name: "Sunita Agarwal",
-    email: "sunita.agarwal@email.com",
-    phone: "+91 98765 43210",
-    course: "MSc in Ayurveda",
-    university: "Jaipur University",
-    location: "Jaipur",
-    status: "pending",
-    priority: "high",
-    applicationDate: "2024-03-06",
-    lastContact: "2024-03-06",
-    createdAt: "2024-03-01",
-    assignedTo: "Admission Team C",
-    notes: "Traditional medicine practitioner, wants to modernize knowledge",
-    documents: ["Traditional Medicine Certificate", "Transcripts", "Experience Letter"],
-    expectedStartDate: "2024-09-01"
-  }
-]
 
 const admissionStatuses = ["All", "pending", "under-review", "approved", "rejected", "waitlisted", "enrolled"]
 const admissionPriorities = ["All", "low", "medium", "high"]
 const courses = ["All", "MBA in Healthcare Management", "BSc in Nutrition", "MSc in Public Health", "BSc in Psychology", "PhD in Health Sciences", "MSc in Clinical Research", "BSc in Physiotherapy", "MSc in Dietetics", "BSc in Sports Science", "MSc in Ayurveda"]
 
+// Type for UI display (with id instead of _id)
+type DashboardAdmissionRequest = AdmissionRequest & {
+  id: string; // UI uses 'id', backend uses '_id'
+}
+
+const mapRequestToDashboard = (request: AdmissionRequest): DashboardAdmissionRequest => ({
+  ...request,
+  id: request._id || '',
+})
+
 const AdmissionRequestPage = () => {
-  const [admissionRequests, setAdmissionRequests] = useState(dummyAdmissionRequests)
+  const dispatch = useAppDispatch()
+  const {
+    items: requestItems,
+    status: requestsStatus,
+    error: requestsError,
+    query,
+    statusFilter,
+    priorityFilter,
+    courseFilter,
+    stats,
+    selectedRequest: selectedRequestFromStore,
+  } = useAppSelector((state) => state.admissionRequests)
+
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedStatus, setSelectedStatus] = useState('All')
-  const [selectedPriority, setSelectedPriority] = useState('All')
-  const [selectedCourse, setSelectedCourse] = useState('All')
+  const [searchTerm, setSearchTerm] = useState(query)
+  const [selectedStatus, setSelectedStatus] = useState(statusFilter || 'All')
+  const [selectedPriority, setSelectedPriority] = useState(priorityFilter || 'All')
+  const [selectedCourse, setSelectedCourse] = useState(courseFilter || 'All')
   const [showViewModal, setShowViewModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [selectedRequest, setSelectedRequest] = useState<typeof dummyAdmissionRequests[0] | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [selectedRequest, setSelectedRequest] = useState<DashboardAdmissionRequest | null>(null)
+  const [isActionLoading, setIsActionLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 20
+
+  // Sync local state with Redux
+  useEffect(() => {
+    dispatch(setAdmissionRequestQuery(searchTerm))
+  }, [dispatch, searchTerm])
+
+  useEffect(() => {
+    dispatch(setAdmissionRequestStatusFilter(selectedStatus))
+  }, [dispatch, selectedStatus])
+
+  useEffect(() => {
+    dispatch(setAdmissionRequestPriorityFilter(selectedPriority))
+  }, [dispatch, selectedPriority])
+
+  useEffect(() => {
+    dispatch(setAdmissionRequestCourseFilter(selectedCourse))
+  }, [dispatch, selectedCourse])
+
+  // Fetch requests on mount and when filters change
+  useEffect(() => {
+    if (requestsStatus === 'idle') {
+      dispatch(fetchAdmissionRequests(undefined))
+      dispatch(fetchAdmissionRequestsStats())
+    }
+  }, [dispatch, requestsStatus])
+
+  useEffect(() => {
+    dispatch(fetchAdmissionRequests({
+      q: query,
+      status: selectedStatus === 'All' ? undefined : selectedStatus,
+      priority: selectedPriority === 'All' ? undefined : selectedPriority,
+      course: selectedCourse === 'All' ? undefined : selectedCourse,
+    }))
+  }, [dispatch, query, selectedStatus, selectedPriority, selectedCourse])
+
+  // Map requests to dashboard format
+  const admissionRequests = useMemo(() => requestItems.map(mapRequestToDashboard), [requestItems])
+
+  // Sync selectedRequest from store
+  useEffect(() => {
+    if (selectedRequestFromStore) {
+      setSelectedRequest(mapRequestToDashboard(selectedRequestFromStore))
+    }
+  }, [selectedRequestFromStore])
 
   // Filter admission requests
   const filteredRequests = useMemo(() => {
@@ -260,49 +157,62 @@ const AdmissionRequestPage = () => {
     setCurrentPage(1)
   }, [searchTerm, selectedStatus, selectedPriority, selectedCourse])
 
-  const handleUpdateRequestStatus = async (requestId: number, newStatus: string) => {
-    setIsLoading(true)
+  const handleUpdateRequestStatus = async (requestId: string, updateData: Partial<AdmissionRequest>) => {
+    setIsActionLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setAdmissionRequests(admissionRequests.map(request => 
-        request.id === requestId 
-          ? { ...request, status: newStatus, lastContact: new Date().toISOString().split('T')[0] }
-          : request
-      ))
+      await dispatch(updateAdmissionRequest({ requestId, data: updateData })).unwrap()
+      setShowEditModal(false)
+      setSelectedRequest(null)
+      dispatch(clearSelectedAdmissionRequest())
+    } catch (error) {
+      console.error('Failed to update admission request', error)
     } finally {
-      setIsLoading(false)
+      setIsActionLoading(false)
     }
   }
 
   const handleDeleteRequest = async () => {
-    setIsLoading(true)
+    if (!selectedRequest || !selectedRequest._id) return
+    
+    setIsActionLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setAdmissionRequests(admissionRequests.filter(request => request.id !== selectedRequest!.id))
+      await dispatch(deleteAdmissionRequest(selectedRequest._id)).unwrap()
       setShowDeleteModal(false)
       setSelectedRequest(null)
+      dispatch(clearSelectedAdmissionRequest())
+    } catch (error) {
+      console.error('Failed to delete admission request', error)
     } finally {
-      setIsLoading(false)
+      setIsActionLoading(false)
     }
   }
 
-  const openViewModal = (request: typeof dummyAdmissionRequests[0]) => {
+  const openViewModal = async (request: DashboardAdmissionRequest) => {
+    if (request._id) {
+      await dispatch(fetchAdmissionRequestById(request._id))
+    }
     setSelectedRequest(request)
     setShowViewModal(true)
   }
 
-  const openEditModal = (request: typeof dummyAdmissionRequests[0]) => {
-    setSelectedRequest(request)
+  const openEditModal = (request: DashboardAdmissionRequest) => {
+    setSelectedRequest({ ...request })
     setShowEditModal(true)
   }
 
-  const openDeleteModal = (request: typeof dummyAdmissionRequests[0]) => {
+  const openDeleteModal = (request: DashboardAdmissionRequest) => {
     setSelectedRequest(request)
     setShowDeleteModal(true)
+  }
+
+  const isLoading = requestsStatus === 'loading' && requestItems.length === 0
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    )
   }
 
   const getStatusIcon = (status: string) => {
@@ -349,6 +259,15 @@ const AdmissionRequestPage = () => {
           </div>
         </div>
 
+        {/* Error Message */}
+        {requestsError && (
+          <Card>
+            <CardContent className="p-4 text-sm text-destructive">
+              {requestsError}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card>
@@ -356,7 +275,7 @@ const AdmissionRequestPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Applications</p>
-                  <p className="text-2xl font-bold text-foreground">{admissionRequests.length}</p>
+                  <p className="text-2xl font-bold text-foreground">{(stats?.totalApplications as number) ?? admissionRequests.length}</p>
                 </div>
                 <Users className="w-8 h-8 text-primary" />
               </div>
@@ -367,7 +286,7 @@ const AdmissionRequestPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Pending Review</p>
-                  <p className="text-2xl font-bold text-foreground">{admissionRequests.filter(r => r.status === 'pending').length}</p>
+                  <p className="text-2xl font-bold text-foreground">{(stats?.pendingApplications as number) ?? admissionRequests.filter(r => r.status === 'pending').length}</p>
                 </div>
                 <Clock className="w-8 h-8 text-blue-600" />
               </div>
@@ -378,7 +297,7 @@ const AdmissionRequestPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Approved</p>
-                  <p className="text-2xl font-bold text-foreground">{admissionRequests.filter(r => r.status === 'approved').length}</p>
+                  <p className="text-2xl font-bold text-foreground">{(stats?.approvedApplications as number) ?? admissionRequests.filter(r => r.status === 'approved').length}</p>
                 </div>
                 <CheckCircle className="w-8 h-8 text-emerald-500" />
               </div>
@@ -389,7 +308,7 @@ const AdmissionRequestPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Enrolled</p>
-                  <p className="text-2xl font-bold text-foreground">{admissionRequests.filter(r => r.status === 'enrolled').length}</p>
+                  <p className="text-2xl font-bold text-foreground">{(stats?.enrolledApplications as number) ?? admissionRequests.filter(r => r.status === 'enrolled').length}</p>
                 </div>
                 <GraduationCap className="w-8 h-8 text-green-600" />
               </div>
@@ -860,13 +779,13 @@ const AdmissionRequestPage = () => {
                 Change the status of application for {selectedRequest?.name}
               </DialogDescription>
             </DialogHeader>
-            {selectedRequest && (
+            {selectedRequest && selectedRequest._id && (
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="application-status" className="mb-2 block">Application Status</Label>
                   <Select 
                     value={selectedRequest.status} 
-                    onValueChange={(value) => setSelectedRequest({...selectedRequest, status: value})}
+                    onValueChange={(value) => setSelectedRequest({...selectedRequest, status: value as AdmissionRequest['status']})}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select status" />
@@ -884,7 +803,7 @@ const AdmissionRequestPage = () => {
                   <Label htmlFor="application-priority" className="mb-2 block">Priority</Label>
                   <Select 
                     value={selectedRequest.priority} 
-                    onValueChange={(value) => setSelectedRequest({...selectedRequest, priority: value})}
+                    onValueChange={(value) => setSelectedRequest({...selectedRequest, priority: value as AdmissionRequest['priority']})}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select priority" />
@@ -911,17 +830,27 @@ const AdmissionRequestPage = () => {
               </div>
             )}
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowEditModal(false)} disabled={isLoading}>
+              <Button variant="outline" onClick={() => {
+                setShowEditModal(false)
+                setSelectedRequest(null)
+                dispatch(clearSelectedAdmissionRequest())
+              }} disabled={isActionLoading}>
                 Cancel
               </Button>
               <Button 
                 onClick={() => {
-                  handleUpdateRequestStatus(selectedRequest!.id, selectedRequest!.status)
-                  setShowEditModal(false)
+                  if (selectedRequest && selectedRequest._id) {
+                    handleUpdateRequestStatus(selectedRequest._id, {
+                      status: selectedRequest.status,
+                      priority: selectedRequest.priority,
+                      notes: selectedRequest.notes,
+                      lastContact: new Date().toISOString(),
+                    })
+                  }
                 }} 
-                disabled={isLoading}
+                disabled={isActionLoading}
               >
-                {isLoading ? (
+                {isActionLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Updating...
@@ -944,15 +873,15 @@ const AdmissionRequestPage = () => {
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowDeleteModal(false)} disabled={isLoading}>
+              <Button variant="outline" onClick={() => setShowDeleteModal(false)} disabled={isActionLoading}>
                 Cancel
               </Button>
               <Button 
                 variant="destructive" 
                 onClick={handleDeleteRequest} 
-                disabled={isLoading}
+                disabled={isActionLoading}
               >
-                {isLoading ? (
+                {isActionLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Deleting...

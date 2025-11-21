@@ -20,6 +20,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { useRouter } from 'next/navigation'
+import { useAppDispatch } from '@/lib/redux/store'
+import { createBlog, type Blog } from '@/lib/redux/features/blogSlice'
 
 interface BlogImage {
   id: string
@@ -54,6 +56,7 @@ interface AIBlogData {
 
 const AddBlogs = () => {
   const router = useRouter()
+  const dispatch = useAppDispatch()
   const [blogTopic, setBlogTopic] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [aiData, setAiData] = useState<AIBlogData | null>(null)
@@ -230,11 +233,29 @@ const AddBlogs = () => {
   const saveBlog = async () => {
     setIsGenerating(true)
     try {
-      // Here you would save to your database
-      console.log('Saving blog:', formData)
+      // Map AIBlogData to Blog type for Redux
+      const blogPayload: Omit<Blog, "_id" | "createdAt" | "updatedAt" | "views" | "likes"> = {
+        title: formData.title,
+        slug: formData.slug,
+        excerpt: formData.excerpt,
+        content: formData.content,
+        featuredImage: formData.featuredImage,
+        author: formData.author,
+        category: formData.category,
+        tags: formData.tags,
+        status: formData.status,
+        publishedAt: formData.status === 'published' ? new Date().toISOString() : null,
+        readTime: formData.readTime,
+        metaTitle: formData.metaTitle,
+        metaDescription: formData.metaDescription,
+        metaKeywords: formData.metaKeywords,
+        canonicalUrl: formData.canonicalUrl,
+        ogTitle: formData.ogTitle,
+        ogDescription: formData.ogDescription,
+        ogImage: formData.ogImage,
+      }
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await dispatch(createBlog(blogPayload)).unwrap()
       
       // Redirect back to blogs page
       router.push('/dashboard/blogs')

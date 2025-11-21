@@ -24,7 +24,7 @@ export default function CoursesView({ presetQuery, presetLevel, presetMode }: { 
   // Fetch courses on component mount
   useEffect(() => {
     dispatch(fetchCourses({ q: presetQuery, level: presetLevel, mode: presetMode }))
-  }, [dispatch])
+  }, [dispatch, presetQuery, presetLevel, presetMode])
 
   // Set preset values
   useEffect(() => {

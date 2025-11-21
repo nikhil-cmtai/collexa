@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { 
   Search, 
   Grid3X3, 
@@ -29,198 +29,101 @@ import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Label } from '@/components/ui/label'
+import { useAppDispatch, useAppSelector } from '@/lib/redux/store'
+import {
+  fetchCampusCourses,
+  createCampusCourse,
+  updateCampusCourse,
+  deleteCampusCourse,
+  fetchCampusCourseById,
+  fetchCampusCoursesStats,
+  setCampusCourseQuery,
+  setCampusCourseTypeFilter,
+  setCampusCourseStatusFilter,
+  clearSelectedCampusCourse,
+  type CampusCourse,
+} from '@/lib/redux/features/campus-courseSlice'
 
-// Dummy data for campus courses
-const dummyCourses = [
-  {
-    id: 1,
-    name: "Master of Business Administration (MBA)",
-    code: "MBA001",
-    duration: "2 Years",
-    fees: 500000,
-    university: "Delhi University",
-    location: "New Delhi",
-    type: "Post Graduate",
-    specialization: "General Management",
-    status: "active",
-    seats: 60,
-    enrolled: 45,
-    rating: 4.8,
-    description: "Comprehensive MBA program covering all aspects of business management with industry exposure.",
-    eligibility: "Bachelor's degree with 50% marks, CAT/MAT/GMAT score",
-    curriculum: ["Business Strategy", "Financial Management", "Marketing Management", "Operations Management", "Human Resource Management"],
-    faculty: ["Dr. Rajesh Kumar", "Prof. Priya Sharma", "Dr. Amit Patel"],
-    createdAt: "2024-01-15",
-    updatedAt: "2024-03-15"
-  },
-  {
-    id: 2,
-    name: "Bachelor of Arts (BA)",
-    code: "BA001",
-    duration: "3 Years",
-    fees: 120000,
-    university: "Mumbai University",
-    location: "Mumbai",
-    type: "Undergraduate",
-    specialization: "Liberal Arts",
-    status: "active",
-    seats: 120,
-    enrolled: 98,
-    rating: 4.5,
-    description: "Comprehensive liberal arts program with multiple subject combinations.",
-    eligibility: "10+2 with 45% marks in any stream",
-    curriculum: ["English Literature", "History", "Political Science", "Economics", "Psychology"],
-    faculty: ["Dr. Sneha Reddy", "Prof. Vikram Singh", "Dr. Anita Desai"],
-    createdAt: "2024-01-10",
-    updatedAt: "2024-03-10"
-  },
-  {
-    id: 3,
-    name: "Bachelor of Computer Applications (BCA)",
-    code: "BCA001",
-    duration: "3 Years",
-    fees: 180000,
-    university: "Bangalore University",
-    location: "Bangalore",
-    type: "Undergraduate",
-    specialization: "Computer Applications",
-    status: "active",
-    seats: 80,
-    enrolled: 72,
-    rating: 4.7,
-    description: "Comprehensive computer applications program with modern programming languages and technologies.",
-    eligibility: "10+2 with Mathematics and 50% marks",
-    curriculum: ["Programming in C", "Data Structures", "Database Management", "Web Development", "Software Engineering"],
-    faculty: ["Dr. Rohit Gupta", "Prof. Kavita Joshi", "Dr. Deepak Mehta"],
-    createdAt: "2024-01-12",
-    updatedAt: "2024-03-12"
-  },
-  {
-    id: 4,
-    name: "Master of Science (MSc)",
-    code: "MSC001",
-    duration: "2 Years",
-    fees: 200000,
-    university: "Pune University",
-    location: "Pune",
-    type: "Post Graduate",
-    specialization: "Computer Science",
-    status: "active",
-    seats: 40,
-    enrolled: 35,
-    rating: 4.9,
-    description: "Advanced computer science program with research focus and industry collaboration.",
-    eligibility: "BSc Computer Science or BCA with 55% marks",
-    curriculum: ["Advanced Algorithms", "Machine Learning", "Data Science", "Cloud Computing", "Research Methodology"],
-    faculty: ["Dr. Sunita Agarwal", "Prof. Arjun Sharma", "Dr. Priya Patel"],
-    createdAt: "2024-01-08",
-    updatedAt: "2024-03-08"
-  },
-  {
-    id: 5,
-    name: "Bachelor of Commerce (BCom)",
-    code: "BCOM001",
-    duration: "3 Years",
-    fees: 100000,
-    university: "Chennai University",
-    location: "Chennai",
-    type: "Undergraduate",
-    specialization: "Commerce",
-    status: "active",
-    seats: 100,
-    enrolled: 85,
-    rating: 4.4,
-    description: "Comprehensive commerce program covering accounting, finance, and business studies.",
-    eligibility: "10+2 with Commerce stream and 45% marks",
-    curriculum: ["Financial Accounting", "Business Law", "Economics", "Taxation", "Auditing"],
-    faculty: ["Dr. Rahul Kumar", "Prof. Sneha Reddy", "Dr. Vikram Singh"],
-    createdAt: "2024-01-05",
-    updatedAt: "2024-03-05"
-  },
-  {
-    id: 6,
-    name: "Bachelor of Technology (B.Tech)",
-    code: "BTECH001",
-    duration: "4 Years",
-    fees: 400000,
-    university: "Hyderabad University",
-    location: "Hyderabad",
-    type: "Undergraduate",
-    specialization: "Information Technology",
-    status: "active",
-    seats: 60,
-    enrolled: 58,
-    rating: 4.6,
-    description: "Engineering program focused on information technology and software development.",
-    eligibility: "10+2 with PCM and 60% marks, JEE Main score",
-    curriculum: ["Programming Fundamentals", "Data Structures", "Computer Networks", "Software Engineering", "Database Systems"],
-    faculty: ["Dr. Anita Desai", "Prof. Rohit Gupta", "Dr. Kavita Joshi"],
-    createdAt: "2024-01-03",
-    updatedAt: "2024-03-03"
-  },
-  {
-    id: 7,
-    name: "Master of Arts (MA)",
-    code: "MA001",
-    duration: "2 Years",
-    fees: 150000,
-    university: "Kolkata University",
-    location: "Kolkata",
-    type: "Post Graduate",
-    specialization: "English Literature",
-    status: "active",
-    seats: 30,
-    enrolled: 25,
-    rating: 4.3,
-    description: "Advanced English literature program with focus on critical analysis and research.",
-    eligibility: "BA English or equivalent with 50% marks",
-    curriculum: ["British Literature", "American Literature", "Literary Theory", "Research Methods", "Comparative Literature"],
-    faculty: ["Dr. Deepak Mehta", "Prof. Sunita Agarwal", "Dr. Arjun Sharma"],
-    createdAt: "2024-01-20",
-    updatedAt: "2024-03-20"
-  },
-  {
-    id: 8,
-    name: "Bachelor of Science (BSc)",
-    code: "BSC001",
-    duration: "3 Years",
-    fees: 140000,
-    university: "Ahmedabad University",
-    location: "Ahmedabad",
-    type: "Undergraduate",
-    specialization: "Mathematics",
-    status: "active",
-    seats: 50,
-    enrolled: 42,
-    rating: 4.5,
-    description: "Comprehensive mathematics program with applications in various fields.",
-    eligibility: "10+2 with Mathematics and 50% marks",
-    curriculum: ["Calculus", "Linear Algebra", "Statistics", "Discrete Mathematics", "Applied Mathematics"],
-    faculty: ["Dr. Priya Patel", "Prof. Rahul Kumar", "Dr. Sneha Reddy"],
-    createdAt: "2024-01-18",
-    updatedAt: "2024-03-18"
-  }
-]
 
 const courseTypes = ["All", "Undergraduate", "Post Graduate", "Doctorate", "Diploma"]
 const courseStatuses = ["All", "active", "inactive", "suspended"]
 const universities = ["All", "Delhi University", "Mumbai University", "Bangalore University", "Pune University", "Chennai University", "Hyderabad University", "Kolkata University", "Ahmedabad University"]
 
+// Type for UI display (with id instead of _id)
+type DashboardCampusCourse = CampusCourse & {
+  id: string; // UI uses 'id', backend uses '_id'
+}
+
+const mapCourseToDashboard = (course: CampusCourse): DashboardCampusCourse => ({
+  ...course,
+  id: course._id || '',
+})
+
 const CampusCoursePage = () => {
-  const [courses, setCourses] = useState(dummyCourses)
+  const dispatch = useAppDispatch()
+  const {
+    items: courseItems,
+    status: coursesStatus,
+    error: coursesError,
+    query,
+    typeFilter,
+    statusFilter,
+    stats,
+    selectedCourse: selectedCourseFromStore,
+  } = useAppSelector((state) => state.campusCourses)
+
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedType, setSelectedType] = useState('All')
-  const [selectedStatus, setSelectedStatus] = useState('All')
+  const [searchTerm, setSearchTerm] = useState(query)
+  const [selectedType, setSelectedType] = useState(typeFilter || 'All')
+  const [selectedStatus, setSelectedStatus] = useState(statusFilter || 'All')
   const [selectedUniversity, setSelectedUniversity] = useState('All')
   const [showViewModal, setShowViewModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [selectedCourse, setSelectedCourse] = useState<typeof dummyCourses[0] | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [selectedCourse, setSelectedCourse] = useState<DashboardCampusCourse | null>(null)
+  const [isActionLoading, setIsActionLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 12
+
+  // Sync local state with Redux
+  useEffect(() => {
+    dispatch(setCampusCourseQuery(searchTerm))
+  }, [dispatch, searchTerm])
+
+  useEffect(() => {
+    dispatch(setCampusCourseTypeFilter(selectedType))
+  }, [dispatch, selectedType])
+
+  useEffect(() => {
+    dispatch(setCampusCourseStatusFilter(selectedStatus))
+  }, [dispatch, selectedStatus])
+
+  // Fetch courses on mount and when filters change
+  useEffect(() => {
+    if (coursesStatus === 'idle') {
+      dispatch(fetchCampusCourses(undefined))
+      dispatch(fetchCampusCoursesStats())
+    }
+  }, [dispatch, coursesStatus])
+
+  useEffect(() => {
+    dispatch(fetchCampusCourses({
+      q: query,
+      type: selectedType === 'All' ? undefined : selectedType,
+      status: selectedStatus === 'All' ? undefined : selectedStatus,
+    }))
+  }, [dispatch, query, selectedType, selectedStatus])
+
+  // Map courses to dashboard format
+  const courses = useMemo(() => courseItems.map(mapCourseToDashboard), [courseItems])
+
+  // Sync selectedCourse from store
+  useEffect(() => {
+    if (selectedCourseFromStore) {
+      setSelectedCourse(mapCourseToDashboard(selectedCourseFromStore))
+    }
+  }, [selectedCourseFromStore])
 
   // Filter courses
   const filteredCourses = useMemo(() => {
@@ -248,69 +151,75 @@ const CampusCoursePage = () => {
     setCurrentPage(1)
   }, [searchTerm, selectedType, selectedStatus, selectedUniversity])
 
-  const handleUpdateCourse = async (courseId: number, updatedCourse: typeof dummyCourses[0]) => {
-    setIsLoading(true)
+  const handleAddCourse = async (courseData: Omit<CampusCourse, "_id" | "createdAt" | "updatedAt">) => {
+    setIsActionLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setCourses(courses.map(course => 
-        course.id === courseId 
-          ? { ...course, ...updatedCourse, updatedAt: new Date().toISOString().split('T')[0] }
-          : course
-      ))
+      await dispatch(createCampusCourse(courseData)).unwrap()
+      setShowAddModal(false)
+      setSelectedCourse(null)
+    } catch (error) {
+      console.error('Failed to create course', error)
     } finally {
-      setIsLoading(false)
+      setIsActionLoading(false)
     }
   }
 
-  const handleAddCourse = async (newCourse: typeof dummyCourses[0]) => {
-    setIsLoading(true)
+  const handleUpdateCourse = async (courseId: string, courseData: Partial<CampusCourse>) => {
+    setIsActionLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      const course = {
-        ...newCourse,
-        id: Math.max(...courses.map(c => c.id)) + 1,
-        enrolled: 0,
-        rating: 0,
-        createdAt: new Date().toISOString().split('T')[0],
-        updatedAt: new Date().toISOString().split('T')[0]
-      }
-      setCourses([...courses, course])
+      await dispatch(updateCampusCourse({ courseId, data: courseData })).unwrap()
+      setShowEditModal(false)
+      setSelectedCourse(null)
+      dispatch(clearSelectedCampusCourse())
+    } catch (error) {
+      console.error('Failed to update course', error)
     } finally {
-      setIsLoading(false)
+      setIsActionLoading(false)
     }
   }
 
   const handleDeleteCourse = async () => {
-    setIsLoading(true)
+    if (!selectedCourse || !selectedCourse._id) return
+    
+    setIsActionLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setCourses(courses.filter(course => course.id !== selectedCourse!.id))
+      await dispatch(deleteCampusCourse(selectedCourse._id)).unwrap()
       setShowDeleteModal(false)
       setSelectedCourse(null)
+      dispatch(clearSelectedCampusCourse())
+    } catch (error) {
+      console.error('Failed to delete course', error)
     } finally {
-      setIsLoading(false)
+      setIsActionLoading(false)
     }
   }
 
-  const openViewModal = (course: typeof dummyCourses[0]) => {
+  const openViewModal = async (course: DashboardCampusCourse) => {
+    if (course._id) {
+      await dispatch(fetchCampusCourseById(course._id))
+    }
     setSelectedCourse(course)
     setShowViewModal(true)
   }
 
-  const openEditModal = (course: typeof dummyCourses[0]) => {
-    setSelectedCourse(course)
+  const openEditModal = (course: DashboardCampusCourse) => {
+    setSelectedCourse({ ...course })
     setShowEditModal(true)
   }
 
-  const openDeleteModal = (course: typeof dummyCourses[0]) => {
+  const openDeleteModal = (course: DashboardCampusCourse) => {
     setSelectedCourse(course)
     setShowDeleteModal(true)
+  }
+
+  const isLoading = coursesStatus === 'loading' && courseItems.length === 0
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    )
   }
 
   const getStatusColor = (status: string) => {
@@ -341,11 +250,23 @@ const CampusCoursePage = () => {
             <h1 className="text-3xl font-bold text-foreground">Campus Courses</h1>
             <p className="text-muted-foreground">Manage university campus courses and programs</p>
           </div>
-          <Button onClick={() => setShowAddModal(true)} className="gap-2">
+          <Button onClick={() => {
+            setSelectedCourse(null)
+            setShowAddModal(true)
+          }} className="gap-2">
             <Plus className="w-4 h-4" />
             Add Course
           </Button>
         </div>
+
+        {/* Error Message */}
+        {coursesError && (
+          <Card>
+            <CardContent className="p-4 text-sm text-destructive">
+              {coursesError}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -354,7 +275,7 @@ const CampusCoursePage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Courses</p>
-                  <p className="text-2xl font-bold text-foreground">{courses.length}</p>
+                  <p className="text-2xl font-bold text-foreground">{(stats?.totalCourses as number) ?? courses.length}</p>
                 </div>
                 <GraduationCap className="w-8 h-8 text-primary" />
               </div>
@@ -365,7 +286,7 @@ const CampusCoursePage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Active Courses</p>
-                  <p className="text-2xl font-bold text-foreground">{courses.filter(c => c.status === 'active').length}</p>
+                  <p className="text-2xl font-bold text-foreground">{(stats?.activeCourses as number) ?? courses.filter(c => c.status === 'active').length}</p>
                 </div>
                 <BookOpen className="w-8 h-8 text-emerald-500" />
               </div>
@@ -376,7 +297,7 @@ const CampusCoursePage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Students</p>
-                  <p className="text-2xl font-bold text-foreground">{courses.reduce((sum, c) => sum + c.enrolled, 0)}</p>
+                  <p className="text-2xl font-bold text-foreground">{(stats?.totalStudents as number) ?? courses.reduce((sum, c) => sum + (c.enrolled || 0), 0)}</p>
                 </div>
                 <Users className="w-8 h-8 text-blue-600" />
               </div>
@@ -387,7 +308,7 @@ const CampusCoursePage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Revenue</p>
-                  <p className="text-2xl font-bold text-foreground">₹{(courses.reduce((sum, c) => sum + (c.fees * c.enrolled), 0) / 100000).toFixed(1)}L</p>
+                  <p className="text-2xl font-bold text-foreground">₹{((stats?.totalRevenue as number) ?? courses.reduce((sum, c) => sum + ((c.fees || 0) * (c.enrolled || 0)), 0) / 100000).toFixed(1)}L</p>
                 </div>
                 <DollarSign className="w-8 h-8 text-green-600" />
               </div>
@@ -863,9 +784,14 @@ const CampusCoursePage = () => {
             </DialogHeader>
             <CourseForm
               course={null}
-              onSubmit={handleAddCourse}
-              onCancel={() => setShowAddModal(false)}
-              isLoading={isLoading}
+              onSubmit={(courseData) => {
+                handleAddCourse(courseData)
+              }}
+              onCancel={() => {
+                setShowAddModal(false)
+                setSelectedCourse(null)
+              }}
+              isLoading={isActionLoading}
             />
           </DialogContent>
         </Dialog>
@@ -879,15 +805,18 @@ const CampusCoursePage = () => {
                 Update course information and details.
               </DialogDescription>
             </DialogHeader>
-            {selectedCourse && (
+            {selectedCourse && selectedCourse._id && (
               <CourseForm
                 course={selectedCourse}
-                onSubmit={(updatedCourse) => {
-                  handleUpdateCourse(selectedCourse.id, updatedCourse)
-                  setShowEditModal(false)
+                onSubmit={(courseData) => {
+                  handleUpdateCourse(courseData._id || '', courseData)
                 }}
-                onCancel={() => setShowEditModal(false)}
-                isLoading={isLoading}
+                onCancel={() => {
+                  setShowEditModal(false)
+                  setSelectedCourse(null)
+                  dispatch(clearSelectedCampusCourse())
+                }}
+                isLoading={isActionLoading}
               />
             )}
           </DialogContent>
@@ -903,15 +832,15 @@ const CampusCoursePage = () => {
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowDeleteModal(false)} disabled={isLoading}>
+              <Button variant="outline" onClick={() => setShowDeleteModal(false)} disabled={isActionLoading}>
                 Cancel
               </Button>
               <Button 
                 variant="destructive" 
                 onClick={handleDeleteCourse} 
-                disabled={isLoading}
+                disabled={isActionLoading}
               >
-                {isLoading ? (
+                {isActionLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Deleting...
@@ -930,8 +859,8 @@ const CampusCoursePage = () => {
 
 // Course Form Component
 const CourseForm = ({ course, onSubmit, onCancel, isLoading }: {
-  course: typeof dummyCourses[0] | null
-  onSubmit: (courseData: typeof dummyCourses[0]) => void
+  course: DashboardCampusCourse | null
+  onSubmit: (courseData: DashboardCampusCourse) => void
   onCancel: () => void
   isLoading: boolean
 }) => {
@@ -957,9 +886,10 @@ const CourseForm = ({ course, onSubmit, onCancel, isLoading }: {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const completeData = {
+    const completeData: DashboardCampusCourse = {
       ...formData,
-      id: course?.id || Date.now(),
+      _id: course?._id,
+      id: course?.id || '',
       enrolled: course?.enrolled || 0,
       rating: course?.rating || 0,
       createdAt: course?.createdAt || new Date().toISOString(),
@@ -1086,7 +1016,7 @@ const CourseForm = ({ course, onSubmit, onCancel, isLoading }: {
         </div>
         <div>
           <Label htmlFor="status">Status</Label>
-          <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value})}>
+          <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value as "active" | "inactive"})}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>

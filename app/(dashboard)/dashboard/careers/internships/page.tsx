@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { 
   Search, 
   Grid3X3, 
@@ -34,218 +34,69 @@ import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Label } from '@/components/ui/label'
+import { useAppDispatch, useAppSelector } from '@/lib/redux/store'
+import {
+  fetchInternships,
+  createInternship,
+  updateInternship,
+  deleteInternship,
+} from '@/lib/redux/features/internshipsSlice'
+import type { Internship as InternshipModel } from '@/lib/redux/features/internshipsSlice'
 
-// Dummy data for internships
-const dummyInternships = [
-  {
-    id: 1,
-    title: "Software Development Intern",
-    company: "TechCorp Solutions",
-    location: "Bangalore, India",
-    type: "Full-time",
-    duration: "6 months",
-    stipend: 25000,
-    category: "Technology",
-    status: "active",
-    postedDate: "2024-03-15",
-    applicationDeadline: "2024-04-15",
-    description: "Join our development team and work on cutting-edge web applications using React, Node.js, and cloud technologies.",
-    requirements: ["Computer Science background", "Basic programming knowledge", "Familiarity with web technologies"],
-    responsibilities: ["Develop web applications", "Collaborate with senior developers", "Participate in code reviews", "Learn new technologies"],
-    benefits: ["Mentorship program", "Certificate of completion", "Potential full-time offer", "Flexible working hours"],
-    skills: ["JavaScript", "React", "Node.js", "Git", "Problem Solving"],
-    contactEmail: "hr@techcorp.com",
-    contactPhone: "+91 98765 43210",
-    website: "https://techcorp.com",
-    applicants: 45,
-    maxApplicants: 100,
-    rating: 4.8,
-    companySize: "100-500 employees",
-    industry: "Information Technology"
-  },
-  {
-    id: 2,
-    title: "Marketing Intern",
-    company: "Digital Marketing Pro",
-    location: "Mumbai, India",
-    type: "Part-time",
-    duration: "3 months",
-    stipend: 15000,
-    category: "Marketing",
-    status: "active",
-    postedDate: "2024-03-14",
-    applicationDeadline: "2024-04-10",
-    description: "Assist in digital marketing campaigns, social media management, and content creation for various clients.",
-    requirements: ["Marketing or Business background", "Social media knowledge", "Creative thinking"],
-    responsibilities: ["Create social media content", "Assist in campaign planning", "Analyze marketing metrics", "Client communication"],
-    benefits: ["Real client experience", "Portfolio development", "Networking opportunities", "Performance bonus"],
-    skills: ["Social Media Marketing", "Content Creation", "Analytics", "Communication", "Creativity"],
-    contactEmail: "careers@digitalmarketingpro.com",
-    contactPhone: "+91 87654 32109",
-    website: "https://digitalmarketingpro.com",
-    applicants: 32,
-    maxApplicants: 50,
-    rating: 4.6,
-    companySize: "50-100 employees",
-    industry: "Digital Marketing"
-  },
-  {
-    id: 3,
-    title: "Data Science Intern",
-    company: "Analytics Hub",
-    location: "Pune, India",
-    type: "Full-time",
-    duration: "4 months",
-    stipend: 30000,
-    category: "Data Science",
-    status: "active",
-    postedDate: "2024-03-13",
-    applicationDeadline: "2024-04-20",
-    description: "Work on real-world data science projects involving machine learning, statistical analysis, and data visualization.",
-    requirements: ["Statistics/Mathematics background", "Python programming", "Basic ML knowledge"],
-    responsibilities: ["Data analysis and visualization", "Model development", "Report generation", "Research assistance"],
-    benefits: ["Hands-on ML projects", "Industry mentorship", "Research publication opportunity", "Competitive stipend"],
-    skills: ["Python", "Machine Learning", "Statistics", "Data Visualization", "SQL"],
-    contactEmail: "internships@analyticshub.com",
-    contactPhone: "+91 76543 21098",
-    website: "https://analyticshub.com",
-    applicants: 28,
-    maxApplicants: 30,
-    rating: 4.9,
-    companySize: "20-50 employees",
-    industry: "Data Analytics"
-  },
-  {
-    id: 4,
-    title: "UI/UX Design Intern",
-    company: "Creative Studio",
-    location: "Delhi, India",
-    type: "Full-time",
-    duration: "5 months",
-    stipend: 20000,
-    category: "Design",
-    status: "active",
-    postedDate: "2024-03-12",
-    applicationDeadline: "2024-04-05",
-    description: "Design user interfaces and experiences for mobile and web applications. Work with a creative team on various projects.",
-    requirements: ["Design background", "Figma/Adobe XD knowledge", "Portfolio required"],
-    responsibilities: ["UI/UX design", "User research", "Prototyping", "Design system development"],
-    benefits: ["Creative freedom", "Portfolio projects", "Design mentorship", "Industry exposure"],
-    skills: ["Figma", "Adobe XD", "User Research", "Prototyping", "Design Thinking"],
-    contactEmail: "design@creativestudio.com",
-    contactPhone: "+91 65432 10987",
-    website: "https://creativestudio.com",
-    applicants: 38,
-    maxApplicants: 25,
-    rating: 4.7,
-    companySize: "10-20 employees",
-    industry: "Design & Creative"
-  },
-  {
-    id: 5,
-    title: "Business Development Intern",
-    company: "Growth Ventures",
-    location: "Hyderabad, India",
-    type: "Full-time",
-    duration: "6 months",
-    stipend: 18000,
-    category: "Business",
-    status: "active",
-    postedDate: "2024-03-11",
-    applicationDeadline: "2024-04-12",
-    description: "Assist in business development activities, market research, and client relationship management.",
-    requirements: ["Business/MBA background", "Communication skills", "Analytical thinking"],
-    responsibilities: ["Market research", "Client outreach", "Proposal development", "Sales support"],
-    benefits: ["Business exposure", "Client interaction", "Sales training", "Commission opportunities"],
-    skills: ["Business Analysis", "Communication", "Market Research", "Sales", "Presentation"],
-    contactEmail: "bd@growthventures.com",
-    contactPhone: "+91 54321 09876",
-    website: "https://growthventures.com",
-    applicants: 25,
-    maxApplicants: 40,
-    rating: 4.5,
-    companySize: "100-500 employees",
-    industry: "Business Consulting"
-  },
-  {
-    id: 6,
-    title: "Content Writing Intern",
-    company: "Content Masters",
-    location: "Chennai, India",
-    type: "Part-time",
-    duration: "3 months",
-    stipend: 12000,
-    category: "Content",
-    status: "active",
-    postedDate: "2024-03-10",
-    applicationDeadline: "2024-04-08",
-    description: "Create engaging content for blogs, social media, and marketing materials. Work with various clients across industries.",
-    requirements: ["English proficiency", "Writing skills", "Research ability"],
-    responsibilities: ["Blog writing", "Social media content", "SEO optimization", "Content strategy"],
-    benefits: ["Diverse writing experience", "Client portfolio", "SEO training", "Flexible schedule"],
-    skills: ["Content Writing", "SEO", "Social Media", "Research", "Editing"],
-    contactEmail: "content@contentmasters.com",
-    contactPhone: "+91 43210 98765",
-    website: "https://contentmasters.com",
-    applicants: 42,
-    maxApplicants: 60,
-    rating: 4.4,
-    companySize: "20-50 employees",
-    industry: "Content & Media"
-  },
-  {
-    id: 7,
-    title: "Cybersecurity Intern",
-    company: "SecureTech Solutions",
-    location: "Bangalore, India",
-    type: "Full-time",
-    duration: "4 months",
-    stipend: 28000,
-    category: "Cybersecurity",
-    status: "active",
-    postedDate: "2024-03-09",
-    applicationDeadline: "2024-04-18",
-    description: "Learn cybersecurity practices, vulnerability assessment, and security monitoring in a real-world environment.",
-    requirements: ["Computer Science background", "Basic security knowledge", "Linux familiarity"],
-    responsibilities: ["Security monitoring", "Vulnerability assessment", "Incident response", "Security documentation"],
-    benefits: ["Security certifications", "Hands-on experience", "Industry mentorship", "Career guidance"],
-    skills: ["Cybersecurity", "Linux", "Network Security", "Incident Response", "Risk Assessment"],
-    contactEmail: "security@securetech.com",
-    contactPhone: "+91 32109 87654",
-    website: "https://securetech.com",
-    applicants: 19,
-    maxApplicants: 20,
-    rating: 4.8,
-    companySize: "50-100 employees",
-    industry: "Cybersecurity"
-  },
-  {
-    id: 8,
-    title: "Finance Intern",
-    company: "FinanceFirst",
-    location: "Mumbai, India",
-    type: "Full-time",
-    duration: "6 months",
-    stipend: 22000,
-    category: "Finance",
-    status: "active",
-    postedDate: "2024-03-08",
-    applicationDeadline: "2024-04-25",
-    description: "Assist in financial analysis, budgeting, and investment research. Work with experienced finance professionals.",
-    requirements: ["Finance/Economics background", "Excel proficiency", "Analytical skills"],
-    responsibilities: ["Financial modeling", "Budget analysis", "Investment research", "Report preparation"],
-    benefits: ["Financial modeling training", "Industry insights", "Mentorship program", "Networking opportunities"],
-    skills: ["Financial Analysis", "Excel", "Financial Modeling", "Investment Research", "Accounting"],
-    contactEmail: "finance@financefirst.com",
-    contactPhone: "+91 21098 76543",
-    website: "https://financefirst.com",
-    applicants: 35,
-    maxApplicants: 35,
-    rating: 4.6,
-    companySize: "100-500 employees",
-    industry: "Financial Services"
-  }
-]
+type DashboardInternship = InternshipModel & {
+  applicants: number;
+  maxApplicants: number;
+  rating: number;
+};
+
+const mapInternshipToDashboard = (internship: InternshipModel): DashboardInternship => ({
+  ...internship,
+  id: internship.id || internship._id || "",
+  applicants: internship.applicants ?? 0,
+  maxApplicants: internship.maxApplicants ?? 0,
+  rating: internship.rating ?? 0,
+  requirements: internship.requirements ?? [],
+  responsibilities: internship.responsibilities ?? [],
+  benefits: internship.benefits ?? [],
+  skills: internship.skills ?? [],
+  contactEmail: internship.contactEmail ?? "",
+  contactPhone: internship.contactPhone ?? "",
+  website: internship.website ?? "",
+  companySize: internship.companySize ?? "",
+  industry: internship.industry ?? "",
+});
+
+const createEmptyInternship = (): DashboardInternship => ({
+  id: "",
+  title: "",
+  company: "",
+  location: "",
+  type: "Full-time",
+  duration: "",
+  stipend: 0,
+  category: "Technology",
+  status: "active",
+  postedDate: new Date().toISOString().split("T")[0],
+  applicationDeadline: "",
+  description: "",
+  requirements: [],
+  responsibilities: [],
+  benefits: [],
+  skills: [],
+  contactEmail: "",
+  contactPhone: "",
+  website: "",
+  applicants: 0,
+  maxApplicants: 50,
+  rating: 0,
+  companySize: "",
+  industry: "",
+});
+
+const mapFormToPayload = (values: DashboardInternship) => {
+  const {...rest } = values;
+  return rest;
+};
 
 const internshipCategories = ["All", "Technology", "Marketing", "Data Science", "Design", "Business", "Content", "Cybersecurity", "Finance"]
 const internshipTypes = ["All", "Full-time", "Part-time", "Remote", "Hybrid"]
@@ -253,7 +104,9 @@ const internshipStatuses = ["All", "active", "closed", "paused"]
 const locations = ["All", "Bangalore, India", "Mumbai, India", "Pune, India", "Delhi, India", "Hyderabad, India", "Chennai, India"]
 
 const InternshipsPage = () => {
-  const [internships, setInternships] = useState(dummyInternships)
+  const dispatch = useAppDispatch()
+  const { items: internshipItems, status: internshipsStatus } = useAppSelector((state) => state.internships)
+
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
@@ -264,18 +117,29 @@ const InternshipsPage = () => {
   const [showEditModal, setShowEditModal] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [selectedInternship, setSelectedInternship] = useState<typeof dummyInternships[0] | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [selectedInternship, setSelectedInternship] = useState<DashboardInternship | null>(null)
+  const [isActionLoading, setIsActionLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 12
 
-  // Filter internships
-  const filteredInternships = useMemo(() => {
-    return internships.filter(internship => {
-      const matchesSearch = internship.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  useEffect(() => {
+    if (internshipsStatus === 'idle') {
+      dispatch(fetchInternships(undefined))
+    }
+  }, [dispatch, internshipsStatus])
+
+  const internships = useMemo<DashboardInternship[]>(
+    () => internshipItems.map((internship) => mapInternshipToDashboard(internship)),
+    [internshipItems]
+  )
+
+  const filteredInternships = useMemo<DashboardInternship[]>(() => {
+    return internships.filter((internship) => {
+      const matchesSearch =
+        internship.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            internship.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            internship.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           internship.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
+        internship.skills.some((skill) => skill.toLowerCase().includes(searchTerm.toLowerCase()))
       const matchesCategory = selectedCategory === 'All' || internship.category === selectedCategory
       const matchesType = selectedType === 'All' || internship.type === selectedType
       const matchesStatus = selectedStatus === 'All' || internship.status === selectedStatus
@@ -285,82 +149,81 @@ const InternshipsPage = () => {
     })
   }, [internships, searchTerm, selectedCategory, selectedType, selectedStatus, selectedLocation])
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredInternships.length / itemsPerPage)
+  const totalPages = Math.max(1, Math.ceil(filteredInternships.length / itemsPerPage))
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
   const paginatedInternships = filteredInternships.slice(startIndex, endIndex)
 
-  // Reset to first page when filters change
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentPage(1)
   }, [searchTerm, selectedCategory, selectedType, selectedStatus, selectedLocation])
 
-  const handleUpdateInternship = async (internshipId: number, updatedInternship: typeof dummyInternships[0]) => {
-    setIsLoading(true)
+  const handleAddInternship = async (newInternship: DashboardInternship) => {
+    setIsActionLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setInternships(internships.map(internship => 
-        internship.id === internshipId 
-          ? { ...internship, ...updatedInternship }
-          : internship
-      ))
+      await dispatch(createInternship(mapFormToPayload(newInternship))).unwrap()
+      setShowAddModal(false)
+    } catch (error) {
+      console.error('Failed to create internship', error)
     } finally {
-      setIsLoading(false)
+      setIsActionLoading(false)
     }
   }
 
-  const handleAddInternship = async (newInternship: typeof dummyInternships[0]) => {
-    setIsLoading(true)
+  const handleUpdateInternship = async (internshipId: string, updatedInternship: DashboardInternship) => {
+    setIsActionLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      const internship = {
-        ...newInternship,
-        id: Math.max(...internships.map(i => i.id)) + 1,
-        applicants: 0,
-        rating: 0,
-        postedDate: new Date().toISOString().split('T')[0]
-      }
-      setInternships([...internships, internship])
+      await dispatch(
+        updateInternship({
+          internshipId,
+          data: mapFormToPayload(updatedInternship),
+        })
+      ).unwrap()
+      setShowEditModal(false)
+    } catch (error) {
+      console.error('Failed to update internship', error)
     } finally {
-      setIsLoading(false)
+      setIsActionLoading(false)
     }
   }
 
   const handleDeleteInternship = async () => {
-    setIsLoading(true)
+    if (!selectedInternship) return
+    setIsActionLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setInternships(internships.filter(internship => internship.id !== selectedInternship!.id))
+      await dispatch(deleteInternship(String(selectedInternship.id))).unwrap()
       setShowDeleteModal(false)
       setSelectedInternship(null)
+    } catch (error) {
+      console.error('Failed to delete internship', error)
     } finally {
-      setIsLoading(false)
+      setIsActionLoading(false)
     }
   }
 
-  const openViewModal = (internship: typeof dummyInternships[0]) => {
+  const openViewModal = (internship: DashboardInternship) => {
     setSelectedInternship(internship)
     setShowViewModal(true)
   }
 
-  const openEditModal = (internship: typeof dummyInternships[0]) => {
+  const openEditModal = (internship: DashboardInternship) => {
     setSelectedInternship(internship)
     setShowEditModal(true)
   }
 
-  const openDeleteModal = (internship: typeof dummyInternships[0]) => {
+  const openDeleteModal = (internship: DashboardInternship) => {
     setSelectedInternship(internship)
     setShowDeleteModal(true)
   }
 
-  const getStatusColor = (status: string) => {
+  const totalInternships = internships.length
+  const totalApplicants = internships.reduce((sum, i) => sum + i.applicants, 0)
+  const avgStipend =
+    totalInternships > 0
+      ? Math.round(internships.reduce((sum, i) => sum + i.stipend, 0) / totalInternships)
+      : 0
+
+const getStatusColor = (status?: string) => {
     switch (status) {
       case 'active': return 'success'
       case 'closed': return 'destructive'
@@ -369,7 +232,7 @@ const InternshipsPage = () => {
     }
   }
 
-  const getCategoryColor = (category: string) => {
+const getCategoryColor = (category?: string) => {
     switch (category) {
       case 'Technology': return 'default'
       case 'Marketing': return 'warning'
@@ -382,6 +245,9 @@ const InternshipsPage = () => {
       default: return 'secondary'
     }
   }
+
+const formatStatusLabel = (status?: string) =>
+  status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unknown'
 
   return (
     <TooltipProvider>
@@ -405,7 +271,7 @@ const InternshipsPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Internships</p>
-                  <p className="text-2xl font-bold text-foreground">{internships.length}</p>
+                  <p className="text-2xl font-bold text-foreground">{totalInternships}</p>
                 </div>
                 <Briefcase className="w-8 h-8 text-primary" />
               </div>
@@ -427,7 +293,7 @@ const InternshipsPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Applicants</p>
-                  <p className="text-2xl font-bold text-foreground">{internships.reduce((sum, i) => sum + i.applicants, 0)}</p>
+                  <p className="text-2xl font-bold text-foreground">{totalApplicants}</p>
                 </div>
                 <Users className="w-8 h-8 text-blue-600" />
               </div>
@@ -438,7 +304,7 @@ const InternshipsPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Avg. Stipend</p>
-                  <p className="text-2xl font-bold text-foreground">₹{Math.round(internships.reduce((sum, i) => sum + i.stipend, 0) / internships.length).toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-foreground">₹{avgStipend.toLocaleString()}</p>
                 </div>
                 <DollarSign className="w-8 h-8 text-green-600" />
               </div>
@@ -498,7 +364,7 @@ const InternshipsPage = () => {
                 <SelectContent>
                   {internshipStatuses.map(status => (
                     <SelectItem key={status} value={status}>
-                      {status === 'All' ? 'All Statuses' : status.charAt(0).toUpperCase() + status.slice(1)}
+                      {status === 'All' ? 'All Statuses' : formatStatusLabel(status)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -565,7 +431,7 @@ const InternshipsPage = () => {
                     <CardTitle className="text-lg line-clamp-2">{internship.title}</CardTitle>
                     <div className="flex gap-2">
                       <Badge variant={getStatusColor(internship.status) as 'default' | 'secondary' | 'destructive' | 'outline'}>
-                        {internship.status.charAt(0).toUpperCase() + internship.status.slice(1)}
+                        {formatStatusLabel(internship.status)}
                       </Badge>
                       <Badge variant={getCategoryColor(internship.category) as 'default' | 'secondary' | 'destructive' | 'outline'}>
                         {internship.category}
@@ -690,7 +556,7 @@ const InternshipsPage = () => {
                     <TableCell>{internship.applicants}/{internship.maxApplicants}</TableCell>
                     <TableCell>
                       <Badge variant={getStatusColor(internship.status) as 'default' | 'secondary' | 'destructive' | 'outline'}>
-                        {internship.status.charAt(0).toUpperCase() + internship.status.slice(1)}
+                        {formatStatusLabel(internship.status)}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -832,7 +698,7 @@ const InternshipsPage = () => {
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Status:</span>
                         <Badge variant={getStatusColor(selectedInternship.status) as 'default' | 'secondary' | 'destructive' | 'outline'}>
-                          {selectedInternship.status.charAt(0).toUpperCase() + selectedInternship.status.slice(1)}
+                          {formatStatusLabel(selectedInternship.status)}
                         </Badge>
                       </div>
                     </CardContent>
@@ -990,7 +856,7 @@ const InternshipsPage = () => {
               internship={null}
               onSubmit={handleAddInternship}
               onCancel={() => setShowAddModal(false)}
-              isLoading={isLoading}
+              isLoading={isActionLoading}
             />
           </DialogContent>
         </Dialog>
@@ -1007,12 +873,9 @@ const InternshipsPage = () => {
             {selectedInternship && (
               <InternshipForm
                 internship={selectedInternship}
-                onSubmit={(updatedInternship) => {
-                  handleUpdateInternship(selectedInternship.id, updatedInternship)
-                  setShowEditModal(false)
-                }}
+                onSubmit={(updatedInternship) => handleUpdateInternship(String(selectedInternship.id), updatedInternship)}
                 onCancel={() => setShowEditModal(false)}
-                isLoading={isLoading}
+                isLoading={isActionLoading}
               />
             )}
           </DialogContent>
@@ -1028,15 +891,15 @@ const InternshipsPage = () => {
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowDeleteModal(false)} disabled={isLoading}>
+              <Button variant="outline" onClick={() => setShowDeleteModal(false)} disabled={isActionLoading}>
                 Cancel
               </Button>
               <Button 
                 variant="destructive" 
                 onClick={handleDeleteInternship} 
-                disabled={isLoading}
+                disabled={isActionLoading}
               >
-                {isLoading ? (
+                {isActionLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Deleting...
@@ -1055,47 +918,29 @@ const InternshipsPage = () => {
 
 // Internship Form Component
 const InternshipForm = ({ internship, onSubmit, onCancel, isLoading }: {
-  internship: typeof dummyInternships[0] | null
-  onSubmit: (internshipData: typeof dummyInternships[0]) => void
+  internship: DashboardInternship | null
+  onSubmit: (internshipData: DashboardInternship) => void
   onCancel: () => void
   isLoading: boolean
 }) => {
-  const [formData, setFormData] = useState({
-    title: internship?.title || '',
-    company: internship?.company || '',
-    location: internship?.location || '',
-    type: internship?.type || 'Full-time',
-    duration: internship?.duration || '',
-    stipend: internship?.stipend || 0,
-    category: internship?.category || 'Technology',
-    status: internship?.status || 'active',
-    postedDate: internship?.postedDate || new Date().toISOString().split('T')[0],
-    applicationDeadline: internship?.applicationDeadline || '',
-    description: internship?.description || '',
-    requirements: internship?.requirements || [],
-    responsibilities: internship?.responsibilities || [],
-    benefits: internship?.benefits || [],
-    skills: internship?.skills || [],
-    contactEmail: internship?.contactEmail || '',
-    contactPhone: internship?.contactPhone || '',
-    website: internship?.website || '',
-    maxApplicants: internship?.maxApplicants || 50,
-    companySize: internship?.companySize || '',
-    industry: internship?.industry || ''
-  })
+  const [formData, setFormData] = useState<DashboardInternship>(internship ?? createEmptyInternship())
 
   const [requirementsInput, setRequirementsInput] = useState('')
   const [responsibilitiesInput, setResponsibilitiesInput] = useState('')
   const [benefitsInput, setBenefitsInput] = useState('')
   const [skillsInput, setSkillsInput] = useState('')
 
+  useEffect(() => {
+    setFormData(internship ?? createEmptyInternship())
+  }, [internship])
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const completeData = {
+    const completeData: DashboardInternship = {
       ...formData,
-      id: internship?.id || Date.now(),
-      applicants: internship?.applicants || 0,
-      rating: internship?.rating || 0
+      id: internship?.id || Date.now().toString(),
+      applicants: internship?.applicants ?? 0,
+      rating: internship?.rating ?? 0,
     }
     onSubmit(completeData)
   }

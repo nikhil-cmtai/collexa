@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Search, Filter, MapPin, Briefcase, DollarSign, Clock, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { fetchInternships, setQuery, setLocation, setType } from "@/lib/redux/features/internshipsSlice";
+import { fetchInternships, setInternshipQuery, setInternshipLocation, setInternshipType } from "@/lib/redux/features/internshipsSlice";
 import InternshipCard from "./internshipCard";
 import InternshipsHero from "./InternshipsHero";
 import InternshipsHighlights from "./InternshipsHighlights";
@@ -32,7 +32,7 @@ export default function InternshipsView() {
     const matchesQuery = 
       internship.title.toLowerCase().includes(query.toLowerCase()) ||
       internship.company.toLowerCase().includes(query.toLowerCase()) ||
-      internship.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()));
+      internship.skills.some((skill: string) => skill.toLowerCase().includes(query.toLowerCase()));
     
     const matchesLocation = 
       !location || internship.location.toLowerCase().includes(location.toLowerCase());
@@ -41,10 +41,10 @@ export default function InternshipsView() {
       !type || internship.type.toLowerCase().includes(type.toLowerCase());
     
     const matchesSalary = 
-      !salaryRange || internship.stipend.toLowerCase().includes(salaryRange.toLowerCase());
+      !salaryRange || internship.stipend.toString().includes(salaryRange);
     
     const matchesExperience = 
-      !experience || internship.tags.some(tag => tag.toLowerCase().includes(experience.toLowerCase()));
+      !experience || internship.skills.some((skill: string) => skill.toLowerCase().includes(experience.toLowerCase()));
 
     return matchesQuery && matchesLocation && matchesType && matchesSalary && matchesExperience;
   });
@@ -64,9 +64,9 @@ export default function InternshipsView() {
 
   // Clear all filters
   const clearFilters = () => {
-    dispatch(setQuery(""));
-    dispatch(setLocation(""));
-    dispatch(setType(""));
+    dispatch(setInternshipQuery(""));
+    dispatch(setInternshipLocation(""));
+    dispatch(setInternshipType(""));
     setSalaryRange("");
     setExperience("");
     setCurrentPage(1);
@@ -101,7 +101,7 @@ export default function InternshipsView() {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
               <input 
                 value={query} 
-                onChange={(e) => dispatch(setQuery(e.target.value))} 
+                onChange={(e) => dispatch(setInternshipQuery(e.target.value))} 
                 placeholder="Search by role, company, or skills..." 
                 className="w-full rounded-xl pl-12 pr-4 py-3 text-base bg-white text-text border border-border focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all duration-300" 
               />
@@ -142,7 +142,7 @@ export default function InternshipsView() {
                 <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-4 h-4" />
                 <input 
                   value={location} 
-                  onChange={(e) => dispatch(setLocation(e.target.value))} 
+                  onChange={(e) => dispatch(setInternshipLocation(e.target.value))} 
                   placeholder="Location" 
                   className="w-full rounded-lg pl-10 pr-4 py-2.5 bg-white text-text border border-border focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all duration-300" 
                 />
@@ -151,7 +151,7 @@ export default function InternshipsView() {
                 <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-4 h-4" />
                 <input 
                   value={type} 
-                  onChange={(e) => dispatch(setType(e.target.value))} 
+                  onChange={(e) => dispatch(setInternshipType(e.target.value))} 
                   placeholder="Internship Type" 
                   className="w-full rounded-lg pl-10 pr-4 py-2.5 bg-white text-text border border-border focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all duration-300" 
                 />
@@ -222,9 +222,24 @@ export default function InternshipsView() {
           )}
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {currentInternships.map((internship, index) => (
-              <InternshipCard key={internship.id} internship={internship} index={index} />
-            ))}
+            {currentInternships.map((internship, index) => {
+              // Map Internship type to InternshipCard expected format
+              const mappedInternship = {
+                id: parseInt(internship._id || internship.id || String(index), 10) || index,
+                title: internship.title,
+                company: internship.company,
+                location: internship.location,
+                type: internship.type,
+                tags: internship.skills || [],
+                stipend: typeof internship.stipend === 'number' 
+                  ? `₹${internship.stipend.toLocaleString()}/month` 
+                  : String(internship.stipend || 'Not specified'),
+                postedAt: internship.postedDate || new Date().toLocaleDateString(),
+              };
+              return (
+                <InternshipCard key={internship._id || internship.id || index} internship={mappedInternship} index={index} />
+              );
+            })}
           </div>
 
           {/* Pagination */}

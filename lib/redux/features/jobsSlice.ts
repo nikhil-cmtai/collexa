@@ -22,170 +22,144 @@ type JobsState = {
   query: string;
   location: string;
   type: string;
+  stats: Record<string, unknown> | null;
+  selectedJob: Job | null;
 };
 
-// Dummy fallback data to ensure UI shows jobs even without API
-const dummyJobs: Job[] = [
-  {
-    id: "j-1",
-    title: "Frontend Developer Intern",
-    company: "Acme Labs",
-    location: "Bengaluru",
-    stipend: "₹15,000/mo",
-    type: "Internship",
-    duration: "3 months",
-    tags: ["React", "TypeScript", "UI"],
-    postedAt: "2d ago",
-  },
-  {
-    id: "j-2",
-    title: "Junior Backend Engineer",
-    company: "Nimbus Tech",
-    location: "Hyderabad",
-    stipend: null,
-    type: "Full-time",
-    duration: null,
-    tags: ["Node.js", "Express", "MongoDB"],
-    postedAt: "3d ago",
-  },
-  {
-    id: "j-3",
-    title: "Data Analyst Intern",
-    company: "Quantia",
-    location: "Remote",
-    stipend: "₹12,000/mo",
-    type: "Internship",
-    duration: "4 months",
-    tags: ["SQL", "Excel", "Python"],
-    postedAt: "1d ago",
-  },
-  {
-    id: "j-4",
-    title: "Marketing Associate",
-    company: "BrightWave",
-    location: "Mumbai",
-    stipend: null,
-    type: "Full-time",
-    duration: null,
-    tags: ["SEO", "Content", "Social"],
-    postedAt: "5d ago",
-  },
-  {
-    id: "j-5",
-    title: "UX/UI Designer Intern",
-    company: "Designify",
-    location: "Chennai",
-    stipend: "₹10,000/mo",
-    type: "Internship",
-    duration: "3 months",
-    tags: ["Figma", "Prototyping", "Research"],
-    postedAt: "Today",
-  },
-  {
-    id: "j-6",
-    title: "Finance Trainee",
-    company: "BlueStone Capital",
-    location: "Delhi",
-    stipend: null,
-    type: "Full-time",
-    duration: null,
-    tags: ["Tally", "Accounting", "Excel"],
-    postedAt: "7d ago",
-  },
-  {
-    id: "j-7",
-    title: "Full-stack Developer",
-    company: "StackForge",
-    location: "Pune",
-    stipend: null,
-    type: "Full-time",
-    duration: null,
-    tags: ["React", "Node.js", "PostgreSQL"],
-    postedAt: "4d ago",
-  },
-  {
-    id: "j-8",
-    title: "HR Coordinator Intern",
-    company: "PeopleFirst",
-    location: "Kolkata",
-    stipend: "₹8,000/mo",
-    type: "Internship",
-    duration: "6 months",
-    tags: ["HR", "Onboarding", "Recruitment"],
-    postedAt: "2d ago",
-  },
-  {
-    id: "j-9",
-    title: "Digital Marketing Executive",
-    company: "GrowthX",
-    location: "Remote",
-    stipend: null,
-    type: "Full-time",
-    duration: null,
-    tags: ["SEO", "Ads", "Analytics"],
-    postedAt: "Today",
-  },
-  {
-    id: "j-10",
-    title: "Data Engineer Intern",
-    company: "DataFlow",
-    location: "Bengaluru",
-    stipend: "₹18,000/mo",
-    type: "Internship",
-    duration: "5 months",
-    tags: ["Python", "ETL", "AWS"],
-    postedAt: "1d ago",
-  },
-  {
-    id: "j-11",
-    title: "UI Engineer",
-    company: "PixelCraft",
-    location: "Chennai",
-    stipend: null,
-    type: "Full-time",
-    duration: null,
-    tags: ["JavaScript", "CSS", "Accessibility"],
-    postedAt: "6d ago",
-  },
-  {
-    id: "j-12",
-    title: "Product Analyst Intern",
-    company: "NovaWorks",
-    location: "Hyderabad",
-    stipend: "₹14,000/mo",
-    type: "Internship",
-    duration: "3 months",
-    tags: ["SQL", "Dashboards", "Product"],
-    postedAt: "3d ago",
-  },
-];
-
 const initialState: JobsState = {
-  items: dummyJobs,
+  items: [],
   status: "idle",
   error: undefined,
   query: "",
   location: "",
   type: "",
+  stats: null,
+  selectedJob: null,
 };
 
+type ApiResponse<T> = {
+  statusCode?: number;
+  data?: T;
+  message?: string;
+  success?: boolean;
+};
+
+const extractData = <T>(payload: ApiResponse<T> | T): T => {
+  if (payload && typeof payload === "object" && "data" in payload) {
+    return (payload as ApiResponse<T>).data as T;
+  }
+  return payload as T;
+};
+
+// GET /jobs
 export const fetchJobs = createAsyncThunk(
   "jobs/fetchJobs",
   async (
-    params: { q?: string; location?: string; type?: string } | undefined
+    params: { q?: string; location?: string; type?: string } | undefined,
+    { rejectWithValue }
   ) => {
     try {
-      const search = new URLSearchParams();
-      if (params?.q) search.set("q", params.q);
-      if (params?.location) search.set("location", params.location);
-      if (params?.type) search.set("type", params.type);
-      const qs = search.toString();
-      const url = qs ? `/api/jobs?${qs}` : "/api/jobs";
-      const res = await axios.get<{ jobs: Job[] }>(url);
-      return res.data?.jobs?.length ? res.data.jobs : dummyJobs;
+      const response = await axios.get<ApiResponse<{ docs: Job[] }>>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/jobs`, {
+        params,
+      });
+      const data = extractData(response.data);
+      return data?.docs ?? [];
     } catch (error: unknown) {
       console.error("Failed to fetch jobs:", error);
-      return dummyJobs;
+      return rejectWithValue("Failed to fetch jobs");
+    }
+  }
+);
+
+// POST /jobs
+export const createJob = createAsyncThunk(
+  "jobs/createJob",
+  async (
+    data: Omit<Job, "id" | "postedAt">,
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.post<ApiResponse<Job>>(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/jobs`,
+        data
+      );
+      return extractData(response.data);
+    } catch (error: unknown) {
+      console.error("Failed to create job:", error);
+      return rejectWithValue("Failed to create job");
+    }
+  }
+);
+
+// GET /jobs/stats
+export const fetchJobsStats = createAsyncThunk(
+  "jobs/fetchJobsStats",
+  async (
+    _,
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.get<ApiResponse<Record<string, unknown>>>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/jobs/stats`);
+      return extractData(response.data);
+    } catch (error: unknown) {
+      console.error("Failed to fetch jobs stats:", error);
+      return rejectWithValue("Failed to fetch jobs stats");
+    }
+  }
+);
+
+// GET /jobs/:jobId
+export const fetchJobById = createAsyncThunk(
+  "jobs/fetchJobById",
+  async (
+    jobId: string,
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.get<ApiResponse<Job>>(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/jobs/${jobId}`
+      );
+      return extractData(response.data);
+    } catch (error: unknown) {
+      console.error("Failed to fetch job by id:", error);
+      return rejectWithValue("Failed to fetch job by id");
+    }
+  }
+);
+
+// PATCH /jobs/:jobId
+export const updateJob = createAsyncThunk(
+  "jobs/updateJob",
+  async (
+    { jobId, data }: { jobId: string; data: Partial<Job> },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.patch<ApiResponse<Job>>(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/jobs/${jobId}`,
+        data
+      );
+      return extractData(response.data);
+    } catch (error: unknown) {
+      console.error("Failed to update job:", error);
+      return rejectWithValue("Failed to update job");
+    }
+  }
+);
+
+// DELETE /jobs/:jobId
+export const deleteJob = createAsyncThunk(
+  "jobs/deleteJob",
+  async (
+    jobId: string,
+    { rejectWithValue }
+  ) => {
+    try {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/jobs/${jobId}`);
+      return jobId;
+    } catch (error: unknown) {
+      console.error("Failed to delete job:", error);
+      return rejectWithValue("Failed to delete job");
     }
   }
 );
@@ -203,9 +177,13 @@ const jobsSlice = createSlice({
     setType(state, action: PayloadAction<string>) {
       state.type = action.payload;
     },
+    clearSelectedJob(state) {
+      state.selectedJob = null;
+    },
   },
   extraReducers: (builder) => {
     builder
+      // Fetch all jobs
       .addCase(fetchJobs.pending, (state) => {
         state.status = "loading";
         state.error = undefined;
@@ -216,12 +194,94 @@ const jobsSlice = createSlice({
       })
       .addCase(fetchJobs.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message || "Failed to load jobs";
+        state.error = action.payload as string || "Failed to load jobs";
+      })
+
+      // Create job
+      .addCase(createJob.pending, (state) => {
+        state.status = "loading";
+        state.error = undefined;
+      })
+      .addCase(createJob.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.items.unshift(action.payload);
+      })
+      .addCase(createJob.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string || "Failed to create job";
+      })
+
+      // Jobs stats
+      .addCase(fetchJobsStats.pending, (state) => {
+        state.status = "loading";
+        state.error = undefined;
+      })
+      .addCase(fetchJobsStats.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.stats = action.payload;
+      })
+      .addCase(fetchJobsStats.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string || "Failed to load job stats";
+      })
+
+      // Get job by id
+      .addCase(fetchJobById.pending, (state) => {
+        state.status = "loading";
+        state.error = undefined;
+        state.selectedJob = null;
+      })
+      .addCase(fetchJobById.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.selectedJob = action.payload;
+      })
+      .addCase(fetchJobById.rejected, (state, action) => {
+        state.status = "failed";
+        state.selectedJob = null;
+        state.error = action.payload as string || "Failed to fetch job";
+      })
+
+      // Update job
+      .addCase(updateJob.pending, (state) => {
+        state.status = "loading";
+        state.error = undefined;
+      })
+      .addCase(updateJob.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        // Update job in items if found
+        const idx = state.items.findIndex((j) => j.id === action.payload.id);
+        if (idx !== -1) {
+          state.items[idx] = { ...state.items[idx], ...action.payload };
+        }
+        // If selected job is being updated, update that
+        if (state.selectedJob?.id === action.payload.id) {
+          state.selectedJob = { ...state.selectedJob, ...action.payload };
+        }
+      })
+      .addCase(updateJob.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string || "Failed to update job";
+      })
+
+      // Delete job
+      .addCase(deleteJob.pending, (state) => {
+        state.status = "loading";
+        state.error = undefined;
+      })
+      .addCase(deleteJob.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.items = state.items.filter((job) => job.id !== action.payload);
+        if (state.selectedJob?.id === action.payload) {
+          state.selectedJob = null;
+        }
+      })
+      .addCase(deleteJob.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string || "Failed to delete job";
       });
   },
 });
 
-export const { setQuery, setLocation, setType } = jobsSlice.actions;
+export const { setQuery, setLocation, setType, clearSelectedJob } =
+  jobsSlice.actions;
 export default jobsSlice.reducer;
-
-

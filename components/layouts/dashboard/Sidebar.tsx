@@ -56,6 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed }) => {
         { name: 'Skills Based', href: '/dashboard/courses/skills-based', icon: Award },
       ]
     },
+    { name: 'Blog Categories', href: '/dashboard/blog-categories', icon: BookOpen },
     { name: 'Blogs', href: '/dashboard/blogs', icon: BookOpen },
     { name: 'Testimonials', href: '/dashboard/testimonials', icon: MessageSquare },
     {

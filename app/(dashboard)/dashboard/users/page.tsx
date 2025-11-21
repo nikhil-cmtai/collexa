@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { 
   Search, 
   Grid3X3, 
@@ -8,7 +8,7 @@ import {
   Edit, 
   Trash2, 
   UserPlus,
-  User,
+  User as UserIcon,
   Star,
   Eye,
   Loader2,
@@ -33,156 +33,105 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-
-// Dummy user data
-const dummyUsers = [
-  {
-    id: 1,
-    firstName: "Rajesh",
-    lastName: "Kumar",
-    email: "rajesh.kumar@collexa.edu",
-    phone: "+91 98765 43210",
-    role: "admin",
-    status: "active",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-    address: "123 Education Street, Learning District, Mumbai, Maharashtra 400001",
-    dateOfBirth: "1985-06-15",
-    joinDate: "2020-01-15",
-    lastLogin: "2024-03-15T10:30:00Z",
-    bio: "Founder and CEO of Collexa Edu. Passionate about transforming education through technology.",
-    verified: true,
-    totalCourses: 0,
-    totalSpent: 0,
-    rating: 0,
-    students: 0
-  },
-  {
-    id: 2,
-    firstName: "Priya",
-    lastName: "Sharma",
-    email: "priya.sharma@collexa.edu",
-    phone: "+91 98765 43211",
-    role: "student",
-    status: "active",
-    avatar: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face",
-    address: "456 Learning Center, Education Plaza, Delhi, Delhi 110001",
-    dateOfBirth: "2000-03-22",
-    joinDate: "2021-02-10",
-    lastLogin: "2024-03-14T14:20:00Z",
-    bio: "Computer Science student passionate about web development and data science.",
-    verified: true,
-    totalCourses: 5,
-    totalSpent: 25000,
-    rating: 4.8,
-    students: 0
-  },
-  {
-    id: 3,
-    firstName: "Amit",
-    lastName: "Patel",
-    email: "amit.patel@techcorp.com",
-    phone: "+91 98765 43212",
-    role: "company",
-    status: "active",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-    address: "789 Tech Lane, IT Complex, Bangalore, Karnataka 560001",
-    dateOfBirth: "1985-11-08",
-    joinDate: "2022-05-20",
-    lastLogin: "2024-03-15T09:15:00Z",
-    bio: "HR Manager at TechCorp Solutions. Looking for skilled graduates for our development team.",
-    verified: true,
-    totalCourses: 0,
-    totalSpent: 0,
-    rating: 4.5,
-    students: 0
-  },
-  {
-    id: 4,
-    firstName: "Sneha",
-    lastName: "Reddy",
-    email: "sneha.reddy@iitm.ac.in",
-    phone: "+91 98765 43213",
-    role: "institution",
-    status: "active",
-    avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
-    address: "321 Education Avenue, IIT Campus, Chennai, Tamil Nadu 600001",
-    dateOfBirth: "1975-08-14",
-    joinDate: "2021-08-15",
-    lastLogin: "2024-03-15T16:45:00Z",
-    bio: "Professor and Head of Computer Science Department at IIT Madras. Partnering with Collexa for industry-relevant courses.",
-    verified: true,
-    totalCourses: 12,
-    totalSpent: 0,
-    rating: 4.9,
-    students: 500
-  },
-  {
-    id: 5,
-    firstName: "Vikram",
-    lastName: "Singh",
-    email: "vikram.singh@collexa.edu",
-    phone: "+91 98765 43214",
-    role: "student",
-    status: "inactive",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
-    address: "654 Learning Street, Education Center, Pune, Maharashtra 411001",
-    dateOfBirth: "2001-12-03",
-    joinDate: "2022-01-10",
-    lastLogin: "2024-02-28T11:30:00Z",
-    bio: "Engineering student interested in cybersecurity and cloud computing.",
-    verified: false,
-    totalCourses: 3,
-    totalSpent: 28000,
-    rating: 4.2,
-    students: 0
-  },
-  {
-    id: 6,
-    firstName: "Anita",
-    lastName: "Desai",
-    email: "anita.desai@microsoft.com",
-    phone: "+91 98765 43215",
-    role: "company",
-    status: "active",
-    avatar: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=150&h=150&fit=crop&crop=face",
-    address: "987 Tech Plaza, IT District, Hyderabad, Telangana 500001",
-    dateOfBirth: "1980-04-18",
-    joinDate: "2020-11-05",
-    lastLogin: "2024-03-14T13:20:00Z",
-    bio: "Talent Acquisition Manager at Microsoft India. Actively recruiting skilled graduates for various technical roles.",
-    verified: true,
-    totalCourses: 0,
-    totalSpent: 0,
-    rating: 4.7,
-    students: 0
-  }
-]
+import { useAppDispatch, useAppSelector } from '@/lib/redux/store'
+import {
+  fetchUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+  fetchUserById,
+  fetchUsersStats,
+  setUserQuery,
+  setUserRoleFilter,
+  setUserStatusFilter,
+  clearSelectedUser,
+  type User,
+} from '@/lib/redux/features/userSlice'
 
 const userRoles = ["All", "admin", "student", "company", "institution"]
 const userStatuses = ["All", "active", "inactive", "suspended"]
 
+// Type for UI display (with id instead of _id)
+type DashboardUser = User & {
+  id: string; // UI uses 'id', backend uses '_id'
+}
+
+const mapUserToDashboard = (user: User): DashboardUser => ({
+  ...user,
+  id: user._id || '',
+})
+
 const UsersPage = () => {
-  const [users, setUsers] = useState(dummyUsers)
+  const dispatch = useAppDispatch()
+  const {
+    items: userItems,
+    status: usersStatus,
+    error: usersError,
+    query,
+    roleFilter,
+    statusFilter,
+    selectedUser: selectedUserFromStore,
+  } = useAppSelector((state) => state.users)
+
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedRole, setSelectedRole] = useState('All')
-  const [selectedStatus, setSelectedStatus] = useState('All')
+  const [searchTerm, setSearchTerm] = useState(query)
+  const [selectedRole, setSelectedRole] = useState(roleFilter || 'All')
+  const [selectedStatus, setSelectedStatus] = useState(statusFilter || 'All')
   const [showViewModal, setShowViewModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [selectedUser, setSelectedUser] = useState<typeof dummyUsers[0] | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [selectedUser, setSelectedUser] = useState<DashboardUser | null>(null)
+  const [isActionLoading, setIsActionLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 12
 
-  // Filter users
+  // Sync local state with Redux
+  useEffect(() => {
+    dispatch(setUserQuery(searchTerm))
+  }, [dispatch, searchTerm])
+
+  useEffect(() => {
+    dispatch(setUserRoleFilter(selectedRole))
+  }, [dispatch, selectedRole])
+
+  useEffect(() => {
+    dispatch(setUserStatusFilter(selectedStatus))
+  }, [dispatch, selectedStatus])
+
+  // Fetch users on mount and when filters change
+  useEffect(() => {
+    if (usersStatus === 'idle') {
+      dispatch(fetchUsers(undefined))
+      dispatch(fetchUsersStats())
+    }
+  }, [dispatch, usersStatus])
+
+  useEffect(() => {
+    dispatch(fetchUsers({
+      q: query,
+      role: selectedRole === 'All' ? undefined : selectedRole,
+      status: selectedStatus === 'All' ? undefined : selectedStatus,
+    }))
+  }, [dispatch, query, selectedRole, selectedStatus])
+
+  // Map users to dashboard format
+  const users = useMemo(() => userItems.map(mapUserToDashboard), [userItems])
+
+  // Sync selectedUser from store
+  useEffect(() => {
+    if (selectedUserFromStore) {
+      setSelectedUser(mapUserToDashboard(selectedUserFromStore))
+    }
+  }, [selectedUserFromStore])
+
+  // Filter users (additional client-side filtering if needed)
   const filteredUsers = useMemo(() => {
     return users.filter(user => {
       const matchesSearch = user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           user.phone.includes(searchTerm)
+                           (user.phone && user.phone.includes(searchTerm))
       const matchesRole = selectedRole === 'All' || user.role === selectedRole
       const matchesStatus = selectedStatus === 'All' || user.status === selectedStatus
       
@@ -207,7 +156,7 @@ const UsersPage = () => {
       case 'student': return <GraduationCap className="w-4 h-4" />
       case 'company': return <Briefcase className="w-4 h-4" />
       case 'institution': return <Building className="w-4 h-4" />
-      default: return <User className="w-4 h-4" />
+      default: return <UserIcon className="w-4 h-4" />
     }
   }
 
@@ -239,35 +188,76 @@ const UsersPage = () => {
     }
   }
 
-  const handleDeleteUser = async () => {
-    if (!selectedUser || selectedUser.role === 'admin') return
-    
-    setIsLoading(true)
+
+  const handleAddUser = async (userData: Omit<User, "_id" | "createdAt" | "updatedAt">) => {
+    setIsActionLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setUsers(users.filter(user => user.id !== selectedUser.id))
-      setShowDeleteModal(false)
+      await dispatch(createUser(userData)).unwrap()
+      setShowAddModal(false)
       setSelectedUser(null)
+    } catch (error) {
+      console.error('Failed to create user', error)
     } finally {
-      setIsLoading(false)
+      setIsActionLoading(false)
     }
   }
 
-  const openViewModal = (user: typeof dummyUsers[0]) => {
+  const handleUpdateUser = async (userId: string, userData: Partial<User>) => {
+    setIsActionLoading(true)
+    try {
+      await dispatch(updateUser({ userId, data: userData })).unwrap()
+      setShowEditModal(false)
+      setSelectedUser(null)
+      dispatch(clearSelectedUser())
+    } catch (error) {
+      console.error('Failed to update user', error)
+    } finally {
+      setIsActionLoading(false)
+    }
+  }
+
+  const handleDeleteUser = async () => {
+    if (!selectedUser || !selectedUser._id || selectedUser.role === 'admin') return
+    
+    setIsActionLoading(true)
+    try {
+      await dispatch(deleteUser(selectedUser._id)).unwrap()
+      setShowDeleteModal(false)
+      setSelectedUser(null)
+      dispatch(clearSelectedUser())
+    } catch (error) {
+      console.error('Failed to delete user', error)
+    } finally {
+      setIsActionLoading(false)
+    }
+  }
+
+  const openViewModal = async (user: DashboardUser) => {
+    if (user._id) {
+      await dispatch(fetchUserById(user._id))
+    }
     setSelectedUser(user)
     setShowViewModal(true)
   }
 
-  const openEditModal = (user: typeof dummyUsers[0]) => {
-    setSelectedUser(user)
+  const openEditModal = (user: DashboardUser) => {
+    setSelectedUser({ ...user })
     setShowEditModal(true)
   }
 
-  const openDeleteModal = (user: typeof dummyUsers[0]) => {
+  const openDeleteModal = (user: DashboardUser) => {
     setSelectedUser(user)
     setShowDeleteModal(true)
+  }
+
+  const isLoading = usersStatus === 'loading' && userItems.length === 0
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    )
   }
 
   return (
@@ -279,11 +269,23 @@ const UsersPage = () => {
           <h1 className="text-3xl font-bold text-foreground">Users</h1>
           <p className="text-muted-foreground">Manage student, company, institution, and admin accounts</p>
         </div>
-          <Button onClick={() => setShowAddModal(true)} className="gap-2">
+          <Button onClick={() => {
+            setSelectedUser(null)
+            setShowAddModal(true)
+          }} className="gap-2">
             <UserPlus className="w-4 h-4" />
             Add User
           </Button>
         </div>
+
+        {/* Error Message */}
+        {usersError && (
+          <Card>
+            <CardContent className="p-4 text-sm text-destructive">
+              {usersError}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -294,7 +296,7 @@ const UsersPage = () => {
                   <p className="text-sm text-muted-foreground">Total Users</p>
                   <p className="text-2xl font-bold text-foreground">{users.length}</p>
                 </div>
-                <User className="w-8 h-8 text-primary" />
+                <UserIcon className="w-8 h-8 text-primary" />
               </div>
             </CardContent>
           </Card>
@@ -456,20 +458,24 @@ const UsersPage = () => {
                 </CardHeader>
                 <CardContent className="space-y-3 flex-1 flex flex-col">
                   <div className="space-y-2 flex-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Phone:</span>
-                      <span className="text-sm font-medium">{user.phone}</span>
-                    </div>
+                    {user.phone && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Phone:</span>
+                        <span className="text-sm font-medium">{user.phone}</span>
+                      </div>
+                    )}
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Verified:</span>
                       <Badge variant={user.verified ? 'success' : 'secondary'}>
                         {user.verified ? 'Yes' : 'No'}
                       </Badge>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Join Date:</span>
-                      <span className="text-sm font-medium">{new Date(user.joinDate).toLocaleDateString()}</span>
-                    </div>
+                    {user.joinDate && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Join Date:</span>
+                        <span className="text-sm font-medium">{new Date(user.joinDate).toLocaleDateString()}</span>
+                      </div>
+                    )}
                     {user.role === 'student' && (
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-muted-foreground">Courses:</span>
@@ -488,7 +494,7 @@ const UsersPage = () => {
                     {user.role === 'institution' && (
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-muted-foreground">Students:</span>
-                        <span className="text-sm font-medium">{user.students.toLocaleString()}</span>
+                        <span className="text-sm font-medium">{(user.students || 0).toLocaleString()}</span>
                       </div>
                     )}
                   </div>
@@ -570,9 +576,9 @@ const UsersPage = () => {
                         <span className="ml-1">{user.status.charAt(0).toUpperCase() + user.status.slice(1)}</span>
                       </Badge>
                     </TableCell>
-                    <TableCell>{user.phone}</TableCell>
-                    <TableCell>{new Date(user.joinDate).toLocaleDateString()}</TableCell>
-                    <TableCell>{new Date(user.lastLogin).toLocaleDateString()}</TableCell>
+                    <TableCell>{user.phone || 'N/A'}</TableCell>
+                    <TableCell>{user.joinDate ? new Date(user.joinDate).toLocaleDateString() : 'N/A'}</TableCell>
+                    <TableCell>{user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'N/A'}</TableCell>
                     <TableCell>
                       <div className="flex gap-2">
                         <Tooltip>
@@ -705,10 +711,12 @@ const UsersPage = () => {
                         <span className="text-muted-foreground">Phone:</span>
                         <span className="font-medium">{selectedUser.phone}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Date of Birth:</span>
-                        <span className="font-medium">{new Date(selectedUser.dateOfBirth).toLocaleDateString()}</span>
-                      </div>
+                      {selectedUser.dateOfBirth && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Date of Birth:</span>
+                          <span className="font-medium">{new Date(selectedUser.dateOfBirth).toLocaleDateString()}</span>
+                        </div>
+                      )}
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Address:</span>
                         <span className="font-medium text-right max-w-[200px]">{selectedUser.address}</span>
@@ -741,14 +749,18 @@ const UsersPage = () => {
                           {selectedUser.verified ? 'Yes' : 'No'}
                         </Badge>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Join Date:</span>
-                        <span className="font-medium">{new Date(selectedUser.joinDate).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Last Login:</span>
-                        <span className="font-medium">{new Date(selectedUser.lastLogin).toLocaleDateString()}</span>
-                      </div>
+                      {selectedUser.joinDate && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Join Date:</span>
+                          <span className="font-medium">{new Date(selectedUser.joinDate).toLocaleDateString()}</span>
+                        </div>
+                      )}
+                      {selectedUser.lastLogin && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Last Login:</span>
+                          <span className="font-medium">{new Date(selectedUser.lastLogin).toLocaleDateString()}</span>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 </div>
@@ -776,7 +788,7 @@ const UsersPage = () => {
                           <p className="text-sm text-muted-foreground">Enrolled Courses</p>
                         </div>
                         <div className="text-center">
-                          <p className="text-2xl font-bold text-foreground">₹{selectedUser.totalSpent.toLocaleString()}</p>
+                          <p className="text-2xl font-bold text-foreground">₹{(selectedUser.totalSpent || 0).toLocaleString()}</p>
                           <p className="text-sm text-muted-foreground">Total Spent</p>
                         </div>
                       </div>
@@ -847,143 +859,23 @@ const UsersPage = () => {
               </DialogDescription>
             </DialogHeader>
             {selectedUser && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input
-                      id="firstName"
-                      value={selectedUser.firstName}
-                      onChange={(e) => setSelectedUser({...selectedUser, firstName: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input
-                      id="lastName"
-                      value={selectedUser.lastName}
-                      onChange={(e) => setSelectedUser({...selectedUser, lastName: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={selectedUser.email}
-                      onChange={(e) => setSelectedUser({...selectedUser, email: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input
-                      id="phone"
-                      value={selectedUser.phone}
-                      onChange={(e) => setSelectedUser({...selectedUser, phone: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="role">Role</Label>
-                    <Select 
-                      value={selectedUser.role} 
-                      onValueChange={(value) => setSelectedUser({...selectedUser, role: value})}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="student">Student</SelectItem>
-                        <SelectItem value="company">Company</SelectItem>
-                        <SelectItem value="institution">Institution</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="status">Status</Label>
-                    <Select 
-                      value={selectedUser.status} 
-                      onValueChange={(value) => setSelectedUser({...selectedUser, status: value})}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="inactive">Inactive</SelectItem>
-                        <SelectItem value="suspended">Suspended</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                    <Input
-                      id="dateOfBirth"
-                      type="date"
-                      value={selectedUser.dateOfBirth}
-                      onChange={(e) => setSelectedUser({...selectedUser, dateOfBirth: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="verified">Verified</Label>
-                    <Select 
-                      value={selectedUser.verified ? 'true' : 'false'} 
-                      onValueChange={(value) => setSelectedUser({...selectedUser, verified: value === 'true'})}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select verification" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="true">Verified</SelectItem>
-                        <SelectItem value="false">Not Verified</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="address">Address</Label>
-                  <Textarea
-                    id="address"
-                    value={selectedUser.address}
-                    onChange={(e) => setSelectedUser({...selectedUser, address: e.target.value})}
-                    rows={3}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="bio">Bio</Label>
-                  <Textarea
-                    id="bio"
-                    value={selectedUser.bio}
-                    onChange={(e) => setSelectedUser({...selectedUser, bio: e.target.value})}
-                    rows={3}
-                  />
-                </div>
-              </div>
-            )}
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setShowEditModal(false)} disabled={isLoading}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => {
-                  // Update user in the list
-                  setUsers(users.map(user => 
-                    user.id === selectedUser!.id ? selectedUser! : user
-                  ))
+              <UserForm
+                user={selectedUser}
+                onUserChange={setSelectedUser}
+                onSubmit={(userData) => {
+                  if (userData._id) {
+                    const { _id, ...updateData } = userData
+                    handleUpdateUser(_id, updateData)
+                  }
+                }}
+                onCancel={() => {
                   setShowEditModal(false)
-                }} 
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Updating...
-                  </>
-                ) : (
-                  'Update User'
-                )}
-              </Button>
-            </DialogFooter>
+                  setSelectedUser(null)
+                  dispatch(clearSelectedUser())
+                }}
+                isLoading={isActionLoading}
+              />
+            )}
           </DialogContent>
         </Dialog>
 
@@ -996,122 +888,28 @@ const UsersPage = () => {
                 Create a new user account with the required information.
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="newFirstName">First Name</Label>
-                  <Input
-                    id="newFirstName"
-                    placeholder="Enter first name"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="newLastName">Last Name</Label>
-                  <Input
-                    id="newLastName"
-                    placeholder="Enter last name"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="newEmail">Email</Label>
-                  <Input
-                    id="newEmail"
-                    type="email"
-                    placeholder="Enter email address"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="newPhone">Phone</Label>
-                  <Input
-                    id="newPhone"
-                    placeholder="Enter phone number"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="newRole">Role</Label>
-                  <Select defaultValue="student">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="student">Student</SelectItem>
-                      <SelectItem value="company">Company</SelectItem>
-                      <SelectItem value="institution">Institution</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="newStatus">Status</Label>
-                  <Select defaultValue="active">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                      <SelectItem value="suspended">Suspended</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="newDateOfBirth">Date of Birth</Label>
-                  <Input
-                    id="newDateOfBirth"
-                    type="date"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="newVerified">Verified</Label>
-                  <Select defaultValue="false">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select verification" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="true">Verified</SelectItem>
-                      <SelectItem value="false">Not Verified</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="newAddress">Address</Label>
-                <Textarea
-                  id="newAddress"
-                  placeholder="Enter address"
-                  rows={3}
-                />
-              </div>
-              <div>
-                <Label htmlFor="newBio">Bio</Label>
-                <Textarea
-                  id="newBio"
-                  placeholder="Enter bio"
-                  rows={3}
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setShowAddModal(false)} disabled={isLoading}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => {
-                  // Add new user logic here
-                  setShowAddModal(false)
-                }} 
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Creating...
-                  </>
-                ) : (
-                  'Create User'
-                )}
-              </Button>
-            </DialogFooter>
+            <UserForm
+              user={selectedUser || {
+                id: '',
+                firstName: '',
+                lastName: '',
+                email: '',
+                phone: '',
+                role: 'student',
+                status: 'active',
+                verified: false,
+              } as DashboardUser}
+              onUserChange={setSelectedUser}
+              onSubmit={(userData) => {
+                const {...createData } = userData
+                handleAddUser(createData)
+              }}
+              onCancel={() => {
+                setShowAddModal(false)
+                setSelectedUser(null)
+              }}
+              isLoading={isActionLoading}
+            />
           </DialogContent>
         </Dialog>
 
@@ -1130,15 +928,15 @@ const UsersPage = () => {
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowDeleteModal(false)} disabled={isLoading}>
+              <Button variant="outline" onClick={() => setShowDeleteModal(false)} disabled={isActionLoading}>
                 Cancel
               </Button>
               <Button 
                 variant="destructive" 
                 onClick={handleDeleteUser} 
-                disabled={isLoading || selectedUser?.role === 'admin'}
+                disabled={isActionLoading || selectedUser?.role === 'admin'}
               >
-                {isLoading ? (
+                {isActionLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Deleting...
@@ -1152,6 +950,171 @@ const UsersPage = () => {
         </Dialog>
       </div>
     </TooltipProvider>
+  )
+}
+
+// User Form Component
+const UserForm = ({
+  user,
+  onUserChange,
+  onSubmit,
+  onCancel,
+  isLoading
+}: {
+  user: DashboardUser
+  onUserChange: (user: DashboardUser) => void
+  onSubmit: (user: DashboardUser) => void
+  onCancel: () => void
+  isLoading: boolean
+}) => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onSubmit(user)
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <Label htmlFor="formFirstName">First Name</Label>
+          <Input
+            id="formFirstName"
+            value={user.firstName}
+            onChange={(e) => onUserChange({...user, firstName: e.target.value})}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="formLastName">Last Name</Label>
+          <Input
+            id="formLastName"
+            value={user.lastName}
+            onChange={(e) => onUserChange({...user, lastName: e.target.value})}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="formEmail">Email</Label>
+          <Input
+            id="formEmail"
+            type="email"
+            value={user.email}
+            onChange={(e) => onUserChange({...user, email: e.target.value})}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="formPhone">Phone</Label>
+          <Input
+            id="formPhone"
+            value={user.phone || ''}
+            onChange={(e) => onUserChange({...user, phone: e.target.value})}
+          />
+        </div>
+        <div>
+          <Label htmlFor="formRole">Role</Label>
+          <Select 
+            value={user.role} 
+            onValueChange={(value) => onUserChange({...user, role: value as User['role']})}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="admin">Admin</SelectItem>
+              <SelectItem value="student">Student</SelectItem>
+              <SelectItem value="company">Company</SelectItem>
+              <SelectItem value="institution">Institution</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="formStatus">Status</Label>
+          <Select 
+            value={user.status} 
+            onValueChange={(value) => onUserChange({...user, status: value as User['status']})}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="inactive">Inactive</SelectItem>
+              <SelectItem value="suspended">Suspended</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="formDateOfBirth">Date of Birth</Label>
+          <Input
+            id="formDateOfBirth"
+            type="date"
+            value={user.dateOfBirth || ''}
+            onChange={(e) => onUserChange({...user, dateOfBirth: e.target.value})}
+          />
+        </div>
+        <div>
+          <Label htmlFor="formVerified">Verified</Label>
+          <Select 
+            value={user.verified ? 'true' : 'false'} 
+            onValueChange={(value) => onUserChange({...user, verified: value === 'true'})}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select verification" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="true">Verified</SelectItem>
+              <SelectItem value="false">Not Verified</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="formAvatar">Avatar URL</Label>
+          <Input
+            id="formAvatar"
+            type="url"
+            value={user.avatar || ''}
+            onChange={(e) => onUserChange({...user, avatar: e.target.value})}
+            placeholder="https://example.com/avatar.jpg"
+          />
+        </div>
+      </div>
+      <div>
+        <Label htmlFor="formAddress">Address</Label>
+        <Textarea
+          id="formAddress"
+          value={user.address || ''}
+          onChange={(e) => onUserChange({...user, address: e.target.value})}
+          rows={3}
+          placeholder="Enter address"
+        />
+      </div>
+      <div>
+        <Label htmlFor="formBio">Bio</Label>
+        <Textarea
+          id="formBio"
+          value={user.bio || ''}
+          onChange={(e) => onUserChange({...user, bio: e.target.value})}
+          rows={3}
+          placeholder="Enter bio"
+        />
+      </div>
+      <DialogFooter>
+        <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
+          Cancel
+        </Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              {user._id ? 'Updating...' : 'Creating...'}
+            </>
+          ) : (
+            user._id ? 'Update User' : 'Create User'
+          )}
+        </Button>
+      </DialogFooter>
+    </form>
   )
 }
 

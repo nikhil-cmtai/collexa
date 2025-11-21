@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { 
   Search, 
@@ -14,189 +14,146 @@ import {
   UserCheck,
   Clock,
   UserX,
+  Loader2,
+  Grid3X3,
+  List,
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useAppDispatch, useAppSelector } from '@/lib/redux/store'
+import { fetchJobApplications } from '@/lib/redux/features/job-applicationSlice'
+import { fetchJobs } from '@/lib/redux/features/jobsSlice'
+import type { JobApplication } from '@/lib/redux/features/job-applicationSlice'
+import type { Job } from '@/lib/redux/features/jobsSlice'
 
-// Dummy company data with applications
-const dummyCompanies = [
-  {
-    id: 1,
-    name: "TechCorp Solutions",
-    logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop&crop=center",
-    industry: "Technology",
-    location: "Bangalore, India",
-    totalApplications: 45,
-    jobApplications: 32,
-    internshipApplications: 13,
-    hired: 8,
-    underReview: 15,
-    shortlisted: 12,
-    rejected: 10,
-    recentApplications: [
-  {
-    id: 1,
-    candidateName: "Rajesh Kumar",
-    position: "Senior Software Engineer",
-        type: "job",
-    status: "under_review",
-    appliedDate: "2024-03-15",
-        experience: "5 years"
-  },
-  {
-    id: 2,
-    candidateName: "Priya Sharma",
-    position: "Data Scientist",
-        type: "job",
-    status: "shortlisted",
-    appliedDate: "2024-03-14",
-        experience: "3 years"
-      }
-    ]
-  },
-  {
-    id: 2,
-    name: "DataTech Inc",
-    logo: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=100&h=100&fit=crop&crop=center",
-    industry: "Data Analytics",
-    location: "Mumbai, India",
-    totalApplications: 28,
-    jobApplications: 18,
-    internshipApplications: 10,
-    hired: 5,
-    underReview: 8,
-    shortlisted: 10,
-    rejected: 5,
-    recentApplications: [
-  {
-    id: 3,
-    candidateName: "Amit Patel",
-    position: "Product Manager",
-        type: "job",
-    status: "interview_scheduled",
-    appliedDate: "2024-03-13",
-        experience: "6 years"
-      }
-    ]
-  },
-  {
-    id: 3,
-    name: "DesignStudio",
-    logo: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=100&h=100&fit=crop&crop=center",
-    industry: "Design",
-    location: "Pune, India",
-    totalApplications: 22,
-    jobApplications: 12,
-    internshipApplications: 10,
-    hired: 3,
-    underReview: 6,
-    shortlisted: 8,
-    rejected: 5,
-    recentApplications: [
-  {
-    id: 4,
-    candidateName: "Sneha Gupta",
-    position: "UX Designer",
-        type: "job",
-    status: "rejected",
-    appliedDate: "2024-03-12",
-        experience: "2 years"
-      }
-    ]
-  },
-  {
-    id: 4,
-    name: "CloudTech",
-    logo: "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=100&h=100&fit=crop&crop=center",
-    industry: "Cloud Services",
-    location: "Hyderabad, India",
-    totalApplications: 35,
-    jobApplications: 25,
-    internshipApplications: 10,
-    hired: 7,
-    underReview: 10,
-    shortlisted: 12,
-    rejected: 6,
-    recentApplications: [
-  {
-    id: 5,
-    candidateName: "Vikram Singh",
-    position: "DevOps Engineer",
-        type: "job",
-    status: "hired",
-    appliedDate: "2024-03-10",
-        experience: "4 years"
-      }
-    ]
-  },
-  {
-    id: 5,
-    name: "EduTech Solutions",
-    logo: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=100&h=100&fit=crop&crop=center",
-    industry: "Education Technology",
-    location: "Delhi, India",
-    totalApplications: 18,
-    jobApplications: 8,
-    internshipApplications: 10,
-    hired: 2,
-    underReview: 4,
-    shortlisted: 6,
-    rejected: 6,
-    recentApplications: [
-      {
-        id: 6,
-        candidateName: "Rahul Verma",
-        position: "Frontend Developer Intern",
-        type: "internship",
-        status: "under_review",
-        appliedDate: "2024-03-11",
-        experience: "Fresher"
-      }
-    ]
-  },
-  {
-    id: 6,
-    name: "FinTech Innovations",
-    logo: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=100&h=100&fit=crop&crop=center",
-    industry: "Financial Technology",
-    location: "Chennai, India",
-    totalApplications: 42,
-    jobApplications: 30,
-    internshipApplications: 12,
-    hired: 9,
-    underReview: 12,
-    shortlisted: 15,
-    rejected: 6,
-    recentApplications: [
-      {
-        id: 7,
-        candidateName: "Anita Reddy",
-        position: "Backend Developer",
-        type: "job",
-        status: "shortlisted",
-        appliedDate: "2024-03-09",
-        experience: "4 years"
-      }
-    ]
-  }
-]
+type CompanyWithApplications = {
+  id: string
+  name: string
+  location: string
+  totalApplications: number
+  jobApplications: number
+  internshipApplications: number
+  hired: number
+  underReview: number
+  shortlisted: number
+  rejected: number
+  recentApplications: Array<{
+    id: string
+    candidateName: string
+    position: string
+    type: 'job' | 'internship'
+    status: string
+    appliedDate: string
+  }>
+}
 
 const ApplicationsPage = () => {
   const router = useRouter()
-  const [companies] = useState(dummyCompanies)
+  const dispatch = useAppDispatch()
+  const { items: jobApplications, status: applicationsStatus, error: applicationsError } = useAppSelector((state) => state.jobApplications)
+  const { items: jobs, status: jobsStatus } = useAppSelector((state) => state.jobs)
   const [searchTerm, setSearchTerm] = useState('')
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+
+  useEffect(() => {
+    if (applicationsStatus === 'idle') {
+      dispatch(fetchJobApplications(undefined))
+    }
+    if (jobsStatus === 'idle') {
+      dispatch(fetchJobs(undefined))
+    }
+  }, [dispatch, applicationsStatus, jobsStatus])
+
+  // Create a map of jobId -> Job for quick lookup
+  const jobsMap = useMemo(() => {
+    const map = new Map<string, Job>()
+    jobs.forEach(job => {
+      map.set(job.id, job)
+    })
+    return map
+  }, [jobs])
+
+  // Group applications by company
+  const companiesWithApplications = useMemo(() => {
+    const companyMap = new Map<string, {
+      applications: Array<JobApplication & { job?: Job }>
+      companyName: string
+      location: string
+    }>()
+
+    jobApplications.forEach(app => {
+      const job = jobsMap.get(app.jobId)
+      if (!job) return
+
+      const companyName = job.company
+      const location = job.location
+
+      if (!companyMap.has(companyName)) {
+        companyMap.set(companyName, {
+          applications: [],
+          companyName,
+          location,
+        })
+      }
+
+      companyMap.get(companyName)!.applications.push({ ...app, job })
+    })
+
+    // Convert to array and calculate stats
+    return Array.from(companyMap.entries()).map(([companyName, data], index) => {
+      const applications = data.applications
+      const jobApps = applications.filter(app => app.job?.type !== 'internship')
+      const internshipApps = applications.filter(app => app.job?.type === 'internship')
+      
+      const statusCounts = {
+        hired: applications.filter(app => app.status === 'hired').length,
+        underReview: applications.filter(app => app.status === 'under_review').length,
+        shortlisted: applications.filter(app => app.status === 'shortlisted').length,
+        rejected: applications.filter(app => app.status === 'rejected').length,
+      }
+
+      // Get recent applications (sorted by createdAt, most recent first)
+      const recentApplications = applications
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, 2)
+        .map(app => ({
+          id: app._id || '',
+          candidateName: app.name,
+          position: app.job?.title || 'Unknown Position',
+          type: (app.job?.type === 'internship' ? 'internship' : 'job') as 'job' | 'internship',
+          status: app.status,
+          appliedDate: app.createdAt,
+        }))
+
+      return {
+        id: `company-${index}`,
+        name: companyName,
+        location: data.location,
+        totalApplications: applications.length,
+        jobApplications: jobApps.length,
+        internshipApplications: internshipApps.length,
+        hired: statusCounts.hired,
+        underReview: statusCounts.underReview,
+        shortlisted: statusCounts.shortlisted,
+        rejected: statusCounts.rejected,
+        recentApplications,
+      } as CompanyWithApplications
+    })
+  }, [jobApplications, jobsMap])
 
   // Filter companies
   const filteredCompanies = useMemo(() => {
-    return companies.filter(company => {
+    return companiesWithApplications.filter(company => {
       const matchesSearch = company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           company.industry.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            company.location.toLowerCase().includes(searchTerm.toLowerCase())
       return matchesSearch
     })
-  }, [companies, searchTerm])
+  }, [companiesWithApplications, searchTerm])
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -220,13 +177,17 @@ const ApplicationsPage = () => {
     }
   }
 
-  const handleCompanyClick = (companyId: number) => {
-    router.push(`/dashboard/applications/${companyId}`)
+  const handleCompanyClick = (companyName: string) => {
+    // Find company index for routing (you may want to use company ID if available)
+    const companyIndex = companiesWithApplications.findIndex(c => c.name === companyName)
+    if (companyIndex !== -1) {
+      router.push(`/dashboard/applications/${companyIndex + 1}`)
+    }
   }
 
   // Calculate total stats
   const totalStats = useMemo(() => {
-    return companies.reduce((acc, company) => ({
+    return companiesWithApplications.reduce((acc, company) => ({
       totalApplications: acc.totalApplications + company.totalApplications,
       totalJobs: acc.totalJobs + company.jobApplications,
       totalInternships: acc.totalInternships + company.internshipApplications,
@@ -243,9 +204,20 @@ const ApplicationsPage = () => {
       totalShortlisted: 0,
       totalRejected: 0
     })
-  }, [companies])
+  }, [companiesWithApplications])
+
+  const isLoading = applicationsStatus === 'loading' || jobsStatus === 'loading'
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    )
+  }
 
   return (
+    <TooltipProvider>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -254,6 +226,15 @@ const ApplicationsPage = () => {
           <p className="text-muted-foreground">Monitor applications across all companies and positions</p>
         </div>
         </div>
+
+        {/* Error Message */}
+        {applicationsError && (
+          <Card>
+            <CardContent className="p-4 text-sm text-destructive">
+              {applicationsError}
+            </CardContent>
+          </Card>
+        )}
 
       {/* Overall Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -303,131 +284,255 @@ const ApplicationsPage = () => {
           </Card>
         </div>
 
-      {/* Search */}
+      {/* Search and View Toggle */}
         <Card>
           <CardContent className="p-6">
-          <div className="relative">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   type="text"
-              placeholder="Search companies by name, industry, or location..."
+                  placeholder="Search companies by name, industry, or location..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
                 />
+              </div>
+              {/* View Toggle */}
+              <div className="flex border border-input rounded-lg overflow-hidden">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                      size="icon"
+                      onClick={() => setViewMode('grid')}
+                      className="rounded-none"
+                    >
+                      <Grid3X3 className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Grid view</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={viewMode === 'list' ? 'default' : 'ghost'}
+                      size="icon"
+                      onClick={() => setViewMode('list')}
+                      className="rounded-none"
+                    >
+                      <List className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>List view</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-      {/* Companies Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCompanies.map(company => (
-          <Card 
-            key={company.id} 
-            className="overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer group"
-            onClick={() => handleCompanyClick(company.id)}
-          >
-            <CardHeader className="pb-4">
+      {/* Companies Display */}
+      {viewMode === 'grid' ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredCompanies.map(company => (
+            <Card 
+              key={company.id} 
+              className="overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer group"
+              onClick={() => handleCompanyClick(company.name)}
+            >
+              <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                        <Avatar className="w-12 h-12">
+                      <AvatarFallback className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
+                        {company.name.split(' ').map(n => n[0]).join('')}
+                      </AvatarFallback>
+                        </Avatar>
+                        <div>
+                      <CardTitle className="text-lg group-hover:text-primary transition-colors">
+                        {company.name}
+                      </CardTitle>
+                      <CardDescription className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />
+                        {company.location}
+                      </CardDescription>
+                    </div>
+                      </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                      </div>
+              </CardHeader>
+              
+              <CardContent className="space-y-4">
+                {/* Company Stats */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-muted/50 rounded-lg">
+                    <p className="text-2xl font-bold text-foreground">{company.totalApplications}</p>
+                    <p className="text-xs text-muted-foreground">Total Applications</p>
+                      </div>
+                  <div className="text-center p-3 bg-muted/50 rounded-lg">
+                    <p className="text-2xl font-bold text-foreground">{company.hired}</p>
+                    <p className="text-xs text-muted-foreground">Hired</p>
+                        </div>
+                      </div>
+
+                {/* Application Types */}
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                      <Avatar className="w-12 h-12">
-                    <AvatarFallback className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
-                      {company.name.split(' ').map(n => n[0]).join('')}
-                    </AvatarFallback>
+                    <div className="flex items-center gap-2">
+                      <Briefcase className="w-4 h-4 text-green-500" />
+                      <span className="text-sm text-muted-foreground">Jobs</span>
+                    </div>
+                    <span className="text-sm font-medium">{company.jobApplications}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-purple-500" />
+                      <span className="text-sm text-muted-foreground">Internships</span>
+                    </div>
+                    <span className="text-sm font-medium">{company.internshipApplications}</span>
+                  </div>
+                </div>
+
+                {/* Status Breakdown */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-yellow-500" />
+                      <span className="text-sm text-muted-foreground">Under Review</span>
+                          </div>
+                    <span className="text-sm font-medium">{company.underReview}</span>
+                          </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Star className="w-4 h-4 text-blue-500" />
+                      <span className="text-sm text-muted-foreground">Shortlisted</span>
+                          </div>
+                    <span className="text-sm font-medium">{company.shortlisted}</span>
+                          </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <UserX className="w-4 h-4 text-red-500" />
+                      <span className="text-sm text-muted-foreground">Rejected</span>
+                    </div>
+                    <span className="text-sm font-medium">{company.rejected}</span>
+                          </div>
+                        </div>
+
+                {/* Recent Applications */}
+                {company.recentApplications.length > 0 && (
+                  <div className="pt-3 border-t">
+                    <p className="text-sm font-medium text-muted-foreground mb-2">Recent Applications</p>
+                    <div className="space-y-2">
+                      {company.recentApplications.slice(0, 2).map(app => (
+                        <div key={app.id} className="flex items-center justify-between text-sm">
+                          <div>
+                            <p className="font-medium">{app.candidateName}</p>
+                            <p className="text-muted-foreground">{app.position}</p>
+                          </div>
+                          <Badge className={`text-xs ${getStatusColor(app.status)}`}>
+                            {getStatusText(app.status)}
+                            </Badge>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Company</TableHead>
+                <TableHead>Location</TableHead>
+                <TableHead>Total Applications</TableHead>
+                <TableHead>Jobs</TableHead>
+                <TableHead>Internships</TableHead>
+                <TableHead>Hired</TableHead>
+                <TableHead>Under Review</TableHead>
+                <TableHead>Shortlisted</TableHead>
+                <TableHead>Rejected</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredCompanies.map(company => (
+                <TableRow 
+                  key={company.id}
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => handleCompanyClick(company.name)}
+                >
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Avatar className="w-10 h-10">
+                        <AvatarFallback className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
+                          {company.name.split(' ').map(n => n[0]).join('')}
+                        </AvatarFallback>
                       </Avatar>
                       <div>
-                    <CardTitle className="text-lg group-hover:text-primary transition-colors">
-                      {company.name}
-                    </CardTitle>
-                    <CardDescription className="flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      {company.location}
-                    </CardDescription>
-                  </div>
-                    </div>
-                <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                    </div>
-            </CardHeader>
-            
-            <CardContent className="space-y-4">
-              {/* Company Stats */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-3 bg-muted/50 rounded-lg">
-                  <p className="text-2xl font-bold text-foreground">{company.totalApplications}</p>
-                  <p className="text-xs text-muted-foreground">Total Applications</p>
-                    </div>
-                <div className="text-center p-3 bg-muted/50 rounded-lg">
-                  <p className="text-2xl font-bold text-foreground">{company.hired}</p>
-                  <p className="text-xs text-muted-foreground">Hired</p>
+                        <p className="font-medium text-foreground">{company.name}</p>
                       </div>
                     </div>
-
-              {/* Application Types */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Briefcase className="w-4 h-4 text-green-500" />
-                    <span className="text-sm text-muted-foreground">Jobs</span>
-                  </div>
-                  <span className="text-sm font-medium">{company.jobApplications}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-purple-500" />
-                    <span className="text-sm text-muted-foreground">Internships</span>
-                  </div>
-                  <span className="text-sm font-medium">{company.internshipApplications}</span>
-                </div>
-              </div>
-
-              {/* Status Breakdown */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-yellow-500" />
-                    <span className="text-sm text-muted-foreground">Under Review</span>
-                        </div>
-                  <span className="text-sm font-medium">{company.underReview}</span>
-                        </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-blue-500" />
-                    <span className="text-sm text-muted-foreground">Shortlisted</span>
-                        </div>
-                  <span className="text-sm font-medium">{company.shortlisted}</span>
-                        </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <UserX className="w-4 h-4 text-red-500" />
-                    <span className="text-sm text-muted-foreground">Rejected</span>
-                  </div>
-                  <span className="text-sm font-medium">{company.rejected}</span>
-                        </div>
-                      </div>
-
-              {/* Recent Applications */}
-              {company.recentApplications.length > 0 && (
-                <div className="pt-3 border-t">
-                  <p className="text-sm font-medium text-muted-foreground mb-2">Recent Applications</p>
-                  <div className="space-y-2">
-                    {company.recentApplications.slice(0, 2).map(app => (
-                      <div key={app.id} className="flex items-center justify-between text-sm">
-                        <div>
-                          <p className="font-medium">{app.candidateName}</p>
-                          <p className="text-muted-foreground">{app.position}</p>
-                        </div>
-                        <Badge className={`text-xs ${getStatusColor(app.status)}`}>
-                          {getStatusText(app.status)}
-                          </Badge>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-3 h-3 text-muted-foreground" />
+                      <span>{company.location}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-medium">{company.totalApplications}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Briefcase className="w-3 h-3 text-green-500" />
+                      <span>{company.jobApplications}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Users className="w-3 h-3 text-purple-500" />
+                      <span>{company.internshipApplications}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <UserCheck className="w-3 h-3 text-emerald-500" />
+                      <span className="font-medium">{company.hired}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-yellow-500" />
+                      <span>{company.underReview}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-3 h-3 text-blue-500" />
+                      <span>{company.shortlisted}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <UserX className="w-3 h-3 text-red-500" />
+                      <span>{company.rejected}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
 
       {/* No Results */}
       {filteredCompanies.length === 0 && (
@@ -442,7 +547,8 @@ const ApplicationsPage = () => {
         </Card>
       )}
 
-    </div>
+      </div>
+    </TooltipProvider>
   )
 }
 

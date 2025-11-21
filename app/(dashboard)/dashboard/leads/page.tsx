@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { 
   Search, 
   Grid3X3, 
@@ -30,177 +30,45 @@ import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Label } from '@/components/ui/label'
+import { useAppDispatch, useAppSelector } from '@/lib/redux/store'
+import {
+  fetchLeads,
+  updateLead,
+  deleteLead,
+  type Lead,
+} from '@/lib/redux/features/leadSlice'
 
-// Dummy data
-const dummyLeads = [
-  {
-    id: 1,
-    name: "Rajesh Kumar",
-    email: "rajesh.kumar@email.com",
-    phone: "+91 98765 43210",
-    company: "Tech Solutions Pvt Ltd",
-    position: "CEO",
-    source: "Website",
-    status: "new",
-    priority: "high",
-    estimatedValue: 50000,
-    notes: "Interested in premium wellness products for company employees",
-    lastContact: "2024-03-15",
-    createdAt: "2024-03-15",
-    assignedTo: "Sales Team A"
-  },
-  {
-    id: 2,
-    name: "Priya Sharma",
-    email: "priya.sharma@email.com",
-    phone: "+91 87654 32109",
-    company: "Health Plus Clinic",
-    position: "Doctor",
-    source: "Referral",
-    status: "contacted",
-    priority: "medium",
-    estimatedValue: 25000,
-    notes: "Looking for supplements for patients with specific health conditions",
-    lastContact: "2024-03-14",
-    createdAt: "2024-03-12",
-    assignedTo: "Sales Team B"
-  },
-  {
-    id: 3,
-    name: "Amit Patel",
-    email: "amit.patel@email.com",
-    phone: "+91 76543 21098",
-    company: "Fitness First Gym",
-    position: "Owner",
-    source: "Social Media",
-    status: "qualified",
-    priority: "high",
-    estimatedValue: 75000,
-    notes: "Wants to stock protein powders and supplements for gym members",
-    lastContact: "2024-03-13",
-    createdAt: "2024-03-10",
-    assignedTo: "Sales Team A"
-  },
-  {
-    id: 4,
-    name: "Sneha Reddy",
-    email: "sneha.reddy@email.com",
-    phone: "+91 65432 10987",
-    company: "Wellness Center",
-    position: "Manager",
-    source: "Cold Call",
-    status: "proposal",
-    priority: "medium",
-    estimatedValue: 30000,
-    notes: "Interested in bulk orders for wellness center clients",
-    lastContact: "2024-03-12",
-    createdAt: "2024-03-08",
-    assignedTo: "Sales Team C"
-  },
-  {
-    id: 5,
-    name: "Vikram Singh",
-    email: "vikram.singh@email.com",
-    phone: "+91 54321 09876",
-    company: "Pharmacy Chain",
-    position: "Procurement Manager",
-    source: "Trade Show",
-    status: "negotiation",
-    priority: "high",
-    estimatedValue: 100000,
-    notes: "Large pharmacy chain looking for exclusive distribution rights",
-    lastContact: "2024-03-11",
-    createdAt: "2024-03-05",
-    assignedTo: "Sales Team A"
-  },
-  {
-    id: 6,
-    name: "Anita Desai",
-    email: "anita.desai@email.com",
-    phone: "+91 43210 98765",
-    company: "Online Health Store",
-    position: "Founder",
-    source: "Website",
-    status: "closed-won",
-    priority: "high",
-    estimatedValue: 40000,
-    notes: "Successfully closed deal for online store partnership",
-    lastContact: "2024-03-10",
-    createdAt: "2024-02-28",
-    assignedTo: "Sales Team B"
-  },
-  {
-    id: 7,
-    name: "Rohit Gupta",
-    email: "rohit.gupta@email.com",
-    phone: "+91 32109 87654",
-    company: "Corporate Wellness",
-    position: "Director",
-    source: "Email Campaign",
-    status: "closed-lost",
-    priority: "low",
-    estimatedValue: 20000,
-    notes: "Decided to go with competitor due to pricing",
-    lastContact: "2024-03-09",
-    createdAt: "2024-02-25",
-    assignedTo: "Sales Team C"
-  },
-  {
-    id: 8,
-    name: "Kavita Joshi",
-    email: "kavita.joshi@email.com",
-    phone: "+91 21098 76543",
-    company: "Nutrition Clinic",
-    position: "Nutritionist",
-    source: "Referral",
-    status: "new",
-    priority: "medium",
-    estimatedValue: 15000,
-    notes: "Interested in specialized nutrition products for diabetic patients",
-    lastContact: "2024-03-08",
-    createdAt: "2024-03-08",
-    assignedTo: "Sales Team B"
-  },
-  {
-    id: 9,
-    name: "Deepak Mehta",
-    email: "deepak.mehta@email.com",
-    phone: "+91 10987 65432",
-    company: "Sports Academy",
-    position: "Coach",
-    source: "Social Media",
-    status: "contacted",
-    priority: "medium",
-    estimatedValue: 35000,
-    notes: "Looking for sports nutrition products for athletes",
-    lastContact: "2024-03-07",
-    createdAt: "2024-03-05",
-    assignedTo: "Sales Team A"
-  },
-  {
-    id: 10,
-    name: "Sunita Agarwal",
-    email: "sunita.agarwal@email.com",
-    phone: "+91 98765 43210",
-    company: "Ayurvedic Center",
-    position: "Owner",
-    source: "Website",
-    status: "qualified",
-    priority: "high",
-    estimatedValue: 60000,
-    notes: "Interested in combining modern supplements with traditional Ayurveda",
-    lastContact: "2024-03-06",
-    createdAt: "2024-03-01",
-    assignedTo: "Sales Team C"
-  }
-]
+type DashboardLead = Lead & {
+  id: string
+  assignedTo?: string
+}
+
+const generateId = () =>
+  typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+
+const mapLeadToDashboard = (lead: Lead & { id?: string; assignedTo?: string }): DashboardLead => ({
+  ...lead,
+  id: lead._id || lead.id || generateId(),
+  source: lead.source || 'Website',
+  status: lead.status || 'new',
+  priority: lead.priority || 'medium',
+  estimatedValue: lead.estimatedValue ?? 0,
+  notes: lead.notes || '',
+  assignedTo: lead.assignedTo || 'Unassigned',
+  lastContact: lead.lastContact || new Date().toISOString(),
+  createdAt: lead.createdAt || new Date().toISOString(),
+})
 
 const leadStatuses = ["All", "new", "contacted", "qualified", "proposal", "negotiation", "closed-won", "closed-lost"]
 const leadSources = ["All", "Website", "Referral", "Social Media", "Cold Call", "Trade Show", "Email Campaign"]
 const leadPriorities = ["All", "low", "medium", "high"]
 
 const LeadsPage = () => {
-  const [leads, setLeads] = useState(dummyLeads)
+  const dispatch = useAppDispatch()
+  const { items: leadItems, status: leadsStatus, error: leadsError } = useAppSelector((state) => state.leads)
+  const leads = useMemo(() => leadItems.map(mapLeadToDashboard), [leadItems])
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedStatus, setSelectedStatus] = useState('All')
@@ -209,12 +77,17 @@ const LeadsPage = () => {
   const [showViewModal, setShowViewModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [selectedLead, setSelectedLead] = useState<typeof dummyLeads[0] | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [selectedLead, setSelectedLead] = useState<DashboardLead | null>(null)
+  const [isActionLoading, setIsActionLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 20
 
-  // Filter leads
+  useEffect(() => {
+    if (leadsStatus === 'idle') {
+      dispatch(fetchLeads(undefined))
+    }
+  }, [dispatch, leadsStatus])
+
   const filteredLeads = useMemo(() => {
     return leads.filter(lead => {
       const matchesSearch = lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -239,47 +112,54 @@ const LeadsPage = () => {
     setCurrentPage(1)
   }, [searchTerm, selectedStatus, selectedSource, selectedPriority])
 
-  const handleUpdateLeadStatus = async (leadId: number, newStatus: string) => {
-    setIsLoading(true)
+  const handleUpdateLeadStatus = async (leadId: string, newStatus: string, updates?: Partial<DashboardLead>) => {
+    setIsActionLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setLeads(leads.map(lead => 
-        lead.id === leadId 
-          ? { ...lead, status: newStatus, lastContact: new Date().toISOString().split('T')[0] }
-          : lead
-      ))
+      await dispatch(
+        updateLead({
+          leadId,
+          data: {
+            status: newStatus,
+            priority: updates?.priority ?? selectedLead?.priority,
+            notes: updates?.notes ?? selectedLead?.notes,
+            lastContact: new Date().toISOString().split('T')[0],
+          },
+        })
+      ).unwrap()
+      setShowEditModal(false)
+      setSelectedLead(null)
+    } catch (error) {
+      console.error('Failed to update lead', error)
     } finally {
-      setIsLoading(false)
+      setIsActionLoading(false)
     }
   }
 
   const handleDeleteLead = async () => {
-    setIsLoading(true)
+    if (!selectedLead) return
+    setIsActionLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setLeads(leads.filter(lead => lead.id !== selectedLead!.id))
+      await dispatch(deleteLead(selectedLead.id)).unwrap()
       setShowDeleteModal(false)
       setSelectedLead(null)
+    } catch (error) {
+      console.error('Failed to delete lead', error)
     } finally {
-      setIsLoading(false)
+      setIsActionLoading(false)
     }
   }
 
-  const openViewModal = (lead: typeof dummyLeads[0]) => {
+  const openViewModal = (lead: DashboardLead) => {
     setSelectedLead(lead)
     setShowViewModal(true)
   }
 
-  const openEditModal = (lead: typeof dummyLeads[0]) => {
+  const openEditModal = (lead: DashboardLead) => {
     setSelectedLead(lead)
     setShowEditModal(true)
   }
 
-  const openDeleteModal = (lead: typeof dummyLeads[0]) => {
+  const openDeleteModal = (lead: DashboardLead) => {
     setSelectedLead(lead)
     setShowDeleteModal(true)
   }
@@ -319,6 +199,16 @@ const LeadsPage = () => {
     }
   }
 
+  const formatStatusLabel = (status?: string) =>
+    status ? status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' ') : 'Unknown'
+
+  const formatPriorityLabel = (priority?: string) =>
+    priority ? priority.charAt(0).toUpperCase() + priority.slice(1) : 'N/A'
+
+  const totalPipelineValue = leads.reduce((sum, lead) => sum + (lead.estimatedValue ?? 0), 0)
+  const totalNewLeads = leads.filter((l) => l.status === 'new').length
+  const totalQualifiedLeads = leads.filter((l) => l.status === 'qualified').length
+
   return (
     <TooltipProvider>
       <div className="space-y-6">
@@ -329,6 +219,14 @@ const LeadsPage = () => {
             <p className="text-muted-foreground">Manage sales leads and customer prospects</p>
           </div>
         </div>
+
+        {leadsError && (
+          <Card>
+            <CardContent className="p-4 text-sm text-destructive">
+              {leadsError}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -348,7 +246,7 @@ const LeadsPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">New Leads</p>
-                  <p className="text-2xl font-bold text-foreground">{leads.filter(l => l.status === 'new').length}</p>
+                  <p className="text-2xl font-bold text-foreground">{totalNewLeads}</p>
                 </div>
                 <UserPlus className="w-8 h-8 text-blue-600" />
               </div>
@@ -359,7 +257,7 @@ const LeadsPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Qualified Leads</p>
-                  <p className="text-2xl font-bold text-foreground">{leads.filter(l => l.status === 'qualified').length}</p>
+                  <p className="text-2xl font-bold text-foreground">{totalQualifiedLeads}</p>
                 </div>
                 <CheckCircle className="w-8 h-8 text-emerald-500" />
               </div>
@@ -370,7 +268,7 @@ const LeadsPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Pipeline Value</p>
-                  <p className="text-2xl font-bold text-foreground">₹{leads.reduce((sum, l) => sum + l.estimatedValue, 0).toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-foreground">₹{totalPipelineValue.toLocaleString()}</p>
                 </div>
                 <TrendingUp className="w-8 h-8 text-green-600" />
               </div>
@@ -402,7 +300,7 @@ const LeadsPage = () => {
                 <SelectContent>
                   {leadStatuses.map(status => (
                     <SelectItem key={status} value={status}>
-                      {status === 'All' ? 'All Statuses' : status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' ')}
+                      {status === 'All' ? 'All Statuses' : formatStatusLabel(status)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -484,10 +382,10 @@ const LeadsPage = () => {
                     <div className="flex gap-2">
                       <Badge variant={getStatusColor(lead.status) as 'default' | 'secondary' | 'destructive' | 'outline'}>
                         {getStatusIcon(lead.status)}
-                        <span className="ml-1">{lead.status.charAt(0).toUpperCase() + lead.status.slice(1).replace('-', ' ')}</span>
+                        <span className="ml-1">{formatStatusLabel(lead.status)}</span>
                       </Badge>
                       <Badge variant={getPriorityColor(lead.priority) as 'default' | 'secondary' | 'destructive' | 'outline'}>
-                        {lead.priority.charAt(0).toUpperCase() + lead.priority.slice(1)}
+                        {formatPriorityLabel(lead.priority)}
                       </Badge>
                     </div>
                   </div>
@@ -584,12 +482,12 @@ const LeadsPage = () => {
                     <TableCell>
                       <Badge variant={getStatusColor(lead.status) as 'default' | 'secondary' | 'destructive' | 'outline'}>
                         {getStatusIcon(lead.status)}
-                        <span className="ml-1">{lead.status.charAt(0).toUpperCase() + lead.status.slice(1).replace('-', ' ')}</span>
+                        <span className="ml-1">{formatStatusLabel(lead.status)}</span>
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <Badge variant={getPriorityColor(lead.priority) as 'default' | 'secondary' | 'destructive' | 'outline'}>
-                        {lead.priority.charAt(0).toUpperCase() + lead.priority.slice(1)}
+                        {formatPriorityLabel(lead.priority)}
                       </Badge>
                     </TableCell>
                     <TableCell className="font-medium">₹{lead.estimatedValue.toLocaleString()}</TableCell>
@@ -744,13 +642,13 @@ const LeadsPage = () => {
                         <span className="text-muted-foreground">Status:</span>
                         <Badge variant={getStatusColor(selectedLead.status) as 'default' | 'secondary' | 'destructive' | 'outline'}>
                           {getStatusIcon(selectedLead.status)}
-                          <span className="ml-1">{selectedLead.status.charAt(0).toUpperCase() + selectedLead.status.slice(1).replace('-', ' ')}</span>
+                          <span className="ml-1">{formatStatusLabel(selectedLead.status)}</span>
                         </Badge>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Priority:</span>
                         <Badge variant={getPriorityColor(selectedLead.priority) as 'default' | 'secondary' | 'destructive' | 'outline'}>
-                          {selectedLead.priority.charAt(0).toUpperCase() + selectedLead.priority.slice(1)}
+                          {formatPriorityLabel(selectedLead.priority)}
                         </Badge>
                       </div>
                       <div className="flex justify-between">
@@ -824,7 +722,7 @@ const LeadsPage = () => {
                   <Label htmlFor="lead-status" className="mb-2 block">Lead Status</Label>
                   <Select 
                     value={selectedLead.status} 
-                    onValueChange={(value) => setSelectedLead({...selectedLead, status: value})}
+                    onValueChange={(value) => setSelectedLead((prev) => prev ? { ...prev, status: value } : prev)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select status" />
@@ -832,7 +730,7 @@ const LeadsPage = () => {
                     <SelectContent>
                       {leadStatuses.slice(1).map(status => (
                         <SelectItem key={status} value={status}>
-                          {status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' ')}
+                          {formatStatusLabel(status)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -842,7 +740,7 @@ const LeadsPage = () => {
                   <Label htmlFor="lead-priority" className="mb-2 block">Priority</Label>
                   <Select 
                     value={selectedLead.priority} 
-                    onValueChange={(value) => setSelectedLead({...selectedLead, priority: value})}
+                    onValueChange={(value) => setSelectedLead((prev) => prev ? { ...prev, priority: value } : prev)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select priority" />
@@ -850,7 +748,7 @@ const LeadsPage = () => {
                     <SelectContent>
                       {leadPriorities.slice(1).map(priority => (
                         <SelectItem key={priority} value={priority}>
-                          {priority.charAt(0).toUpperCase() + priority.slice(1)}
+                          {formatPriorityLabel(priority)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -862,24 +760,25 @@ const LeadsPage = () => {
                     id="lead-notes"
                     placeholder="Add lead notes"
                     value={selectedLead.notes || ''}
-                    onChange={(e) => setSelectedLead({...selectedLead, notes: e.target.value})}
+                    onChange={(e) => setSelectedLead((prev) => prev ? { ...prev, notes: e.target.value } : prev)}
                     rows={3}
                   />
                 </div>
               </div>
             )}
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowEditModal(false)} disabled={isLoading}>
+              <Button variant="outline" onClick={() => setShowEditModal(false)} disabled={isActionLoading}>
                 Cancel
               </Button>
               <Button 
                 onClick={() => {
-                  handleUpdateLeadStatus(selectedLead!.id, selectedLead!.status)
-                  setShowEditModal(false)
+                  if (selectedLead) {
+                    handleUpdateLeadStatus(selectedLead.id, selectedLead.status, selectedLead)
+                  }
                 }} 
-                disabled={isLoading}
+                disabled={isActionLoading || !selectedLead}
               >
-                {isLoading ? (
+                {isActionLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Updating...
@@ -902,15 +801,15 @@ const LeadsPage = () => {
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowDeleteModal(false)} disabled={isLoading}>
+              <Button variant="outline" onClick={() => setShowDeleteModal(false)} disabled={isActionLoading}>
                 Cancel
               </Button>
               <Button 
                 variant="destructive" 
                 onClick={handleDeleteLead} 
-                disabled={isLoading}
+                disabled={isActionLoading}
               >
-                {isLoading ? (
+                {isActionLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Deleting...

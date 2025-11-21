@@ -1,7 +1,9 @@
 "use client"
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/store';
+import { fetchTestimonials } from '@/lib/redux/features/testimonialsSlice';
 
 // Type definitions
 interface AvatarProps {
@@ -185,99 +187,128 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ title, descri
 
 // Main Education Testimonials Component
 const EducationTestimonials: React.FC = () => {
-  const testimonials: TestimonialCardProps[] = [
-    {
-      author: {
-        name: "Rahul Sharma",
-        handle: "@rahuldev",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
-      },
-      text: "Got placed at Google after completing their Full Stack Development course. The practical projects and mentorship were game-changers!",
-      href: "https://linkedin.com/in/rahuldev"
-    },
-    {
-      author: {
-        name: "Priya Patel",
-        handle: "@priyacodes",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face"
-      },
-      text: "From zero coding knowledge to landing a ₹12 LPA job at Microsoft in just 8 months. Their placement support is incredible!"
-    },
-    {
-      author: {
-        name: "Amit Kumar",
-        handle: "@amitml",
-        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
-      },
-      text: "The Data Science internship program helped me transition from mechanical engineering to ML engineer at Flipkart. Best decision ever!",
-      href: "https://twitter.com/amitml"
-    },
-    {
-      author: {
-        name: "Sneha Gupta",
-        handle: "@snehatech",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face"
-      },
-      text: "Their React Native course was so comprehensive. Got an internship at Zomato during the course itself, now working full-time there!"
-    },
-    {
-      author: {
-        name: "Vikash Singh",
-        handle: "@vikashcloud",
-        avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop&crop=face"
-      },
-      text: "DevOps bootcamp changed my career trajectory completely. From ₹3 LPA to ₹18 LPA at Amazon in 6 months. Thank you team!"
-    },
-    {
-      author: {
-        name: "Ananya Joshi",
-        handle: "@ananyaux",
-        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
-      },
-      text: "UI/UX Design course with real client projects gave me confidence. Now working as Senior Designer at Paytm with amazing salary!"
-    },
-    {
-      author: {
-        name: "Rohit Verma",
-        handle: "@rohitjava",
-        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face"
-      },
-      text: "Java Full Stack course + guaranteed internship program = dream job at TCS. The mock interviews really prepared me well.",
-      href: "https://linkedin.com/in/rohitjava"
-    },
-    {
-      author: {
-        name: "Kavya Reddy",
-        handle: "@kavyaai",
-        avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face"
-      },
-      text: "AI/ML specialization course is top-notch! Got selected for internship at IIT Delhi research lab, now pursuing PhD there."
-    },
-    {
-      author: {
-        name: "Harsh Agarwal",
-        handle: "@harshstartup",
-        avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face"
-      },
-      text: "Entrepreneurship & Digital Marketing course helped me start my own agency. Now making ₹50k+ monthly at age 22!"
-    },
-    {
-      author: {
-        name: "Divya Shah",
-        handle: "@divyacyber",
-        avatar: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=150&h=150&fit=crop&crop=face"
-      },
-      text: "Cybersecurity certification course was exactly what I needed. Switched from IT support to Security Analyst at Wipro with 80% hike!"
+  const dispatch = useAppDispatch();
+  const { items, status, error } = useAppSelector((s) => s.testimonials);
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchTestimonials());
     }
-  ];
+  }, [dispatch, status]);
+
+  const testimonials = useMemo(() => {
+    if (items.length) {
+      return items.map((item): TestimonialCardProps => ({
+        author: {
+          name: item.name,
+          handle: item.handle,
+          avatar: item.avatar,
+        },
+        text: item.text,
+        href: item.href || undefined,
+      }));
+    }
+    return fallbackTestimonials;
+  }, [items]);
+
+  const descriptionText =
+    status === "failed"
+      ? (error || "Unable to load latest testimonials right now. Showing featured highlights from our community.")
+      : "See success stories of students who built their careers through our courses, internships and job placement programs";
 
   return (
     <TestimonialsSection
       title="Thousands Trained. Careers Transformed."
-      description="See success stories of students who built their careers through our courses, internships and job placement programs"
+      description={descriptionText}
       testimonials={testimonials}
     />
   );
 };
 
 export default EducationTestimonials;
+
+const fallbackTestimonials: TestimonialCardProps[] = [
+  {
+    author: {
+      name: "Rahul Sharma",
+      handle: "@rahuldev",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+    },
+    text: "Got placed at Google after completing their Full Stack Development course. The practical projects and mentorship were game-changers!",
+    href: "https://linkedin.com/in/rahuldev"
+  },
+  {
+    author: {
+      name: "Priya Patel",
+      handle: "@priyacodes",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face"
+    },
+    text: "From zero coding knowledge to landing a ₹12 LPA job at Microsoft in just 8 months. Their placement support is incredible!"
+  },
+  {
+    author: {
+      name: "Amit Kumar",
+      handle: "@amitml",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+    },
+    text: "The Data Science internship program helped me transition from mechanical engineering to ML engineer at Flipkart. Best decision ever!",
+    href: "https://twitter.com/amitml"
+  },
+  {
+    author: {
+      name: "Sneha Gupta",
+      handle: "@snehatech",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face"
+    },
+    text: "Their React Native course was so comprehensive. Got an internship at Zomato during the course itself, now working full-time there!"
+  },
+  {
+    author: {
+      name: "Vikash Singh",
+      handle: "@vikashcloud",
+      avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop&crop=face"
+    },
+    text: "DevOps bootcamp changed my career trajectory completely. From ₹3 LPA to ₹18 LPA at Amazon in 6 months. Thank you team!"
+  },
+  {
+    author: {
+      name: "Ananya Joshi",
+      handle: "@ananyaux",
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
+    },
+    text: "UI/UX Design course with real client projects gave me confidence. Now working as Senior Designer at Paytm with amazing salary!"
+  },
+  {
+    author: {
+      name: "Rohit Verma",
+      handle: "@rohitjava",
+      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face"
+    },
+    text: "Java Full Stack course + guaranteed internship program = dream job at TCS. The mock interviews really prepared me well.",
+    href: "https://linkedin.com/in/rohitjava"
+  },
+  {
+    author: {
+      name: "Kavya Reddy",
+      handle: "@kavyaai",
+      avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face"
+    },
+    text: "AI/ML specialization course is top-notch! Got selected for internship at IIT Delhi research lab, now pursuing PhD there."
+  },
+  {
+    author: {
+      name: "Harsh Agarwal",
+      handle: "@harshstartup",
+      avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face"
+    },
+    text: "Entrepreneurship & Digital Marketing course helped me start my own agency. Now making ₹50k+ monthly at age 22!"
+  },
+  {
+    author: {
+      name: "Divya Shah",
+      handle: "@divyacyber",
+      avatar: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=150&h=150&fit=crop&crop=face"
+    },
+    text: "Cybersecurity certification course was exactly what I needed. Switched from IT support to Security Analyst at Wipro with 80% hike!"
+  }
+];

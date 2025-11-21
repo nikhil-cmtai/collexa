@@ -71,7 +71,7 @@ const StatSection = () => {
                 });
             }, stepDuration);
         });
-    }, [isVisible]);
+    }, [isVisible, stats]);
 
     return (
         <div id="stats-section" className="w-full bg-primary/5 py-8">

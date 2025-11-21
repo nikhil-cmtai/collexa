@@ -215,7 +215,7 @@ const getDetailedInternshipData = (internship: Internship): DetailedInternship =
   return {
     ...internship,
     ...defaultData,
-    ...detailedData[internship.id]
+    ...detailedData[internship.id as unknown as number]
   } as DetailedInternship
 }
 
@@ -228,7 +228,7 @@ const InternshipDetailsPage = () => {
   )
   
   // Get detailed internship data
-  const internship = baseInternship ? getDetailedInternshipData(baseInternship as Internship) : null
+  const internship = baseInternship ? getDetailedInternshipData(baseInternship as unknown as Internship) : null
   
   const [formData, setFormData] = useState({
     fullName: "",

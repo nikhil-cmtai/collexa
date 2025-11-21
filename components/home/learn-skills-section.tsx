@@ -537,7 +537,7 @@ interface SkillsCoursesData {
 }
 
 // ======= TabSection Component =======
-function TabSection({ title, data }: { title: string; data: SkillsCoursesData; sectionType: "skills" }) {
+function TabSection({ data }: { data: SkillsCoursesData; sectionType: "skills" }) {
   const [activeCategory, setActiveCategory] = useState("Digital Skills")
   const [currentSlide, setCurrentSlide] = useState(0)
   const [cardsPerSlide, setCardsPerSlide] = useState(3)
@@ -711,7 +711,7 @@ export default function SkillsCoursesAndDevelopment() {
             Master professional skills and boost your career with expert-led courses
           </p>
         </motion.div>
-        <TabSection title=" Skills Courses" data={skillsCoursesData} sectionType="skills" />
+        <TabSection data={skillsCoursesData} sectionType="skills" />
       </div>
     </section>
   )
