@@ -59,7 +59,7 @@ const FloatingButtons = () => {
               rel={btn.href.startsWith("http") ? "noopener noreferrer" : undefined}
               aria-label={btn.label}
               className={`
-                group relative flex items-center justify-center h-12 w-12 rounded-full border border-secondary
+                group relative flex items-center justify-center h-12 w-12 rounded-full border border-primary
                 transition-all duration-200
                 hover:scale-110
                 ${expanded ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-90 -translate-y-2 pointer-events-none"}
@@ -86,12 +86,9 @@ const FloatingButtons = () => {
         className={`
           flex items-center justify-center h-12 w-12 rounded-full bg-primary text-white shadow-lg
           hover:scale-110 transition-all duration-150
-          focus:outline-none focus:ring-2 focus:ring-secondary
+          focus:outline-none focus:ring-2 focus:ring-primary
           ${expanded ? "rotate-90" : ""}
         `}
-        style={{
-          background: "linear-gradient(135deg, var(--primary), var(--secondary))",
-        }}
       >
         <MessageCircle size={ICON_SIZE} className="drop-shadow" />
       </button>
@@ -100,7 +97,7 @@ const FloatingButtons = () => {
         <button
           onClick={handleScrollTop}
           aria-label="Scroll to top"
-          className="group relative mt-2 flex items-center justify-center h-12 w-12 rounded-full bg-white text-primary border border-secondary shadow-lg hover:bg-secondary hover:text-white hover:scale-110 transition-all duration-150"
+          className="group relative mt-2 flex items-center justify-center h-12 w-12 rounded-full bg-white text-primary border border-primary shadow-lg hover:bg-secondary hover:text-white hover:scale-110 transition-all duration-150"
         >
           <ArrowUp size={ICON_SIZE} className="drop-shadow" />
           <span className="absolute right-14 opacity-0 group-hover:opacity-100 bg-secondary text-white px-3 py-1 rounded-md text-xs font-semibold shadow transition-all duration-200 pointer-events-none">

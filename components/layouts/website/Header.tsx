@@ -59,10 +59,10 @@ const Header = () => {
         { title: "Freelance Jobs", href: "/jobs" }
       ]},
       { title: "Placement Courses with AI", badge: "NEW", items: [
-        { title: "AI Placement Course", href: "/courses" },
-        { title: "Data Science Bootcamp", href: "/courses" },
-        { title: "Full Stack Development", href: "/courses" },
-        { title: "Digital Marketing", href: "/courses" }
+        { title: "AI Placement Course", href: "/campus-courses" },
+        { title: "Data Science Bootcamp", href: "/campus-courses" },
+        { title: "Full Stack Development", href: "/campus-courses" },
+        { title: "Digital Marketing", href: "/campus-courses" }
       ]}
     ]
   };
@@ -110,35 +110,35 @@ const Header = () => {
   const campusCoursesData = {
     categories: [
       { title: "Engineering Courses", items: [
-        { title: "B.Tech Computer Science", href: "/courses" },
-        { title: "B.Tech Electronics", href: "/courses" },
-        { title: "B.Tech Mechanical", href: "/courses" },
-        { title: "M.Tech Programs", href: "/courses" },
-        { title: "Diploma Engineering", href: "/courses" }
+        { title: "B.Tech Computer Science", href: "/campus-courses" },
+        { title: "B.Tech Electronics", href: "/campus-courses" },
+        { title: "B.Tech Mechanical", href: "/campus-courses" },
+        { title: "M.Tech Programs", href: "/campus-courses" },
+        { title: "Diploma Engineering", href: "/campus-courses" }
       ]},
       { title: "Management Courses", items: [
-        { title: "MBA Programs", href: "/courses" },
-        { title: "BBA Programs", href: "/courses" },
-        { title: "PGDM", href: "/courses" },
-        { title: "Executive MBA", href: "/courses" }
+        { title: "MBA Programs", href: "/campus-courses" },
+        { title: "BBA Programs", href: "/campus-courses" },
+        { title: "PGDM", href: "/campus-courses" },
+        { title: "Executive MBA", href: "/campus-courses" }
       ]},
       { title: "Computer Science", items: [
-        { title: "B.Sc Computer Science", href: "/courses" },
-        { title: "M.Sc Computer Science", href: "/courses" },
-        { title: "BCA", href: "/courses" },
-        { title: "MCA", href: "/courses" }
+        { title: "B.Sc Computer Science", href: "/campus-courses" },
+        { title: "M.Sc Computer Science", href: "/campus-courses" },
+        { title: "BCA", href: "/campus-courses" },
+        { title: "MCA", href: "/campus-courses" }
       ]},
       { title: "Data Science", items: [
-        { title: "B.Sc Data Science", href: "/courses" },
-        { title: "M.Sc Data Science", href: "/courses" },
-        { title: "AI/ML Programs", href: "/courses" },
-        { title: "Business Analytics", href: "/courses" }
+        { title: "B.Sc Data Science", href: "/campus-courses" },
+        { title: "M.Sc Data Science", href: "/campus-courses" },
+        { title: "AI/ML Programs", href: "/campus-courses" },
+        { title: "Business Analytics", href: "/campus-courses" }
       ]},
       { title: "Design Courses", items: [
-        { title: "B.Des Programs", href: "/courses" },
-        { title: "M.Des Programs", href: "/courses" },
-        { title: "Fashion Design", href: "/courses" },
-        { title: "Interior Design", href: "/courses" }
+        { title: "B.Des Programs", href: "/campus-courses" },
+        { title: "M.Des Programs", href: "/campus-courses" },
+        { title: "Fashion Design", href: "/campus-courses" },
+        { title: "Interior Design", href: "/campus-courses" }
       ]}
     ]
   };
@@ -147,39 +147,39 @@ const Header = () => {
   const learnSkillsData = {
     categories: [
       { title: "Programming Languages", items: [
-        { title: "Python Masterclass", href: "/skill-based-course" },
-        { title: "JavaScript Deep Dive", href: "/skill-based-course" },
-        { title: "Java Programming", href: "/skill-based-course" },
-        { title: "C++ Programming", href: "/skill-based-course" },
-        { title: "Go Programming", href: "/skill-based-course" }
+        { title: "Python Masterclass", href: "/learn-skills" },
+        { title: "JavaScript Deep Dive", href: "/learn-skills" },
+        { title: "Java Programming", href: "/learn-skills" },
+        { title: "C++ Programming", href: "/learn-skills" },
+        { title: "Go Programming", href: "/learn-skills" }
       ]},
       { title: "Web Development", items: [
-        { title: "React Development", href: "/skill-based-course" },
-        { title: "Node.js Backend", href: "/skill-based-course" },
-        { title: "Full Stack Development", href: "/skill-based-course" },
-        { title: "Next.js Framework", href: "/skill-based-course" },
-        { title: "Vue.js Development", href: "/skill-based-course" }
+        { title: "React Development", href: "/learn-skills" },
+        { title: "Node.js Backend", href: "/learn-skills" },
+        { title: "Full Stack Development", href: "/learn-skills" },
+        { title: "Next.js Framework", href: "/learn-skills" },
+        { title: "Vue.js Development", href: "/learn-skills" }
       ]},
       { title: "Data Science & AI", items: [
-        { title: "Machine Learning", href: "/skill-based-course" },
-        { title: "Deep Learning", href: "/skill-based-course" },
+        { title: "Machine Learning", href: "/learn-skills" },
+        { title: "Deep Learning", href: "/learn-skills" },
         { title: "Data Analytics", href: "/skill-based-course" },
-        { title: "Big Data", href: "/skill-based-course" },
-        { title: "AI Fundamentals", href: "/skill-based-course" }
+        { title: "Big Data", href: "/learn-skills" },
+        { title: "AI Fundamentals", href: "/learn-skills" }
       ]},
       { title: "Digital Marketing", items: [
-        { title: "SEO Mastery", href: "/skill-based-course" },
-        { title: "Google Ads", href: "/skill-based-course" },
-        { title: "Social Media Marketing", href: "/skill-based-course" },
-        { title: "Content Marketing", href: "/skill-based-course" },
-        { title: "Email Marketing", href: "/skill-based-course" }
+        { title: "SEO Mastery", href: "/learn-skills" },
+        { title: "Google Ads", href: "/learn-skills" },
+        { title: "Social Media Marketing", href: "/learn-skills" },
+        { title: "Content Marketing", href: "/learn-skills" },
+        { title: "Email Marketing", href: "/learn-skills" }
       ]},
       { title: "Design Skills", items: [
-        { title: "UI/UX Design", href: "/skill-based-course" },
-        { title: "Figma Mastery", href: "/skill-based-course" },
-        { title: "Adobe Creative Suite", href: "/skill-based-course" },
-        { title: "Web Design", href: "/skill-based-course" },
-        { title: "Motion Graphics", href: "/skill-based-course" }
+        { title: "UI/UX Design", href: "/learn-skills" },
+        { title: "Figma Mastery", href: "/learn-skills" },
+        { title: "Adobe Creative Suite", href: "/learn-skills" },
+        { title: "Web Design", href: "/learn-skills" },
+        { title: "Motion Graphics", href: "/learn-skills" }
       ]}
     ]
   };

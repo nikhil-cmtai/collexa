@@ -52,6 +52,7 @@ const StatSection = () => {
         const duration = 2000; // 2 seconds
         const steps = 60;
         const stepDuration = duration / steps;
+        const intervalIds: NodeJS.Timeout[] = [];
 
         stats.forEach((stat, index) => {
             const increment = stat.number / steps;
@@ -70,8 +71,15 @@ const StatSection = () => {
                     return newCounters;
                 });
             }, stepDuration);
+
+            intervalIds.push(timer);
         });
-    }, [isVisible, stats]);
+
+        // Cleanup function to clear all intervals
+        return () => {
+            intervalIds.forEach(id => clearInterval(id));
+        };
+    }, [isVisible]);
 
     return (
         <div id="stats-section" className="w-full bg-primary/5 py-8">
