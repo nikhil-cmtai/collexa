@@ -11,7 +11,7 @@ interface JobCardProps {
     company: string
     location: string
     type: string
-    tags: string[]
+    tags?: string[]
     stipend: string | null
     postedAt: string
   }
@@ -21,6 +21,7 @@ interface JobCardProps {
 export default function JobCard({ job, index }: JobCardProps) {
   // Create a slug from the job title
   const jobSlug = job.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+  const tags = Array.isArray(job.tags) ? job.tags : []
   
   return (
     <motion.div 
@@ -46,14 +47,14 @@ export default function JobCard({ job, index }: JobCardProps) {
         </div>
         
         <div className="flex flex-wrap gap-1.5 mb-3">
-          {job.tags.slice(0, 3).map((t: string) => (
+          {tags.slice(0, 3).map((t: string) => (
             <span key={t} className="rounded-md bg-primary/5 text-primary border border-primary/10 px-2 py-1 text-xs font-medium">
               {t}
             </span>
           ))}
-          {job.tags.length > 3 && (
+          {tags.length > 3 && (
             <span className="rounded-md bg-muted/50 text-text px-2 py-1 text-xs font-medium">
-              +{job.tags.length - 3} more
+              +{tags.length - 3} more
             </span>
           )}
         </div>

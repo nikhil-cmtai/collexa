@@ -33,12 +33,27 @@ export default function JobsView({ presetLocation, presetType, presetQuery }: { 
   }, [presetLocation, presetType, presetQuery, dispatch])
 
   const filtered = items.filter((job) => {
-    const haystack = (job.title + " " + job.company + " " + job.tags.join(" ")).toLowerCase()
+    const title = job.title ?? ""
+    const company = job.company ?? ""
+    const tagsArray = Array.isArray(job.tags) ? job.tags : []
+    const tagsText = tagsArray.join(" ")
+    const haystack = `${title} ${company} ${tagsText}`.toLowerCase()
+
     const byQuery = query ? haystack.includes(query.toLowerCase()) : true
-    const byLocation = location ? job.location.toLowerCase().includes(location.toLowerCase()) : true
-    const byType = type ? job.type.toLowerCase().includes(type.toLowerCase()) : true
-    const bySalary = salaryRange ? (job.stipend || "").toLowerCase().includes(salaryRange.toLowerCase()) : true
-    const byExperience = experience ? job.tags.some(tag => tag.toLowerCase().includes(experience.toLowerCase())) : true
+
+    const jobLocation = job.location ?? ""
+    const byLocation = location ? jobLocation.toLowerCase().includes(location.toLowerCase()) : true
+
+    const jobType = job.type ?? ""
+    const byType = type ? jobType.toLowerCase().includes(type.toLowerCase()) : true
+
+    const stipendText = (job.stipend ?? "").toLowerCase()
+    const bySalary = salaryRange ? stipendText.includes(salaryRange.toLowerCase()) : true
+
+    const byExperience = experience
+      ? tagsArray.some((tag) => tag?.toLowerCase().includes(experience.toLowerCase()))
+      : true
+
     return byQuery && byLocation && byType && bySalary && byExperience
   })
 

@@ -11,13 +11,8 @@ import {
   Eye, 
   EyeOff, 
   Lock, 
-  UserPlus, 
-  KeyRound, 
   Loader2,
   GraduationCap,
-  Building,
-  Star,
-  Globe,
   Zap,
 } from "lucide-react";
 
@@ -36,19 +31,6 @@ const LoginPage = () => {
     { email: "student@gmail.com", password: "student123", role: "student", name: "Student User", color: "bg-orange-500" },
   ];
 
-  const features = [
-    { icon: GraduationCap, text: "Expert-led courses", color: "text-blue-400" },
-    { icon: Building, text: "Industry partnerships", color: "text-green-400" },
-    { icon: Star, text: "5-star rated platform", color: "text-yellow-400" },
-    { icon: Globe, text: "Global community", color: "text-purple-400" }
-  ];
-
-  const stats = [
-    { number: "50K+", label: "Students" },
-    { number: "200+", label: "Courses" },
-    { number: "95%", label: "Success Rate" },
-    { number: "4.9/5", label: "Rating" }
-  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,69 +91,9 @@ const LoginPage = () => {
       </div>
 
       <div className="relative z-10 min-h-screen flex">
-        {/* Left Side - Branding */}
-        <div className="hidden lg:flex lg:w-1/2 flex-col justify-center px-12 text-foreground">
-          <div className="max-w-md">
-            <div className="flex items-center mb-8">
-              <div className="w-12 h-12 bg-gradient-to-r from-primary to-secondary rounded-2xl flex items-center justify-center mr-4">
-                <GraduationCap className="w-7 h-7 text-primary-foreground" />
-              </div>
-              <h1 className="text-3xl font-bold text-foreground">Collexa</h1>
-            </div>
-            
-            <h2 className="text-4xl font-bold mb-6 leading-tight text-foreground">
-              Transform Your Future with 
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"> Expert Education</span>
-            </h2>
-            
-            <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-              Join thousands of students who have already transformed their careers with our industry-leading courses and expert mentorship.
-            </p>
-
-            <div className="space-y-4 mb-8">
-              {features.map((feature, index) => (
-                <div key={index} className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg flex items-center justify-center">
-                    <feature.icon className="w-4 h-4 text-primary" />
-                  </div>
-                  <span className="text-muted-foreground">{feature.text}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              {stats.map((stat, index) => (
-                <div key={index} className="text-center">
-                  <div className="text-2xl font-bold text-foreground">{stat.number}</div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <div className="flex -space-x-2">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="w-10 h-10 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full border-2 border-background flex items-center justify-center shadow-sm">
-                    <span className="text-xs font-medium text-muted-foreground">U{i}</span>
-                  </div>
-                ))}
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground">Join 50,000+ students</p>
-                <div className="flex items-center">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
-                  ))}
-                  <span className="ml-2 text-sm text-muted-foreground">4.9/5 rating</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Right Side - Login Form */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center px-8">
+        <div className="w-full flex items-center justify-center px-8">
           <div className="w-full max-w-md">
             {/* Mobile Logo */}
             <div className="lg:hidden text-center mb-8">
@@ -247,16 +169,6 @@ const LoginPage = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <button
-                      type="button"
-                      className="text-sm text-primary hover:text-primary/80 transition-colors flex items-center"
-                    >
-                      <KeyRound className="w-4 h-4 mr-1" />
-                      Forgot Password?
-                    </button>
-                  </div>
-
                   <Button 
                     type="submit" 
                     disabled={isLoading}
@@ -276,43 +188,9 @@ const LoginPage = () => {
                   </Button>
                 </form>
 
-                {/* Divider */}
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-border" />
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-4 bg-card text-muted-foreground">
-                      New to Collexa?
-                    </span>
-                  </div>
-                </div>
-
-                {/* Sign Up Button */}
-                <Button 
-                  variant="outline" 
-                  className="w-full h-12 border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200"
-                  onClick={() => router.push('/signup')}
-                >
-                  <UserPlus className="w-5 h-5 mr-2" />
-                  Create New Account
-                </Button>
               </CardContent>
             </Card>
 
-            {/* Footer */}
-            <div className="text-center mt-8">
-              <p className="text-sm text-muted-foreground">
-                By signing in, you agree to our{" "}
-                <a href="/terms" className="text-primary hover:text-primary/80 font-medium transition-colors">
-                  Terms of Service
-                </a>{" "}
-                and{" "}
-                <a href="/privacy-policy" className="text-primary hover:text-primary/80 font-medium transition-colors">
-                  Privacy Policy
-                </a>
-              </p>
-            </div>
           </div>
         </div>
       </div>

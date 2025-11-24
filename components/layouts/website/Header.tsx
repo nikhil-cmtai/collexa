@@ -376,13 +376,19 @@ const Header = () => {
           </nav>
 
           {/* Login Button & Mobile Menu */}
-          <div className="flex items-center space-x-4">
-            <Button 
+          <div className="flex items-center space-x-3">
+            <Button
               asChild
               variant="outline"
-              className="bg-white hover:bg-white text-secondary border-primary font-medium px-6 py-2 rounded-lg transition-all duration-300 hover:border-secondary hover:text-primary hover:shadow-sm hover:bg-primary/5"
+              className="bg-white hover:bg-primary/5 text-primary border-primary font-medium px-5 py-2 rounded-lg transition-all duration-300"
             >
-              <Link href="/login">Login / Signup</Link>
+              <Link target="_blank" href="https://collexa-student-fe.vercel.app/">Student Login</Link>
+            </Button>
+            <Button
+              asChild
+              className="px-5 py-2 rounded-lg font-medium bg-primary !text-white hover:bg-primary/90 transition-all duration-300"
+            >
+              <Link target="_blank" href="https://collexa-employer-frontend.vercel.app/">Employer Login</Link>
             </Button>
 
             {/* Mobile Menu Button */}

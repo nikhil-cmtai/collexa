@@ -21,7 +21,7 @@ const publicRoutes = [
   'cookie-policy',
     // Website public sections
   '/campus-courses',
-  '/internships',
+  '/internship',
   '/jobs',
   '/learn-skills',
   '/enquiry',

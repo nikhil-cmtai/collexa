@@ -10,8 +10,8 @@ const Footer = () => {
   // Footer data arrays
   const exploreLinks = [
     { title: "Campus Jobs", href: "/jobs" },
-    { title: "Internships", href: "/internships" },
-    { title: "Skill Courses", href: "/campus-courses" },
+    { title: "Internships", href: "internship" },
+    { title: "Skill Courses", href: "/learn-skills" },
     { title: "For Employers", href: "/employers" }
   ];
 
@@ -24,7 +24,7 @@ const Footer = () => {
 
   const termsLinks = [
     { title: "Terms", href: "/terms" },
-    { title: "Privacy", href: "/privacy" }
+    { title: "Privacy", href: "/privacy-policy" }
   ];
 
   const socialLinks = [
@@ -132,7 +132,7 @@ const Footer = () => {
         <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <p>© {new Date().getFullYear()} <span className="text-foreground font-semibold">Collexa Edu</span>. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <Link href="/privacy" className="hover:text-primary transition-colors duration-300">Privacy</Link>
+            <Link href="/privacy-policy" className="hover:text-primary transition-colors duration-300">Privacy</Link>
             <Link href="/terms" className="hover:text-primary transition-colors duration-300">Terms</Link>
             <Link href="/contact" className="hover:text-primary transition-colors duration-300">Support</Link>
           </div>
