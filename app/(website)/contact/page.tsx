@@ -7,15 +7,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin, Send, CheckCircle2 } from "lucide-react";
+import { createLead, fetchLeads, Lead } from "@/lib/redux/features/leadSlice";
+import { useAppDispatch } from "@/lib/redux/hooks";
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
+  const dispatch = useAppDispatch();
+  const initialFormState = {
     name: "",
     email: "",
     phone: "",
     subject: "",
     message: "",
-  });
+    company: "",
+  };
+  const [formData, setFormData] = useState(initialFormState);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{
@@ -67,17 +72,33 @@ export default function ContactPage() {
       const data = await response.json();
 
       if (response.ok) {
+        const leadPayload: Omit<Lead, "_id"> = {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          company: formData.company || "N/A",
+          position: formData.subject || "General Enquiry",
+          source: "website",
+          status: "new",
+          priority: "medium",
+          estimatedValue: 0,
+          notes: formData.message,
+          lastContact: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+        };
+
+        try {
+          await dispatch(createLead(leadPayload)).unwrap();
+          dispatch(fetchLeads(undefined));
+        } catch (leadError) {
+          console.warn("Lead creation failed:", leadError);
+        }
+
         setSubmitStatus({
           type: "success",
           message: "Thank you! Your message has been sent successfully.",
         });
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          subject: "",
-          message: "",
-        });
+        setFormData(initialFormState);
       } else {
         setSubmitStatus({
           type: "error",

@@ -11,7 +11,7 @@ const Footer = () => {
   const exploreLinks = [
     { title: "Campus Jobs", href: "/jobs" },
     { title: "Internships", href: "/internships" },
-    { title: "Skill Courses", href: "/courses" },
+    { title: "Skill Courses", href: "/campus-courses" },
     { title: "For Employers", href: "/employers" }
   ];
 
