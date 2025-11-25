@@ -314,6 +314,13 @@ const JobDetailsPage = () => {
     alert("Application submitted successfully!")
   }
 
+  const scrollToForm = () => {
+    const formElement = document.getElementById("application-form")
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: "smooth", block: "start" })
+    }
+  }
+
   // Loading state
   if (status === "loading") {
     return (
@@ -378,7 +385,7 @@ const JobDetailsPage = () => {
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
-                  <span>{job.postedAt}</span>
+                  <span>{new Date(job.postedAt).toLocaleDateString()}</span>
                 </div>
               </div>
               
@@ -395,11 +402,11 @@ const JobDetailsPage = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-3">
-              <button className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+              <button 
+                onClick={scrollToForm}
+                className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+              >
                 Apply Now
-              </button>
-              <button className="px-6 py-3 border border-border text-heading rounded-lg font-semibold hover:bg-muted/50 transition-colors">
-                Save Job
               </button>
             </div>
           </div>
@@ -439,7 +446,7 @@ const JobDetailsPage = () => {
                 <div className="text-center p-4 bg-primary/5 rounded-xl border border-primary/10">
                   <Calendar className="w-6 h-6 text-primary mx-auto mb-2" />
                   <p className="text-sm text-muted mb-1">Posted</p>
-                  <p className="font-semibold text-heading">{job.postedAt}</p>
+                  <p className="font-semibold text-heading">{new Date(job.postedAt).toLocaleDateString()}</p>
                 </div>
               </div>
 
@@ -565,6 +572,7 @@ const JobDetailsPage = () => {
 
         {/* Application Form */}
         <motion.div 
+          id="application-form"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}

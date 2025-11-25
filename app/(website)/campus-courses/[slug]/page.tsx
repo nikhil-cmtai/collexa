@@ -16,8 +16,9 @@ import {
   Target,
   BookOpen,
   Send,
-  FileText,
-  TrendingUp
+  TrendingUp,
+  Loader2,
+  DollarSign
 } from "lucide-react"
 import { useAppSelector } from "@/lib/redux/hooks"
 import { Course } from "@/lib/redux/features/coursesSlice"
@@ -103,11 +104,12 @@ export default function CourseDetailsPage() {
     email: "",
     phone: "",
     qualification: "",
-    currentCompany: "",
-    experience: "",
-    motivation: "",
-    documents: null as File | null
+    location: "",
+    budget: ""
   })
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [successMessage, setSuccessMessage] = useState("")
 
   useEffect(() => {
     // Find course by slug
@@ -128,15 +130,44 @@ export default function CourseDetailsPage() {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null
-    setFormData(prev => ({ ...prev, documents: file }))
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setSuccessMessage("")
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    
+    console.log("Application submitted:", formData)
+    setIsSubmitting(false)
+    setSuccessMessage("Application submitted successfully! We'll get back to you soon.")
+    
+    // Reset form
+    setFormData({
+      fullName: "",
+      email: "",
+      phone: "",
+      qualification: "",
+      location: "",
+      budget: ""
+    })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Application submitted:", formData)
-    alert("Application submitted successfully!")
+  // Auto-hide success message after 3 seconds
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage("")
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [successMessage])
+
+  const scrollToForm = () => {
+    const formElement = document.getElementById("application-form")
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: "smooth", block: "start" })
+    }
   }
 
   if (loading) {
@@ -218,11 +249,19 @@ export default function CourseDetailsPage() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-3">
-              <button className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors">
-                Apply Now
-              </button>
-              <button className="px-6 py-3 border border-border text-heading rounded-lg font-semibold hover:bg-muted/50 transition-colors">
-                Save Course
+              <button 
+                onClick={scrollToForm}
+                disabled={isSubmitting}
+                className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Applying...
+                  </>
+                ) : (
+                  "Apply Now"
+                )}
               </button>
             </div>
           </div>
@@ -422,6 +461,7 @@ export default function CourseDetailsPage() {
 
         {/* Application Form */}
         <motion.div 
+          id="application-form"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
@@ -431,6 +471,18 @@ export default function CourseDetailsPage() {
             <h2 className="text-2xl font-bold text-heading mb-2">Apply for this Course</h2>
             <p className="text-muted">Fill out the form below to submit your application</p>
           </div>
+
+          {successMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="max-w-2xl mx-auto mb-6 p-4 bg-green-50 text-green-800 border border-green-200 rounded-lg flex items-center gap-3"
+            >
+              <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+              <p className="text-sm font-medium">{successMessage}</p>
+            </motion.div>
+          )}
 
           <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
@@ -505,85 +557,58 @@ export default function CourseDetailsPage() {
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-heading mb-1">
-                  Current Company/Institution
+                  Location *
                 </label>
-                <input
-                  type="text"
-                  name="currentCompany"
-                  value={formData.currentCompany}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
-                  placeholder="Enter current organization"
-                />
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
+                  <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full pl-10 pr-3 py-2 border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
+                    placeholder="Enter your location"
+                  />
+                </div>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-heading mb-1">
-                  Work Experience
+                  Budget *
                 </label>
-                <select
-                  name="experience"
-                  value={formData.experience}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
-                >
-                  <option value="">Select experience</option>
-                  <option value="0">Fresher</option>
-                  <option value="0-1">0-1 years</option>
-                  <option value="1-3">1-3 years</option>
-                  <option value="3-5">3-5 years</option>
-                  <option value="5+">5+ years</option>
-                </select>
+                <div className="relative">
+                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
+                  <input
+                    type="text"
+                    name="budget"
+                    value={formData.budget}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full pl-10 pr-3 py-2 border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
+                    placeholder="Enter your budget (e.g., ₹50,000)"
+                  />
+                </div>
               </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-heading mb-1">
-                Documents (Certificates, Resume, etc.) *
-              </label>
-              <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-primary/50 transition-colors">
-                <FileText className="w-6 h-6 text-muted mx-auto mb-2" />
-                <p className="text-sm text-muted mb-2">
-                  {formData.documents ? formData.documents.name : "Click to upload or drag and drop"}
-                </p>
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleFileChange}
-                  required
-                  className="hidden"
-                  id="documents-upload"
-                />
-                <label
-                  htmlFor="documents-upload"
-                  className="inline-block px-3 py-1.5 bg-primary text-white rounded-md cursor-pointer hover:bg-primary/90 transition-colors text-sm"
-                >
-                  Choose File
-                </label>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-heading mb-1">
-                Why do you want to join this course?
-              </label>
-              <textarea
-                name="motivation"
-                value={formData.motivation}
-                onChange={handleInputChange}
-                rows={4}
-                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary transition-colors resize-none"
-                placeholder="Tell us about your motivation and goals..."
-              />
             </div>
 
             <div className="text-center pt-4">
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                disabled={isSubmitting}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Send className="w-4 h-4" />
-                Submit Application
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    Submit Application
+                  </>
+                )}
               </button>
             </div>
           </form>
