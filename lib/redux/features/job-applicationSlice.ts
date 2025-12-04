@@ -86,7 +86,7 @@ export const fetchJobApplications = createAsyncThunk(
 export const createJobApplication = createAsyncThunk(
   "jobApplications/createJobApplication",
   async (
-    data: Omit<JobApplication, "_id" | "createdAt" | "updatedAt">,
+    data: Omit<JobApplication, "_id" | "createdAt" | "updatedAt"> | FormData,
     { rejectWithValue }
   ) => {
     try {

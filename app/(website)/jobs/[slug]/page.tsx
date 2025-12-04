@@ -17,11 +17,13 @@ import {
   Send,
   FileText,
   Award,
-  Target
+  Target,
+  Loader2
 } from "lucide-react"
 import Link from "next/link"
-import { useAppSelector } from "@/lib/redux/hooks"
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks"
 import type { Job } from "@/lib/redux/features/jobsSlice"
+import { createJobApplication, fetchJobApplications, JobApplication } from "@/lib/redux/features/job-applicationSlice"
 
 // Extended job interface for detailed view
 interface DetailedJob extends Job {
@@ -275,6 +277,7 @@ const getDetailedJobData = (job: Job): DetailedJob => {
 
 const JobDetailsPage = () => {
   const { slug } = useParams()
+  const dispatch = useAppDispatch()
   const jobs = useAppSelector((state) => state.jobs.items)
   const status = useAppSelector((state) => state.jobs.status)
   
@@ -296,6 +299,8 @@ const JobDetailsPage = () => {
     coverLetter: "",
     resume: null as File | null
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [successMessage, setSuccessMessage] = useState("")
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -307,11 +312,50 @@ const JobDetailsPage = () => {
     setFormData(prev => ({ ...prev, resume: file }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission
-    console.log("Application submitted:", formData)
-    alert("Application submitted successfully!")
+    if (!job) return
+
+    setIsSubmitting(true)
+    setSuccessMessage("")
+
+    // Backend currently expects JSON body (not multipart), so send a plain object
+    const payload: Omit<JobApplication, "_id" | "createdAt" | "updatedAt"> = {
+      name: formData.fullName,
+      email: formData.email,
+      phone: formData.phone,
+      message: `Expected salary: ${formData.expectedSalary || "N/A"}`,
+      coverLetter: formData.coverLetter,
+      jobId: job.id,
+      userId: "",
+      // Store at least the file name or empty string to satisfy required `resume` field
+      resume: formData.resume?.name || "",
+      status: "applied",
+      interviewScheduled: false,
+      interviewDate: null,
+      notes: `Current company: ${formData.currentCompany || "N/A"}`,
+    }
+
+    try {
+      await dispatch(createJobApplication(payload)).unwrap()
+      dispatch(fetchJobApplications({ jobId: job.id }))
+      setSuccessMessage("Application submitted successfully! The employer will contact you soon.")
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        experience: "",
+        currentCompany: "",
+        expectedSalary: "",
+        coverLetter: "",
+        resume: null,
+      })
+    } catch (err) {
+      console.error("Failed to submit job application:", err)
+      setSuccessMessage("Unable to submit right now. Please try again in a few minutes.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const scrollToForm = () => {
@@ -583,6 +627,13 @@ const JobDetailsPage = () => {
             <p className="text-muted">Fill out the form below to submit your application</p>
           </div>
 
+          {successMessage && (
+            <div className="max-w-2xl mx-auto mb-6 p-3 rounded-lg border border-green-200 bg-green-50 text-green-800 text-sm flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4" />
+              <span>{successMessage}</span>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
@@ -726,10 +777,20 @@ const JobDetailsPage = () => {
             <div className="text-center pt-4">
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                disabled={isSubmitting}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Send className="w-4 h-4" />
-                Submit Application
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    Submit Application
+                  </>
+                )}
               </button>
             </div>
           </form>

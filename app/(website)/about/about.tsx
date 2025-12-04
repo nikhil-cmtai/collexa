@@ -160,7 +160,7 @@ export default function AboutPage() {
             transition={{ duration: 0.5 }}
             className="space-y-4"
           >
-            {values.map((value, index) => {
+            {values.map((value) => {
               const Icon = value.icon
               return (
                 <div

@@ -20,8 +20,9 @@ import {
   Loader2,
   DollarSign
 } from "lucide-react"
-import { useAppSelector } from "@/lib/redux/hooks"
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks"
 import { Course } from "@/lib/redux/features/coursesSlice"
+import { createAdmissionRequest, fetchAdmissionRequests, AdmissionRequest } from "@/lib/redux/features/admission-requestSlice"
 
 interface DetailedCourse extends Course {
   description: string
@@ -93,7 +94,8 @@ const getDetailedCourseData = (course: Course): DetailedCourse => {
 export default function CourseDetailsPage() {
   const params = useParams()
   const slug = params.slug as string
-  
+  const dispatch = useAppDispatch()
+
   const { items: courses } = useAppSelector((state) => state.courses)
   const [detailedCourse, setDetailedCourse] = useState<DetailedCourse | null>(null)
   const [loading, setLoading] = useState(true)
@@ -132,25 +134,50 @@ export default function CourseDetailsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!detailedCourse) return
+
     setIsSubmitting(true)
     setSuccessMessage("")
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    console.log("Application submitted:", formData)
-    setIsSubmitting(false)
-    setSuccessMessage("Application submitted successfully! We'll get back to you soon.")
-    
-    // Reset form
-    setFormData({
-      fullName: "",
-      email: "",
-      phone: "",
-      qualification: "",
-      location: "",
-      budget: ""
-    })
+
+    const now = new Date().toISOString()
+
+    const payload: Omit<AdmissionRequest, "_id" | "createdAt" | "updatedAt"> = {
+      name: formData.fullName,
+      email: formData.email,
+      phone: formData.phone,
+      course: detailedCourse.id,
+      university: detailedCourse.university,
+      location: formData.location,
+      status: "pending",
+      priority: "medium",
+      applicationDate: now,
+      lastContact: now,
+      assignedTo: "",
+      notes: `Qualification: ${formData.qualification || "N/A"} | Budget: ${formData.budget || "N/A"}`,
+      documents: [],
+      expectedStartDate: detailedCourse.startDate || "",
+    }
+
+    try {
+      await dispatch(createAdmissionRequest(payload)).unwrap()
+      // Refresh list for dashboards
+      dispatch(fetchAdmissionRequests(undefined))
+
+      setSuccessMessage("Application submitted successfully! We'll get back to you soon.")
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        qualification: "",
+        location: "",
+        budget: "",
+      })
+    } catch (err) {
+      console.error("Failed to submit admission request:", err)
+      setSuccessMessage("Unable to submit right now. Please try again in a few minutes.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   // Auto-hide success message after 3 seconds
