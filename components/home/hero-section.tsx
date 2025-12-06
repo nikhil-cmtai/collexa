@@ -28,7 +28,7 @@ const HeroSection = () => {
       }
     ],
     image: {
-      src: "/images/hero-man.png",
+      src: "/Home1.png",
       alt: "Student Success",
       width: 500,
       height: 500

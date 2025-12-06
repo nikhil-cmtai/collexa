@@ -3,7 +3,7 @@
 import React from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import careerHero from "@/public/img/image6.png"
+import careerHero from "@/public/course.jpg"
 
 export default function JobsHero() {
 
